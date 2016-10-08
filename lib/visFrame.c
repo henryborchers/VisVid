@@ -3,8 +3,8 @@
 //
 
 #include <stdint.h>
-#include <MacTypes.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "visFrame.h"
 
 enum PIXELCOLORSPACE {
@@ -38,6 +38,9 @@ struct _VisYUVFrame{
 PixelYUV *CreatePixelYUV() {
     PixelYUV *newPixel = NULL;
     newPixel = (PixelYUV*)malloc(sizeof(PixelYUV));
+    if(newPixel == NULL){
+        return NULL;
+    }
     newPixel->Y = 0;
     newPixel->U = 0;
     newPixel->V = 0;
@@ -49,14 +52,20 @@ void DestroyPixelYUV(PixelYUV **pixel) {
     (*pixel) = NULL;
 }
 
-int setPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v) {
+int SetPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v) {
+    if(pixel == NULL){
+        return EFAULT;
+    }
     pixel->Y = y;
     pixel->U = u;
     pixel->V = v;
     return 0;
 }
 
-void getPixelYUV(PixelYUV *pixel, uint8_t *y, uint8_t *u, uint8_t *v) {
+int GetPixelYUV(PixelYUV *pixel, uint8_t *y, uint8_t *u, uint8_t *v) {
+    if(pixel == NULL){
+        return EFAULT;
+    }
     *y = pixel->Y;
     *u = pixel->U;
     *v = pixel->V;

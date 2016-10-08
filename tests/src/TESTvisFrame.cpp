@@ -49,15 +49,15 @@ TEST(visFrameSetup, visFrame_CreateAndCleanup){
 
 
 TEST_F(visFrameFunctions, setPixel){
-    ASSERT_EQ(setPixelYUV(pixel, 4 , 100, 40), 0);
+    ASSERT_EQ(SetPixelYUV(pixel, 4 , 100, 40), 0);
 }
 
 TEST_F(visFrameFunctions, setAndGetPixel){
     uint8_t y = 0;
     uint8_t u = 0;
     uint8_t v = 0;
-    setPixelYUV(pixel, 4 , 100, 40);
-    getPixelYUV(pixel, &y, &u, &v);
+    SetPixelYUV(pixel, 4 , 100, 40);
+    GetPixelYUV(pixel, &y, &u, &v);
 
     ASSERT_EQ(y, 4);
     ASSERT_EQ(u, 100);
