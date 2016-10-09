@@ -11,7 +11,7 @@ extern "C"{
 
 
 using namespace std;
-struct visFrameFunctions : public ::testing::Test{
+struct visPixelYUVFunctions : public ::testing::Test{
     PixelYUV *pixel;
 
 protected:
@@ -26,19 +26,33 @@ protected:
 
 };
 
+struct visFrameYUVFunctions : public ::testing::Test{
+    VisYUVFrame *foo;
+
+protected:
+    virtual void SetUp() {
+        foo = CreateVisYUVFrame();
+
+    }
+    virtual void TearDown() {
+        DestroyVisYUVFrame(&foo);
+    }
+
+
+};
 
 
 TEST(DUMMY, DUMMY_SANIT_Test){
     ASSERT_EQ(1,1);
 }
 
-TEST(visFrameSetup, visFrame_Create){
+TEST(visPixelYUVSetup, visPixelYUV_Create){
     PixelYUV *pixel = NULL;
     pixel = CreatePixelYUV();
     ASSERT_FALSE(pixel == NULL);
 }
 
-TEST(visFrameSetup, visFrame_CreateAndCleanup){
+TEST(visPixelYUVSetup, visPixelYUV_CreateAndCleanup){
 
     PixelYUV *pixel = NULL;
     pixel = CreatePixelYUV();
@@ -48,11 +62,11 @@ TEST(visFrameSetup, visFrame_CreateAndCleanup){
 }
 
 
-TEST_F(visFrameFunctions, setPixel){
+TEST_F(visPixelYUVFunctions, setPixel){
     ASSERT_EQ(SetPixelYUV(pixel, 4 , 100, 40), 0);
 }
 
-TEST_F(visFrameFunctions, setAndGetPixel){
+TEST_F(visPixelYUVFunctions, setAndGetPixel){
     uint8_t y = 0;
     uint8_t u = 0;
     uint8_t v = 0;
@@ -62,4 +76,35 @@ TEST_F(visFrameFunctions, setAndGetPixel){
     ASSERT_EQ(y, 4);
     ASSERT_EQ(u, 100);
     ASSERT_EQ(v, 40);
+}
+
+TEST(visFrameSetup, visFrame_Create){
+    VisYUVFrame *foo = NULL;
+    foo = CreateVisYUVFrame();
+    ASSERT_FALSE(foo == NULL);
+}
+
+TEST(visFrameSetup, visFrame_CreateAndDestroy){
+    VisYUVFrame *foo = CreateVisYUVFrame();
+    DestroyVisYUVFrame(&foo);
+    ASSERT_TRUE(foo == NULL);
+}
+
+TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
+    int height = 0;
+    int width = 0;
+    GetVisYUVFrameSize(foo, &width, &height);
+
+    ASSERT_EQ(height, -1);
+    ASSERT_EQ(width, -1);
+
+}
+
+TEST_F(visFrameYUVFunctions, setFrameSize){
+    ASSERT_EQ(SetVisYUVFrameSize(foo, 640, 480), 0);
+    int height = 0;
+    int width = 0;
+    GetVisYUVFrameSize(foo, &width, &height);
+    ASSERT_EQ(height, 480);
+    ASSERT_EQ(width, 640);
 }
