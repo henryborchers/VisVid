@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 #include "visBuffer.h"
 
 struct _visVisualResult{
@@ -65,7 +66,7 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size) {
     return 0;
 }
 
-int GetVisVisualResultReadyValue(visVisualResult *pRes, uint8_t *value, uint16_t offset) {
+int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, uint16_t offset) {
     if(value == NULL){
         return EFAULT;
     }
@@ -73,6 +74,15 @@ int GetVisVisualResultReadyValue(visVisualResult *pRes, uint8_t *value, uint16_t
         return EFAULT;
     }
     *value = pRes->data[offset];
+    return 0;
+}
+
+int SetVisVisualResultData(visVisualResult *pRes, uint8_t *data, size_t length) {
+    if(pRes->size != length){
+        return EFAULT;
+    }
+    memcpy(pRes->data, data, sizeof(uint8_t) * length);
+    pRes->ready = true;
     return 0;
 }
 

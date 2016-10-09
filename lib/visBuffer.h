@@ -52,6 +52,7 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size);
  * @param offset
  * @return
  */
-int GetVisVisualResultReadyValue(visVisualResult *pRes, uint8_t *value, uint16_t offset);
+int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, uint16_t offset);
 
+int SetVisVisualResultData(visVisualResult *pRes, uint8_t *data, size_t length);
 #endif //VISVID_VISBUFFER_H
