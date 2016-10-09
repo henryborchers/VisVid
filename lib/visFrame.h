@@ -1,15 +1,13 @@
 /**
  * @file visFrame.h
+ * @author Henry Borchers
+ * @date October 8, 2016
  * @brief Contains all the infomation used to contains a frame and its pixel components.
  */
-//
-// Created by Borchers, Henry Samuel on 10/8/16.
-//
-
-
 
 #ifndef VISVID_VISFRAME_H_H
 #define VISVID_VISFRAME_H_H
+const char VISFRAME_VERSION[] = "0.0.1";
 
 typedef struct _PixelYUV PixelYUV;
 typedef struct _VisYUVFrame VisYUVFrame;
