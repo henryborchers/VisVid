@@ -10,6 +10,9 @@
 
 #ifndef VISVID_VISBUFFER_H
 #define VISVID_VISBUFFER_H
+
+typedef struct _visBufferNode visBufferNode;
+typedef struct _visBuffer visBuffer;
 typedef struct _visVisualResult visVisualResult;
 
 /**
@@ -47,12 +50,48 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size);
 
 /**
  * Get the value of a visVisualResult at a certain offset.
- * @param pRes
- * @param value
- * @param offset
- * @return
+ * @param pRes The visVisualResult to retrieve the value from.
+ * @param value A pointer where the results can be saved.
+ * @param offset The index for the value in the data.
+ * @return Returns 0 on success.
  */
 int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, uint16_t offset);
 
+/**
+ * Performs a memory copy of the data and sets visVisualResult->ready to true.
+ * @param pRes visVisualResult with data to copy to.
+ * @param data The data to copy from.
+ * @param length The number of elements in the data.
+ * @return Returns 0 on success.
+ */
 int SetVisVisualResultData(visVisualResult *pRes, uint8_t *data, size_t length);
+
+visBuffer *CreateVisBuffer();
+
+void DestroyVisBuffer(visBuffer **buffer);
+
+int visBufferIsEmpty(visBuffer *buffer);
+
+static visBufferNode *visBufferFront(visBuffer *buffer);
+
+size_t visBufferSize(visBuffer *buffer);
+
+static visBufferNode *visBufferNextNode(visBufferNode *node);
+
+static visBufferNode *visBufferPreviousNode(visBufferNode *node);
+
+static int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode);
+
+int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes);
+
+static visBufferNode *visBufferPop(visBuffer *buffer);
+
+visVisualResult *visBufferPopResult(visBuffer *buffer);
+
+static visBufferNode *CreateVisBufferNode(visVisualResult *pRes);
+
+void DestroyVisBufferNode(visBufferNode **node);
+
+static visVisualResult *visBufferNodeResult(visBufferNode *pNode);
+
 #endif //VISVID_VISBUFFER_H
