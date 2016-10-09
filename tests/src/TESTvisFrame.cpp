@@ -42,10 +42,6 @@ protected:
 };
 
 
-TEST(DUMMY, DUMMY_SANIT_Test){
-    ASSERT_EQ(1,1);
-}
-
 TEST(visPixelYUVSetup, visPixelYUV_Create){
     PixelYUV *pixel = NULL;
     pixel = CreatePixelYUV();
@@ -60,7 +56,6 @@ TEST(visPixelYUVSetup, visPixelYUV_CreateAndCleanup){
     DestroyPixelYUV(&pixel);
     ASSERT_TRUE(pixel == NULL);
 }
-
 
 TEST_F(visPixelYUVFunctions, setPixel){
     ASSERT_EQ(SetPixelYUV(pixel, 4 , 100, 40), 0);
@@ -97,7 +92,6 @@ TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
 
     ASSERT_EQ(height, -1);
     ASSERT_EQ(width, -1);
-
 }
 
 TEST_F(visFrameYUVFunctions, setFrameSize){
