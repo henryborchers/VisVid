@@ -1,8 +1,10 @@
-//
-// Created by henry on 10/11/2016.
-//
-
+/**
+ * @file visDisplay.h
+ */
 #pragma once
+
+#include "visBuffer.h"
+
 typedef struct {
     int width;
     int height;
@@ -12,3 +14,5 @@ typedef struct {
 visDisplay *CreateVisDisplay(int width, int height);
 
 void DestroyVisDisplay(visDisplay **pvd);
+
+int visDisplayUpdate(visDisplay *pD, visBuffer *buffer);

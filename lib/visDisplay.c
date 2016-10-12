@@ -15,7 +15,8 @@ visDisplay *CreateVisDisplay(int width, int height) {
     }
     new_visDisplay->height = height;
     new_visDisplay->width = width;
-    new_visDisplay->data = malloc(sizeof(uint8_t) * width * height);
+
+    new_visDisplay->data = calloc((size_t)(width * height), sizeof(uint8_t));
     return new_visDisplay;
 }
 
@@ -27,3 +28,13 @@ void DestroyVisDisplay(visDisplay **pvd) {
     free(*pvd);
     *pvd = NULL;
 }
+
+// TODO visDisplayUpdate
+int visDisplayUpdate(visDisplay *pD, visBuffer *buffer){
+    int x;
+    int y;
+    size_t buffersize = visBufferLength(buffer);
+    for(x = 0; x < buffersize; x++)
+    return 0;
+}
+
