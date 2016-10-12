@@ -15,18 +15,20 @@ struct _visBufferNode{
 
 struct _visBuffer{
     size_t bufferLen;
+    size_t bufferWidth;
     visBufferNode *first;
     visBufferNode *last;
 };
 
 
-visBuffer *CreateVisBuffer() {
+visBuffer *CreateVisBuffer(size_t width) {
     visBuffer *buffer = NULL;
     buffer = (visBuffer*)malloc(sizeof(visBuffer));
     if(buffer == NULL){
         return NULL;
     }
     buffer->bufferLen = 0;
+    buffer->bufferWidth = width;
     buffer->first = NULL;
     buffer->last = NULL;
     return buffer;
@@ -59,6 +61,17 @@ visBufferNode *visBufferPreviousNode(visBufferNode *node) {
 }
 
 int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes) {
+    // check result size first if it's not null
+    if(pRes != NULL){
+        // check the size only if there is valid data to check
+        if(isVisVisualResultReady(pRes)){
+            int resultSize = -1;
+            GetVisVisualResultReadySize(pRes, &resultSize);
+            if(buffer->bufferWidth != resultSize){
+                return -1;
+            }
+        }
+    }
     visBufferNode *node = NULL;
     node = CreateVisBufferNode(pRes);
     return visBufferPushBack(buffer, node);
@@ -103,7 +116,7 @@ visBufferNode *visBufferPop(visBuffer *buffer) {
     return rNode;
 }
 
-size_t visBufferSize(visBuffer *buffer) {
+size_t visBufferLength(visBuffer *buffer) {
     return buffer->bufferLen;
 }
 

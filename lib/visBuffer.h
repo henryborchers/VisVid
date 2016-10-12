@@ -20,7 +20,7 @@ typedef struct _visBuffer visBuffer;
  * Creates a new visBuffer on the heap.
  * @return Returns a pointer the new visBuffer.
  */
-visBuffer *CreateVisBuffer();
+visBuffer *CreateVisBuffer(size_t width);
 
 /**
  * Cleans up and destroys the given visBuffer.
@@ -48,7 +48,7 @@ static visBufferNode *visBufferFront(visBuffer *buffer);
  * @param buffer The visBuffer to see the size.
  * @return The number of nodes inside the buffer.
  */
-size_t visBufferSize(visBuffer *buffer);
+size_t visBufferLength(visBuffer *buffer);
 
 /**
  * Gets the next node after the given one.
