@@ -2,7 +2,10 @@ INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${PROJECT_SO
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 SET(TEST_SRC
         TESTvisFrame.cpp
-        TESTvisBuffer.cpp)
+        TESTvisBuffer.cpp
+        TESTvisResult.cpp
+        TESTvisDisplay.cpp
+        )
 ADD_EXECUTABLE(runtests ${TEST_SRC})
 add_test(visTests ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/runtests)
 TARGET_LINK_LIBRARIES(runtests gtest gtest_main visvid)
