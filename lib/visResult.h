@@ -1,11 +1,12 @@
-//
-// Created by henry on 10/11/2016.
-//
-
-#pragma once
 /**
  * @file visResult.h
+ * @author Henry Borchers
+ * @date 10/11/2016
  */
+#pragma once
+
+#include <stdbool.h>
+
 typedef struct _visVisualResult visVisualResult;
 
 /**
@@ -48,7 +49,7 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size);
  * @param offset The index for the value in the data.
  * @return Returns 0 on success.
  */
-int GetVisVisualResultValue(visVisualResult *pRes, unsigned char *value, unsigned short offset);
+int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, unsigned short offset);
 
 /**
  * Performs a memory copy of the data and sets visVisualResult->ready to true.
@@ -57,4 +58,4 @@ int GetVisVisualResultValue(visVisualResult *pRes, unsigned char *value, unsigne
  * @param length The number of elements in the data.
  * @return Returns 0 on success.
  */
-int SetVisVisualResultData(visVisualResult *pRes, unsigned char *data, unsigned long long int length);
+int SetVisVisualResultData(visVisualResult *pRes, uint8_t *data, size_t length);

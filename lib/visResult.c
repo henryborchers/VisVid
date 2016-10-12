@@ -66,7 +66,7 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size) {
     return 0;
 }
 
-int GetVisVisualResultValue(visVisualResult *pRes, unsigned char *value, unsigned short offset) {
+int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, unsigned short offset) {
     if(value == NULL){
         return EFAULT;
     }
@@ -77,7 +77,7 @@ int GetVisVisualResultValue(visVisualResult *pRes, unsigned char *value, unsigne
     return 0;
 }
 
-int SetVisVisualResultData(visVisualResult *pRes, unsigned char *data, unsigned long long int length) {
+int SetVisVisualResultData(visVisualResult *pRes, uint8_t *data, size_t length) {
     if(pRes->size != length){
         return EFAULT;
     }
