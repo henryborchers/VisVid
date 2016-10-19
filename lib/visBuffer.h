@@ -13,8 +13,8 @@
 
 #include "visResult.h"
 
-typedef struct _visBufferNode visBufferNode;
-typedef struct _visBuffer visBuffer;
+typedef struct visBufferNode visBufferNode;
+typedef struct visBuffer visBuffer;
 
 /**
  * Creates a new visBuffer on the heap.

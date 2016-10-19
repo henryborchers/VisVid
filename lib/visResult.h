@@ -7,7 +7,7 @@
 
 #include <stdbool.h>
 
-typedef struct _visVisualResult visVisualResult;
+typedef struct visVisualResult visVisualResult;
 
 /**
  * Creates a new visVisualResult on the heap and returns a pointer to it.

@@ -19,7 +19,7 @@ enum PIXELCOLORSPACE {
  * This represent a pixel's value. NOTE: While YUV is really an analog color format and the true format is YCrBr,
  * it's much easier to write YUV as a varible name and YCrBr is more thought of in terms of their analog counterpart.
  */
-struct _PixelYUV {
+struct PixelYUV {
     uint8_t Y;    /**< Luma value for a pixel.*/
     uint8_t U;    /**< Cr chroma value for pixel.*/
     uint8_t V;    /**< Br chroma value for pixel.*/
@@ -29,10 +29,10 @@ struct _PixelYUV {
 /**
  * @brief A frame of video. Each pixel has it's subsampling destructured so that each pixel has a luma and two chroma values.
  */
-struct _VisYUVFrame{
+struct VisYUVFrame{
     int height;                     /**< Number of rows of pixels in the frame.*/
     int width;                      /**< Number of columns of pixels in the frame.*/
-    struct _PixelYUV ***data;       /**< Pixels that make up the frame.*/
+    struct PixelYUV ***data;       /**< Pixels that make up the frame.*/
     int64_t pos;                    /**< timestamp for the frame.*/
 } ;
 

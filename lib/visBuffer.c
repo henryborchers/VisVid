@@ -7,13 +7,13 @@
 
 #include "visBuffer.h"
 
-struct _visBufferNode{
+struct visBufferNode{
     visVisualResult *result;
     visBufferNode *previous;
     visBufferNode *next;
 };
 
-struct _visBuffer{
+struct visBuffer{
     size_t bufferLen;
     size_t bufferWidth;
     visBufferNode *first;

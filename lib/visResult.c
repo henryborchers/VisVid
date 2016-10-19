@@ -10,7 +10,7 @@
 #include <memory.h>
 #include "visResult.h"
 
-struct _visVisualResult{
+struct visVisualResult{
     bool ready;
     int size;
     unsigned char *data;

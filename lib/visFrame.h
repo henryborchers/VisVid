@@ -9,8 +9,8 @@
 #define VISVID_VISFRAME_H_H
 const char VISFRAME_VERSION[] = "0.0.1";
 
-typedef struct _PixelYUV PixelYUV;
-typedef struct _VisYUVFrame VisYUVFrame;
+typedef struct PixelYUV PixelYUV;
+typedef struct VisYUVFrame VisYUVFrame;
 
 /**
  * Creates a YUV pixel on the heap.
