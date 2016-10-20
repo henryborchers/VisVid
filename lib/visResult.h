@@ -3,7 +3,8 @@
  * @author Henry Borchers
  * @date 10/11/2016
  */
-#pragma once
+#ifndef VISVID_VISRESULT_H
+#define VISVID_VISRESULT_H
 
 #include <stdbool.h>
 #include "visTypes.h"
@@ -60,3 +61,5 @@ int GetVisVisualResultValue(visVisualResult *pRes, PixelValue *value, unsigned s
  * @return Returns 0 on success.
  */
 int SetVisVisualResultData(visVisualResult *pRes, PixelValue *data, size_t length);
+
+#endif //VISVID_VISRESULT_H

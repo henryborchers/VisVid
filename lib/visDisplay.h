@@ -1,7 +1,9 @@
 /**
  * @file visDisplay.h
  */
-#pragma once
+#ifndef VISVID_VISDISPLAY_H
+#define VISVID_VISDISPLAY_H
+
 
 #include "visBuffer.h"
 #include "visTypes.h"
@@ -17,3 +19,5 @@ visDisplay *CreateVisDisplay(int width, int height);
 void DestroyVisDisplay(visDisplay **pvd);
 
 int visDisplayUpdate(visDisplay *pD, visBuffer *buffer);
+
+#endif //VISVID_VISDISPLAY_H
