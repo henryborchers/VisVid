@@ -62,9 +62,9 @@ TEST_F(visPixelYUVFunctions, setPixel){
 }
 
 TEST_F(visPixelYUVFunctions, setAndGetPixel){
-    uint8_t y = 0;
-    uint8_t u = 0;
-    uint8_t v = 0;
+    PixelValue y = 0;
+    PixelValue u = 0;
+    PixelValue v = 0;
     SetPixelYUV(pixel, 4 , 100, 40);
     GetPixelYUV(pixel, &y, &u, &v);
 
