@@ -4,7 +4,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <memory.h>
@@ -13,7 +12,7 @@
 struct visVisualResult{
     bool ready;
     int size;
-    unsigned char *data;
+    PixelValue *data;
 };
 
 visVisualResult *CreateVisVisualResult() {
@@ -66,7 +65,7 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size) {
     return 0;
 }
 
-int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, unsigned short offset) {
+int GetVisVisualResultValue(visVisualResult *pRes, PixelValue *value, unsigned short offset) {
     if(value == NULL){
         return EFAULT;
     }
@@ -77,11 +76,11 @@ int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, unsigned shor
     return 0;
 }
 
-int SetVisVisualResultData(visVisualResult *pRes, uint8_t *data, size_t length) {
+int SetVisVisualResultData(visVisualResult *pRes, PixelValue *data, size_t length) {
     if(pRes->size != length){
         return EFAULT;
     }
-    memcpy(pRes->data, data, sizeof(unsigned char) * length);
+    memcpy(pRes->data, data, sizeof(PixelValue) * length);
     pRes->ready = true;
     return 0;
 }

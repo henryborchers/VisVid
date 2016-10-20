@@ -7,10 +7,13 @@
 
 #ifndef VISVID_VISFRAME_H_H
 #define VISVID_VISFRAME_H_H
+
+#include "visTypes.h"
 const char VISFRAME_VERSION[] = "0.0.1";
 
 typedef struct PixelYUV PixelYUV;
 typedef struct VisYUVFrame VisYUVFrame;
+
 
 /**
  * Creates a YUV pixel on the heap.
@@ -32,7 +35,7 @@ void DestroyPixelYUV(PixelYUV **pixel);
  * @param v New v/chroma value to assign to the pixel.
  * @return Returns 0 on success.
  */
-int SetPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v);
+int SetPixelYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v);
 
 /**
  * Use this function to get the pixel values.
@@ -42,7 +45,7 @@ int SetPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v);
  * @param v Pointer to store the v/chroma value after reading the given pixels.
  * @return Returns 0 on success.
  */
-int GetPixelYUV(PixelYUV *pixel, uint8_t *y, uint8_t *u, uint8_t *v);
+int GetPixelYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v);
 
 /**
  * Allocates a new frame on the heap with zero pixels high and and zero pixels wide and returns a pointer to it's

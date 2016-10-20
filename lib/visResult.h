@@ -6,6 +6,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include "visTypes.h"
 
 typedef struct visVisualResult visVisualResult;
 
@@ -49,7 +50,7 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size);
  * @param offset The index for the value in the data.
  * @return Returns 0 on success.
  */
-int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, unsigned short offset);
+int GetVisVisualResultValue(visVisualResult *pRes, PixelValue *value, unsigned short offset);
 
 /**
  * Performs a memory copy of the data and sets visVisualResult->ready to true.
@@ -58,4 +59,4 @@ int GetVisVisualResultValue(visVisualResult *pRes, uint8_t *value, unsigned shor
  * @param length The number of elements in the data.
  * @return Returns 0 on success.
  */
-int SetVisVisualResultData(visVisualResult *pRes, uint8_t *data, size_t length);
+int SetVisVisualResultData(visVisualResult *pRes, PixelValue *data, size_t length);

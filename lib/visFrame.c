@@ -7,6 +7,7 @@
 #include <errno.h>
 #include "visFrame.h"
 
+
 enum PIXELCOLORSPACE {
     PIXELCOLORSPACE_YUV = 0,
     PIXELCOLORSPACE_Y = 1
@@ -20,9 +21,9 @@ enum PIXELCOLORSPACE {
  * it's much easier to write YUV as a varible name and YCrBr is more thought of in terms of their analog counterpart.
  */
 struct PixelYUV {
-    uint8_t Y;    /**< Luma value for a pixel.*/
-    uint8_t U;    /**< Cr chroma value for pixel.*/
-    uint8_t V;    /**< Br chroma value for pixel.*/
+    PixelValue Y;    /**< Luma value for a pixel.*/
+    PixelValue U;    /**< Cr chroma value for pixel.*/
+    PixelValue V;    /**< Br chroma value for pixel.*/
 };
 
 
@@ -55,7 +56,7 @@ void DestroyPixelYUV(PixelYUV **pixel) {
     (*pixel) = NULL;
 }
 
-int SetPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v) {
+int SetPixelYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -65,7 +66,7 @@ int SetPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v) {
     return 0;
 }
 
-int GetPixelYUV(PixelYUV *pixel, uint8_t *y, uint8_t *u, uint8_t *v) {
+int GetPixelYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
     if(pixel == NULL){
         return EFAULT;
     }
