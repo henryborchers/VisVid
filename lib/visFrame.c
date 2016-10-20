@@ -15,7 +15,7 @@ enum PIXELCOLORSPACE {
 
 /**
  * @struct PixelYUV
- * @brief The pxiel split into it's YUV components
+ * @brief The pixel split into it's YUV components
  *
  * This represent a pixel's value. NOTE: While YUV is really an analog color format and the true format is YCrBr,
  * it's much easier to write YUV as a varible name and YCrBr is more thought of in terms of their analog counterpart.
