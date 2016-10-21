@@ -29,7 +29,7 @@ void DestroyVisVisualResult(visVisualResult **pRes);
 bool isVisVisualResultReady(visVisualResult *pRes);
 
 /**
- * Sizes or resizes the length of the visVisualResult. Any existing data will be lost.
+ * Sizes or re-sizes the length of the visVisualResult. Any existing data will be lost.
  * @param pRest Pointer to visVisualResult to set the length.
  * @param size The new length to set the result to. This is most like the width or the height of the frame.
  * @return Returns 0 on success.

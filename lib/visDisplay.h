@@ -21,7 +21,7 @@ typedef struct {
 /**
  * Generates a visDisplay type on the heap. Use DestroyVisDisplay() to clean up afterwards.
  * @param width The number of pixels wide to create a new visDisplay type.
- * @param height The number of pixels hight to create a new visDisplay type.
+ * @param height The number of pixels height to create a new visDisplay type.
  * @return Returns a pointer to a new visDisplay type.
  */
 visDisplay *CreateVisDisplay(int width, int height);

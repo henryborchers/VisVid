@@ -58,7 +58,7 @@ size_t visBufferLength(visBuffer *buffer);
 static visBufferNode *visBufferNextNode(visBufferNode *node);
 
 /**
- * Gets the nrevious node after the given one.
+ * Gets the previous node after the given one.
  * @param node The node which to find the previous node.
  * @return Returns a pointer to the previous node. Returns NULL if none exists.
  */
