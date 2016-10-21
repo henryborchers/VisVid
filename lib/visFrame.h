@@ -9,7 +9,7 @@
 #define VISVID_VISFRAME_H_H
 
 #include "visTypes.h"
-const char VISFRAME_VERSION[] = "0.0.1";
+//const char VISFRAME_VERSION[] = "0.0.1";
 
 typedef struct PixelYUV PixelYUV;
 typedef struct VisYUVFrame VisYUVFrame;
@@ -78,4 +78,11 @@ int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height);
  */
 int GetVisYUVFrameSize(VisYUVFrame *frame, int *width, int *height);
 
+/**
+ * Gets the time information for the frame.
+ * @param frame The frame to read the time information from.
+ * @param pos Pointer to to store the time information of the frame.
+ * @return Returns 0 on success.
+ */
+int GetVisYUVFrameSizePos(VisYUVFrame *frame, int64_t *pos);
 #endif //VISVID_VISFRAME_H_H
