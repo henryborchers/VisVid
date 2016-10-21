@@ -2,7 +2,6 @@
 // Created by Borchers, Henry Samuel on 10/8/16.
 //
 #include <stdint.h>
-#include <stdbool.h>
 #include <stdlib.h>
 
 #include "visBuffer.h"
@@ -16,6 +15,8 @@ struct visBufferNode{
     visBufferNode *previous;
     visBufferNode *next;
 };
+
+typedef struct visBufferNode visBufferNode;
 /**
  * @struct visBuffer
  * @brief Used to store the sequence of calculation results from the visualization.
