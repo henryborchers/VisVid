@@ -7,11 +7,11 @@
 #include <errno.h>
 #include "visFrame.h"
 
-
-enum PIXELCOLORSPACE {
-    PIXELCOLORSPACE_YUV = 0,
-    PIXELCOLORSPACE_Y = 1
-};
+//
+//enum PIXELCOLORSPACE {
+//    PIXELCOLORSPACE_YUV = 0,
+//    PIXELCOLORSPACE_Y = 1
+//};
 
 /**
  * @struct PixelYUV
@@ -152,6 +152,11 @@ int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height) {
     frame->height = height;
     frame->width = width;
 
+    return 0;
+}
+
+int GetVisYUVFrameSizePos(VisYUVFrame *frame, int64_t *pos) {
+    *pos = frame->pos;
     return 0;
 }
 
