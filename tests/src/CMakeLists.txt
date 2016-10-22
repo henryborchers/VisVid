@@ -4,7 +4,7 @@ SET(TEST_SRC
         TESTvisFrame.cpp
         TESTvisBuffer.cpp
         TESTvisResult.cpp
-        TESTvisDisplay.cpp
+        TESTvisView.cpp
         )
 ADD_EXECUTABLE(runtests ${TEST_SRC})
 add_test(visTests ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/runtests)
