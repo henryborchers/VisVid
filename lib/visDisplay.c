@@ -34,7 +34,13 @@ int visDisplayUpdate(visDisplay *pD, visBuffer *buffer){
     int x;
     int y;
     size_t buffersize = visBufferLength(buffer);
-    for(x = 0; x < buffersize; x++)
+
+    for(x = 0; x < buffersize; x++){
+        for(y=0; y < pD->width; y++){
+            // todo Change this line to make sense
+            pD->data[x*y] = 0;
+        }
+    }
     return 0;
 }
 
