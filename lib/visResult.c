@@ -62,7 +62,7 @@ int SetVisVisualResultReadySize(visVisualResult *pRest, int size) {
     return 0;
 }
 
-int GetVisVisualResultReadySize(visVisualResult *pRest, int *size) {
+int GetVisVisualResultReadySize(int *size, visVisualResult *pRest) {
     if(pRest == NULL){
         return EFAULT;
     }
@@ -70,9 +70,13 @@ int GetVisVisualResultReadySize(visVisualResult *pRest, int *size) {
     return 0;
 }
 
-int GetVisVisualResultValue(visVisualResult *pRes, PixelValue *value, unsigned short offset) {
+int GetVisVisualResultValue(PixelValue *value, visVisualResult *pRes, int offset) {
     if(value == NULL){
         return EFAULT;
+    }
+    if(pRes == NULL){
+        *value = NULL;
+        return 0;
     }
     if(offset > pRes->size){
         return EFAULT;

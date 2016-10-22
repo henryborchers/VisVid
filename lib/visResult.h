@@ -38,20 +38,20 @@ int SetVisVisualResultReadySize(visVisualResult *pRest, int size);
 
 /**
  * Gets the size of length of a visVisualResult.
- * @param pRest Pointer to visVisualResult to get the length.
  * @param size A pointer to where the length can be stored.
+ * @param pRest Pointer to visVisualResult to get the length.
  * @return Returns 0 on success.
  */
-int GetVisVisualResultReadySize(visVisualResult *pRest, int *size);
+int GetVisVisualResultReadySize(int *size, visVisualResult *pRest);
 
 /**
  * Get the value of a visVisualResult at a certain offset.
- * @param pRes The visVisualResult to retrieve the value from.
  * @param value A pointer where the results can be saved.
+ * @param pRes The visVisualResult to retrieve the value from.
  * @param offset The index for the value in the data.
  * @return Returns 0 on success.
  */
-int GetVisVisualResultValue(visVisualResult *pRes, PixelValue *value, unsigned short offset);
+int GetVisVisualResultValue(PixelValue *value, visVisualResult *pRes, int offset);
 
 /**
  * Performs a memory copy of the data and sets visVisualResult->ready to true.
