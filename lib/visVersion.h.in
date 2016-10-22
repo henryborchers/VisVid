@@ -1,0 +1,9 @@
+//
+// Created by Borchers, Henry Samuel on 10/8/16.
+//
+
+#ifndef VISVID_VISVERSION_H
+#define VISVID_VISVERSION_H
+const char *version_vis = "@LIBRARY_VERSION@";
+void sayhi();
+#endif //VISVID_VISVERSION_H
