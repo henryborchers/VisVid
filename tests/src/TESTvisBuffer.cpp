@@ -38,7 +38,6 @@ TEST_F(visBufferFunctions, BufferIsEmptyOnCreation) {
 
 }
 
-
 TEST_F(visBufferFunctions, addNode2Buffer){
     visBufferPushBackResult(buffer, NULL);
     size_t length = visBufferLength(buffer);
@@ -71,4 +70,16 @@ TEST_F(visBufferFunctions, addResults2Buffer){
         visVisualResult *res = visBufferPopResult(buffer);
         ASSERT_FALSE(isVisVisualResultReady(res));
     }
+}
+
+TEST_F(visBufferFunctions, get_node_position){
+    visBufferPushBackResult(buffer, NULL);
+    visBufferPushBackResult(buffer, NULL);
+    visBufferNode *node = NULL;
+
+    node = _getBufferNode(buffer, 1);
+    ASSERT_EQ(_nodePosition(node), 1);
+
+    node = _getBufferNode(buffer, 0);
+    ASSERT_EQ(_nodePosition(node), 0);
 }
