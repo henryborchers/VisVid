@@ -75,7 +75,7 @@ int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes) {
         // check the size only if there is valid data to check
         if(isVisVisualResultReady(pRes)){
             int resultSize = -1;
-            GetVisVisualResultReadySize(pRes, &resultSize);
+            GetVisVisualResultReadySize(&resultSize, pRes);
             if(buffer->bufferWidth != resultSize){
                 return -1;
             }
@@ -180,12 +180,11 @@ int getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
         return -1;
     } else {
         if(node->result == NULL){
-            *pRes = NULL;
             return 0;
         }
         for(x = 0; x < buffer->bufferWidth; x++){
             
-            if(GetVisVisualResultValue(node->result, pRes, x) != 0){
+            if(GetVisVisualResultValue(pRes, node->result, x) != 0){
                 return -1;
             };
 
