@@ -116,4 +116,16 @@ void DestroyVisBufferNode(visBufferNode **node);
  */
 static visVisualResult *visBufferNodeResult(visBufferNode *pNode);
 
+
+visBufferNode * _getBufferNode(visBuffer *buffer, size_t index);
+
+size_t _nodePosition(visBufferNode *node);
+/**
+ *
+ * @param pRes
+ * @param buffer
+ * @param index
+ * @return Returns 0 when the result is null. Returns a 1 when a valid result is found. Returns a negative number on failure.
+ */
+int getResult(PixelValue *pRes, visBuffer *buffer, size_t index);
 #endif //VISVID_VISBUFFER_H

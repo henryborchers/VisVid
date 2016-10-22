@@ -3,8 +3,8 @@
 //
 #include <stdint.h>
 #include <stdlib.h>
-
 #include "visBuffer.h"
+
 
 /**
  * @struct visBufferNode
@@ -14,6 +14,7 @@ struct visBufferNode{
     visVisualResult *result;
     visBufferNode *previous;
     visBufferNode *next;
+    size_t position;
 };
 
 typedef struct visBufferNode visBufferNode;
@@ -87,6 +88,7 @@ int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes) {
 
 int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode) {
     newNode->next = NULL;
+    newNode->position = buffer->bufferLen;
     if(visBufferIsEmpty(buffer)) {
         newNode->previous = NULL;
         buffer->first = newNode;
@@ -142,11 +144,55 @@ visBufferNode *CreateVisBufferNode(visVisualResult *pRes) {
     node->previous = NULL;
     node->next = NULL;
     node->result = pRes;
+    node->position = 0;
     return node;
 }
 
 visVisualResult *visBufferNodeResult(visBufferNode *pNode) {
     return pNode->result;
+}
+
+visBufferNode * _getBufferNode(visBuffer *buffer, size_t index) {
+    if(buffer->bufferLen < index){
+        return NULL;
+    }
+
+    visBufferNode *n = visBufferFront(buffer);
+
+    while(n->position < index){
+        n = visBufferNextNode(n);
+    }
+    if(n->position == index){
+        return n;
+    }
+    return NULL;
+}
+
+size_t _nodePosition(visBufferNode *node) {
+    return node->position;
+}
+
+int getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
+    int x;
+    visBufferNode *node = NULL;
+    node = _getBufferNode(buffer, index);
+    if(node == NULL){
+        return -1;
+    } else {
+        if(node->result == NULL){
+            *pRes = NULL;
+            return 0;
+        }
+        for(x = 0; x < buffer->bufferWidth; x++){
+            
+            if(GetVisVisualResultValue(node->result, pRes, x) != 0){
+                return -1;
+            };
+
+
+        }
+    }
+    return 1;
 }
 
 
