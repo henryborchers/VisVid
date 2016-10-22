@@ -6,8 +6,6 @@
 
 extern "C"{
 #include "visResult.h"
-#include "visBuffer.h"
-#include <stdlib.h>
 }
 
 TEST(visVisualResultSetup, visVisualResultSetup_Create_Test) {
@@ -45,21 +43,21 @@ TEST_F(visVisualResultFunctions, isVisVisualResultReady) {
 TEST_F(visVisualResultFunctions, resize) {
     int size = -1;
     SetVisVisualResultReadySize(result, 640);
-    GetVisVisualResultReadySize(result, &size);
+    GetVisVisualResultReadySize(&size, result);
     ASSERT_EQ(size, 640);
 }
 
 TEST_F(visVisualResultFunctions, zeroOnInit){
     PixelValue value = 100;
     SetVisVisualResultReadySize(result, 10);
-    GetVisVisualResultValue(result, &value, 5);
+    GetVisVisualResultValue(&value, result, 5);
     ASSERT_EQ(value, 0);
 }
 
 TEST_F(visVisualResultFunctions, visVisualResultFunctions_getBadVaue_Test){
     PixelValue value = 100;
     SetVisVisualResultReadySize(result, 10);
-    ASSERT_EQ(GetVisVisualResultValue(result, &value, 100), EFAULT);
+    ASSERT_EQ(GetVisVisualResultValue(&value, result, 100), EFAULT);
 
 }
 
@@ -74,19 +72,18 @@ TEST_F(visVisualResultFunctions, setresultdata) {
     // Test stack
     ASSERT_FALSE(isVisVisualResultReady(result));
     SetVisVisualResultData(result, foo, 10);
-    GetVisVisualResultValue(result, &value, 5);
+    GetVisVisualResultValue(&value, result, 5);
     ASSERT_EQ(value, 5);
-    GetVisVisualResultValue(result, &value, 0);
+    GetVisVisualResultValue(&value, result, 0);
     ASSERT_TRUE(isVisVisualResultReady(result));
     ASSERT_EQ(value, 0);
 
     // test heap
     SetVisVisualResultData(result, bar, 10);
-    GetVisVisualResultValue(result, &value, 5);
+    GetVisVisualResultValue(&value, result, 5);
     ASSERT_EQ(value, 9);
     bar[5] = 2;
     free(bar);
-    bar = NULL;
     ASSERT_EQ(value, 9);
 
 }
