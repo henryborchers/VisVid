@@ -11,6 +11,12 @@ extern "C"{
 
 
 using namespace std;
+
+
+TEST(visFrame, version) {
+    EXPECT_EQ(VISFRAME_VERSION, VISFRAME_VERSION);
+}
+
 struct visPixelYUVFunctions : public ::testing::Test{
     PixelYUV *pixel;
 
@@ -62,9 +68,9 @@ TEST_F(visPixelYUVFunctions, setPixel){
 }
 
 TEST_F(visPixelYUVFunctions, setAndGetPixel){
-    uint8_t y = 0;
-    uint8_t u = 0;
-    uint8_t v = 0;
+    PixelValue y = 0;
+    PixelValue u = 0;
+    PixelValue v = 0;
     SetPixelYUV(pixel, 4 , 100, 40);
     GetPixelYUV(pixel, &y, &u, &v);
 
@@ -88,10 +94,15 @@ TEST(visFrameSetup, visFrame_CreateAndDestroy){
 TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
     int height = 0;
     int width = 0;
+    int64_t pos = 0;
     GetVisYUVFrameSize(foo, &width, &height);
+    GetVisYUVFrameSizePos(foo, &pos);
 
     ASSERT_EQ(height, -1);
     ASSERT_EQ(width, -1);
+    ASSERT_EQ(pos, -1);
+
+
 }
 
 TEST_F(visFrameYUVFunctions, setFrameSize){

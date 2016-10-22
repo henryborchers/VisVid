@@ -2,22 +2,30 @@
 // Created by Borchers, Henry Samuel on 10/8/16.
 //
 #include <stdint.h>
-#include <stdbool.h>
 #include <stdlib.h>
 
 #include "visBuffer.h"
 
-struct _visBufferNode{
+/**
+ * @struct visBufferNode
+ * @brief Wraps the visVisualResult into a linked list.
+ */
+struct visBufferNode{
     visVisualResult *result;
     visBufferNode *previous;
     visBufferNode *next;
 };
 
-struct _visBuffer{
-    size_t bufferLen;
-    size_t bufferWidth;
-    visBufferNode *first;
-    visBufferNode *last;
+typedef struct visBufferNode visBufferNode;
+/**
+ * @struct visBuffer
+ * @brief Used to store the sequence of calculation results from the visualization.
+ */
+struct visBuffer{
+    size_t bufferLen;               /**< Number of nodes in the buffer.*/
+    size_t bufferWidth;             /**< The resolution of the calculations*/
+    visBufferNode *first;           /**< First node in the buffer*/
+    visBufferNode *last;            /**< Last node in the buffer*/
 };
 
 

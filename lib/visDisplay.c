@@ -16,7 +16,7 @@ visDisplay *CreateVisDisplay(int width, int height) {
     new_visDisplay->height = height;
     new_visDisplay->width = width;
 
-    new_visDisplay->data = calloc((size_t)(width * height), sizeof(uint8_t));
+    new_visDisplay->data = calloc((size_t)(width * height), sizeof(PixelValue));
     return new_visDisplay;
 }
 

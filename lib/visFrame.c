@@ -7,32 +7,33 @@
 #include <errno.h>
 #include "visFrame.h"
 
-enum PIXELCOLORSPACE {
-    PIXELCOLORSPACE_YUV = 0,
-    PIXELCOLORSPACE_Y = 1
-};
+//
+//enum PIXELCOLORSPACE {
+//    PIXELCOLORSPACE_YUV = 0,
+//    PIXELCOLORSPACE_Y = 1
+//};
 
 /**
  * @struct PixelYUV
- * @brief The pxiel split into it's YUV components
+ * @brief The pixel split into it's YUV components
  *
  * This represent a pixel's value. NOTE: While YUV is really an analog color format and the true format is YCrBr,
- * it's much easier to write YUV as a varible name and YCrBr is more thought of in terms of their analog counterpart.
+ * it's much easier to write YUV as a variable name and YCrBr is more thought of in terms of their analog counterpart.
  */
-struct _PixelYUV {
-    uint8_t Y;    /**< Luma value for a pixel.*/
-    uint8_t U;    /**< Cr chroma value for pixel.*/
-    uint8_t V;    /**< Br chroma value for pixel.*/
+struct PixelYUV {
+    PixelValue Y;    /**< Luma value for a pixel.*/
+    PixelValue U;    /**< Cr chroma value for pixel.*/
+    PixelValue V;    /**< Br chroma value for pixel.*/
 };
 
 
 /**
- * @brief A frame of video. Each pixel has it's subsampling destructured so that each pixel has a luma and two chroma values.
+ * @brief A frame of video. Each pixel has it's sub-sampling de-structured so that each pixel has a luma and two chroma values.
  */
-struct _VisYUVFrame{
+struct VisYUVFrame{
     int height;                     /**< Number of rows of pixels in the frame.*/
     int width;                      /**< Number of columns of pixels in the frame.*/
-    struct _PixelYUV ***data;       /**< Pixels that make up the frame.*/
+    struct PixelYUV ***data;       /**< Pixels that make up the frame.*/
     int64_t pos;                    /**< timestamp for the frame.*/
 } ;
 
@@ -55,7 +56,7 @@ void DestroyPixelYUV(PixelYUV **pixel) {
     (*pixel) = NULL;
 }
 
-int SetPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v) {
+int SetPixelYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -65,7 +66,7 @@ int SetPixelYUV(PixelYUV *pixel, uint8_t y, uint8_t u, uint8_t v) {
     return 0;
 }
 
-int GetPixelYUV(PixelYUV *pixel, uint8_t *y, uint8_t *u, uint8_t *v) {
+int GetPixelYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -151,6 +152,11 @@ int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height) {
     frame->height = height;
     frame->width = width;
 
+    return 0;
+}
+
+int GetVisYUVFrameSizePos(VisYUVFrame *frame, int64_t *pos) {
+    *pos = frame->pos;
     return 0;
 }
 
