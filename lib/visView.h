@@ -1,5 +1,5 @@
 /**
- * @file visDisplay.h
+ * @file visView.h
  */
 #ifndef VISVID_VISVIEW_H
 #define VISVID_VISVIEW_H
@@ -26,8 +26,18 @@ typedef struct {
  */
 visView *CreateVisView(int width, int height);
 
+/**
+ * Cleans up and free memory used in a visView type stored on the heap.
+ * @param pvd Pointer to the visView to clean up and freed.
+ */
 void DestroyVisView(visView **pvd);
 
-int visViewUpdate(visView *pD, visBuffer *buffer);
+/**
+ * Updates the view information based on the current data in the buffer
+ * @param pView Pointer to a view to be updated.
+ * @param buffer Pointer to a buffer which to build this information from.
+ * @return Returns 0 on success.
+ */
+int visViewUpdate(visView *pView, visBuffer *buffer);
 
 #endif //VISVID_VISVIEW_H

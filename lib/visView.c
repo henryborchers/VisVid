@@ -4,7 +4,9 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <memory.h>
 #include "visView.h"
+
 
 visView *CreateVisView(int width, int height) {
     visView *new_visView = NULL;
@@ -29,21 +31,38 @@ void DestroyVisView(visView **pvd) {
     *pvd = NULL;
 }
 
-// TODO visViewUpdate
-int visViewUpdate(visView *pD, visBuffer *buffer){
+int visViewUpdate(visView *pView, visBuffer *buffer){
     size_t x;
     int y;
-    int rc = 0;
+    int valid_result = 0;
     size_t buffersize = visBufferLength(buffer);
-    PixelValue slice[buffersize];
+    PixelValue currentSlice[pView->height];
+    PixelValue lastSlice[pView->height];
 
     for(x = 0; x < buffersize; x++){
-        for(y=0; y < pD->width; y++){
-            rc = getResult(slice, buffer, x);
-            if( rc != 0){
-                return rc;
-            };
-            pD->data[x*y] = slice[y];
+        // If the result is null the result code will be 0
+        valid_result = getResult(currentSlice, buffer, x);
+        if( valid_result < 0){
+            return valid_result;
+        };
+        for(y = 0; y < pView->width; y++){
+            // If the result is a true result, the memory can be copied
+            if(valid_result){
+                pView->data[x*y] = currentSlice[y];
+            } else {
+                // If the result isn't a true result (for example: there is no data calculated yet), do one of the following.
+                // If it's the first one, render it out as black.
+                if( x == 0){
+                    pView->data[x*y] = 0;
+                    currentSlice[y] = 0;
+                } else{
+                    // Otherwise, use the last good slice
+                    pView->data[x*y] = lastSlice[y];
+                }
+            }
+        }
+        if(valid_result || x == 0){
+            memcpy(lastSlice, currentSlice, pView->height);
         }
     }
     return 0;
