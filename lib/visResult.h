@@ -7,6 +7,7 @@
 #define VISVID_VISRESULT_H
 
 #include <stdbool.h>
+#include <stddef.h>
 #include "visTypes.h"
 
 typedef struct visVisualResult visVisualResult;
@@ -34,7 +35,7 @@ bool isVisVisualResultReady(visVisualResult *pRes);
  * @param size The new length to set the result to. This is most like the width or the height of the frame.
  * @return Returns 0 on success.
  */
-int SetVisVisualResultReadySize(visVisualResult *pRest, int size);
+int SetVisVisualResultSize(visVisualResult *pRest, int size);
 
 /**
  * Gets the size of length of a visVisualResult.
@@ -42,7 +43,7 @@ int SetVisVisualResultReadySize(visVisualResult *pRest, int size);
  * @param pRest Pointer to visVisualResult to get the length.
  * @return Returns 0 on success.
  */
-int GetVisVisualResultReadySize(int *size, visVisualResult *pRest);
+int GetVisVisualResultSize(int *size, visVisualResult *pRest);
 
 /**
  * Get the value of a visVisualResult at a certain offset.
