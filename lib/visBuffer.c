@@ -75,7 +75,7 @@ int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes) {
         // check the size only if there is valid data to check
         if(isVisVisualResultReady(pRes)){
             int resultSize = -1;
-            GetVisVisualResultReadySize(&resultSize, pRes);
+            GetVisVisualResultSize(&resultSize, pRes);
             if(buffer->bufferWidth != resultSize){
                 return -1;
             }
