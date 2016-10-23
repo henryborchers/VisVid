@@ -9,10 +9,30 @@
 #define VISVID_VISFRAME_H_H
 
 #include "visTypes.h"
-const char VISFRAME_VERSION[] = "0.0.1";
+//const char VISFRAME_VERSION[] = "0.0.1";
 
 typedef struct PixelYUV PixelYUV;
 typedef struct VisYUVFrame VisYUVFrame;
+typedef struct visBrush visBrush;
+struct visBrush{
+    PixelValue Y;
+    PixelValue U;
+    PixelValue V;
+};
+
+/**
+ * @struct PixelYUV
+ * @brief The pixel split into it's YUV components
+ *
+ * This represent a pixel's value. NOTE: While YUV is really an analog color format and the true format is YCrBr,
+ * it's much easier to write YUV as a variable name and YCrBr is more thought of in terms of their analog counterpart.
+ */
+struct PixelYUV {
+    PixelValue Y;    /**< Luma value for a pixel.*/
+    PixelValue U;    /**< Cr chroma value for pixel.*/
+    PixelValue V;    /**< Br chroma value for pixel.*/
+};
+
 
 
 /**
@@ -35,7 +55,7 @@ void DestroyPixelYUV(PixelYUV **pixel);
  * @param v New v/chroma value to assign to the pixel.
  * @return Returns 0 on success.
  */
-int SetPixelYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v);
+int SetPixelValueYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v);
 
 /**
  * Use this function to get the pixel values.
@@ -45,7 +65,7 @@ int SetPixelYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v);
  * @param v Pointer to store the v/chroma value after reading the given pixels.
  * @return Returns 0 on success.
  */
-int GetPixelYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v);
+int GetPixelValueYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v);
 
 /**
  * Allocates a new frame on the heap with zero pixels high and and zero pixels wide and returns a pointer to it's
@@ -85,4 +105,11 @@ int GetVisYUVFrameSize(VisYUVFrame *frame, int *width, int *height);
  * @return Returns 0 on success.
  */
 int GetVisYUVFrameSizePos(VisYUVFrame *frame, int64_t *pos);
+
+int GetPixelFromYUVFrame(PixelYUV *pixel, VisYUVFrame *frame, int x, int y);
+
+int visFillYUVFrame(VisYUVFrame *frame, visBrush *brush);
+
+int visDrawYUVPixel(VisYUVFrame *frame, visBrush *brush, int x, int y);
+
 #endif //VISVID_VISFRAME_H_H

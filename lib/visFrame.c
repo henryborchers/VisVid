@@ -13,18 +13,6 @@
 //    PIXELCOLORSPACE_Y = 1
 //};
 
-/**
- * @struct PixelYUV
- * @brief The pixel split into it's YUV components
- *
- * This represent a pixel's value. NOTE: While YUV is really an analog color format and the true format is YCrBr,
- * it's much easier to write YUV as a variable name and YCrBr is more thought of in terms of their analog counterpart.
- */
-struct PixelYUV {
-    PixelValue Y;    /**< Luma value for a pixel.*/
-    PixelValue U;    /**< Cr chroma value for pixel.*/
-    PixelValue V;    /**< Br chroma value for pixel.*/
-};
 
 
 /**
@@ -56,7 +44,7 @@ void DestroyPixelYUV(PixelYUV **pixel) {
     (*pixel) = NULL;
 }
 
-int SetPixelYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) {
+int SetPixelValueYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -66,7 +54,7 @@ int SetPixelYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) {
     return 0;
 }
 
-int GetPixelYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
+int GetPixelValueYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -157,6 +145,46 @@ int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height) {
 
 int GetVisYUVFrameSizePos(VisYUVFrame *frame, int64_t *pos) {
     *pos = frame->pos;
+    return 0;
+}
+
+int visFillYUVFrame(VisYUVFrame *frame, visBrush *brush) {
+    int x;
+    int y;
+    if(frame == NULL){
+        return EFAULT;
+    }
+
+    for(x = 0; x < frame->width; x++){
+        for(y = 0; y < frame->height; y++){
+            PixelYUV *pixel = frame->data[y][x];
+            pixel->Y = brush->Y;
+            pixel->U = brush->U;
+            pixel->V = brush->V;
+        }
+    }
+    return 0;
+}
+
+int GetPixelFromYUVFrame(PixelYUV *pixel, VisYUVFrame *frame, int x, int y) {
+    if(x > frame->width || y > frame->height){
+        return EFAULT;
+    }
+    PixelYUV *pix = frame->data[y][x];
+    pixel->U = pix->U;
+    pixel->Y = pix->Y;
+    pixel->V = pix->V;
+    return 0;
+}
+
+int visDrawYUVPixel(VisYUVFrame *frame, visBrush *brush, int x, int y) {
+    if(x > frame->width || y > frame->height){
+        return EFAULT;
+    }
+    PixelYUV *pix = frame->data[y][x];
+    pix->U = brush->U;
+    pix->Y = brush->Y;
+    pix->V = brush->V;
     return 0;
 }
 
