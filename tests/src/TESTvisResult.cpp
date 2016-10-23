@@ -42,21 +42,21 @@ TEST_F(visVisualResultFunctions, isVisVisualResultReady) {
 
 TEST_F(visVisualResultFunctions, resize) {
     int size = -1;
-    SetVisVisualResultReadySize(result, 640);
-    GetVisVisualResultReadySize(&size, result);
+    SetVisVisualResultSize(result, 640);
+    GetVisVisualResultSize(&size, result);
     ASSERT_EQ(size, 640);
 }
 
 TEST_F(visVisualResultFunctions, zeroOnInit){
     PixelValue value = 100;
-    SetVisVisualResultReadySize(result, 10);
+    SetVisVisualResultSize(result, 10);
     GetVisVisualResultValue(&value, result, 5);
     ASSERT_EQ(value, 0);
 }
 
 TEST_F(visVisualResultFunctions, visVisualResultFunctions_getBadVaue_Test){
     PixelValue value = 100;
-    SetVisVisualResultReadySize(result, 10);
+    SetVisVisualResultSize(result, 10);
     ASSERT_EQ(GetVisVisualResultValue(&value, result, 100), EFAULT);
 
 }
@@ -67,7 +67,7 @@ TEST_F(visVisualResultFunctions, setresultdata) {
     PixelValue *bar = (PixelValue *)malloc(sizeof(PixelValue ) * 10);
     bar[5] = 9;
 
-    SetVisVisualResultReadySize(result, 10);
+    SetVisVisualResultSize(result, 10);
 
     // Test stack
     ASSERT_FALSE(isVisVisualResultReady(result));
