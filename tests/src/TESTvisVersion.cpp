@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 extern "C"{
+#include "visFrame.h"
 }
 
 TEST(visVersion, visVersion_libraryVersion_Test) {
