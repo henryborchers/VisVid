@@ -3,5 +3,6 @@ set(libvisvid
         visResult.c visResult.h
         visBuffer.c visBuffer.h
         visView.c visView.h
-        visTypes.h)
+        visVisualization.c visVisualization.h
+        visTypes.h )
 add_library(visvid ${libvisvid})
