@@ -21,7 +21,7 @@
 struct VisYUVFrame{
     int height;                     /**< Number of rows of pixels in the frame.*/
     int width;                      /**< Number of columns of pixels in the frame.*/
-    struct PixelYUV ***data;       /**< Pixels that make up the frame.*/
+    struct PixelYUV **data;         /**< Pixels that make up the frame.*/
     int64_t pos;                    /**< timestamp for the frame.*/
 } ;
 
@@ -40,7 +40,8 @@ PixelYUV *CreatePixelYUV() {
 }
 
 void DestroyPixelYUV(PixelYUV **pixel) {
-    free(*pixel);
+    PixelYUV  *p = *pixel;
+    free(p);
     (*pixel) = NULL;
 }
 
@@ -94,13 +95,14 @@ void FreeFrameData(VisYUVFrame **pFrame) {
     if((*pFrame)->data != NULL){
         for(y = 0; y < (*pFrame)->height; y++){
             for(x = 0; x < (*pFrame)->width; x++){
-                PixelYUV *p =(*pFrame)->data[y][x];
+                int index = x + (*pFrame)->width * y;
+                PixelYUV *p =(*pFrame)->data[index];
                 if(p != NULL){
                     DestroyPixelYUV(&p);
                 }
 
             }
-            free((*pFrame)->data[y]);
+//            free((*pFrame)->data[y]);y
         }
     free((*pFrame)->data);
     }
@@ -128,12 +130,16 @@ int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height) {
 
 
     // Create new data
-    frame->data = (PixelYUV ***) malloc(sizeof(PixelYUV **) * height);
+    frame->data = (PixelYUV **) malloc(sizeof(PixelYUV*) * height * width);
+    if(frame->data == NULL){
+        return EFAULT;
+    }
 
     for(y = 0; y < height; y++){
-        frame->data[y] = (PixelYUV **) malloc(sizeof(PixelYUV *) * width);
+//        frame->data[y] = (PixelYUV **) malloc(sizeof(PixelYUV *) * width);
         for(x = 0; x < width; x++){
-            frame->data[y][x] = CreatePixelYUV();
+//            int index = x + width * y;
+            frame->data[x + width * y] = CreatePixelYUV();
         }
     }
 
@@ -157,7 +163,7 @@ int visFillYUVFrame(VisYUVFrame *frame, visBrush *brush) {
 
     for(x = 0; x < frame->width; x++){
         for(y = 0; y < frame->height; y++){
-            PixelYUV *pixel = frame->data[y][x];
+            PixelYUV *pixel = frame->data[x + frame->width * y];
             pixel->Y = brush->Y;
             pixel->U = brush->U;
             pixel->V = brush->V;
@@ -170,7 +176,7 @@ int GetPixelFromYUVFrame(PixelYUV *pixel, VisYUVFrame *frame, int x, int y) {
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }
-    PixelYUV *pix = frame->data[y][x];
+    PixelYUV *pix = frame->data[x + frame->width * y];
     pixel->U = pix->U;
     pixel->Y = pix->Y;
     pixel->V = pix->V;
@@ -181,7 +187,7 @@ int visDrawYUVPixel(VisYUVFrame *frame, visBrush *brush, int x, int y) {
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }
-    PixelYUV *pix = frame->data[y][x];
+    PixelYUV *pix = frame->data[x + frame->width * y];
     pix->U = brush->U;
     pix->Y = brush->Y;
     pix->V = brush->V;
