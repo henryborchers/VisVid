@@ -42,7 +42,7 @@ protected:
 TEST_F(visViewFunctionsEmptyBuffer, visViewFunctions_empty) {
     for(int x = 0; x < pvid->width; x++){
         for(int y = 0; y < pvid->height; y++){
-            ASSERT_EQ(pvid->data[x*y], 0);
+            ASSERT_EQ(pvid->data[x + pvid->width * y], 0);
 
         }
     }
@@ -57,7 +57,7 @@ TEST_F(visViewFunctionsEmptyBuffer, visViewFunctions_emptyBuffer_Test){
 
     for(int x = 0; x < pvid->width; x++){
         for(int y = 0; y < pvid->height; y++){
-            ASSERT_EQ(pvid->data[x*y], 0);
+            ASSERT_EQ(pvid->data[x + pvid->width * y], 0);
 
         }
     }
@@ -89,7 +89,7 @@ TEST_F(visViewFunctionsFullBuffer1, updateView) {
     ASSERT_EQ(visViewUpdate(pvid, buffer), 0);
     for(int x = 0; x<pvid->width; x++){
         for(int y = 0; y<pvid->height; y++){
-            ASSERT_EQ(pvid->data[x*y], 0);
+            ASSERT_EQ(pvid->data[x + pvid->width * y], 0);
         }
 
     };

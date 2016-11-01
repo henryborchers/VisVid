@@ -64,7 +64,7 @@ TEST_F(visVisualResultFunctions, visVisualResultFunctions_getBadVaue_Test){
 TEST_F(visVisualResultFunctions, setresultdata) {
     PixelValue value = 100;
     PixelValue foo[] = {0,1,2,3,4,5,6,7,8,9};
-    PixelValue *bar = (PixelValue *)malloc(sizeof(PixelValue ) * 10);
+    PixelValue *bar = (PixelValue *)malloc(sizeof(PixelValue) * 10);
     bar[5] = 9;
 
     SetVisVisualResultSize(result, 10);
