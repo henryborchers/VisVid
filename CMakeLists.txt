@@ -9,3 +9,5 @@ add_subdirectory(tests)
 
 # Build Documentation
 include(cmake/buildDocumentation.cmake)
+
+include(swig/swig.cmake)
