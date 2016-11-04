@@ -101,12 +101,12 @@ int GetVisYUVFrameSize(VisYUVFrame *frame, int *width, int *height);
 /**
  * Gets the time information for the frame.
  * @param frame The frame to read the time information from.
- * @param pos Pointer to to store the time information of the frame.
+ * @param result Pointer to to store the time information of the frame.
  * @return Returns 0 on success.
  */
-int GetVisYUVFrameSizePos(VisYUVFrame *frame, int64_t *pos);
+int GetVisYUVFramePos(VisYUVFrame *frame, int64_t *result);
 
-int GetPixelFromYUVFrame(PixelYUV *pixel, VisYUVFrame *frame, int x, int y);
+int GetPixelFromYUVFrame(PixelYUV *result, VisYUVFrame *frame, int x, int y);
 
 int visFillYUVFrame(VisYUVFrame *frame, visBrush *brush);
 
