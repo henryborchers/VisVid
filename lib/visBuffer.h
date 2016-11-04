@@ -37,40 +37,12 @@ void DestroyVisBuffer(visBuffer **buffer);
 int visBufferIsEmpty(visBuffer *buffer);
 
 /**
- * Gets the first node of the visBuffer.
- * @param buffer The buffer to find the first node.
- * @return Returns a node in the visBuffer.
- */
-static visBufferNode *visBufferFront(visBuffer *buffer);
-
-/**
  * Gets the size of the buffer stored in the buffer's metadata.
  * @param buffer The visBuffer to see the size.
  * @return The number of nodes inside the buffer.
  */
 size_t visBufferLength(visBuffer *buffer);
 
-/**
- * Gets the next node after the given one.
- * @param node The node which to find the next node.
- * @return Returns a pointer to the next node. Returns NULL if none exists.
- */
-static visBufferNode *visBufferNextNode(visBufferNode *node);
-
-/**
- * Gets the previous node after the given one.
- * @param node The node which to find the previous node.
- * @return Returns a pointer to the previous node. Returns NULL if none exists.
- */
-static visBufferNode *visBufferPreviousNode(visBufferNode *node);
-
-/**
- * Pushes a visBufferNode to the end of a visBuffer.
- * @param buffer The buffer to add the node to.
- * @param newNode The node to add to the buffer.
- * @return Returns 0 on success.
- */
-static int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode);
 
 
 /**
@@ -82,25 +54,11 @@ static int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode);
 int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes);
 
 /**
- * Pops a visBufferNode off the front of the a visBuffer.
- * @param buffer The visBuffer to pop a visBufferNode off of.
- * @return Returns a pointer to the visBufferNode that was popped off of the front of the visBuffer.
- */
-static visBufferNode *visBufferPop(visBuffer *buffer);
-
-/**
  * Pops a visVisualResult off the front of the a visBuffer.
  * @param buffer The visBuffer to pop a visVisualResult off of.
  * @return Returns a pointer to the visVisualResult that was popped off of the front of the visBuffer.
  */
 visVisualResult *visBufferPopResult(visBuffer *buffer);
-
-/**
- * Creates a new visBufferNode from a visVisualResult.
- * @param pRes The Result to added to node.
- * @return Returns a new visBufferNode with the visVisualResult.
- */
-static visBufferNode *CreateVisBufferNode(visVisualResult *pRes);
 
 
 /**
@@ -108,14 +66,6 @@ static visBufferNode *CreateVisBufferNode(visVisualResult *pRes);
  * @param node The Node to be cleaned up.
  */
 void DestroyVisBufferNode(visBufferNode **node);
-
-/**
- * Get the visVisualResult from a given visBufferNode.
- * @param pNode The visBufferNode to get the visVisualResult from.
- * @return Returns a pointer to visVisualResult.
- */
-static visVisualResult *visBufferNodeResult(visBufferNode *pNode);
-
 
 visBufferNode * _getBufferNode(visBuffer *buffer, size_t index);
 
