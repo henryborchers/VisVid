@@ -100,7 +100,7 @@ TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
     int width = 0;
     int64_t pos = 0;
     GetVisYUVFrameSize(foo, &width, &height);
-    GetVisYUVFrameSizePos(foo, &pos);
+    GetVisYUVFramePos(foo, &pos);
 
     ASSERT_EQ(height, -1);
     ASSERT_EQ(width, -1);
