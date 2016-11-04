@@ -9,6 +9,9 @@ INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
 
-SET(CMAKE_SWIG_FLAGS "")
-SWIG_ADD_MODULE(visVid python swig/visFrame.i lib/visFrame.c)
+SET(CMAKE_SWIG_FLAGS "-py3")
+SWIG_ADD_MODULE(visVid python swig/visVid.i lib/visFrame.c lib/visBuffer.c lib/visResult.c
+        lib/visView.c lib/visView.h
+        lib/visVisualization.c lib/visVisualization.h
+        lib/visTypes.h)
 SWIG_LINK_LIBRARIES(visVid ${PYTHON_LIBRARIES})
