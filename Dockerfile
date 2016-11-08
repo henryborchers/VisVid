@@ -38,6 +38,10 @@ RUN apt-get update -y && \
     libssl-dev \
     python-dev \
     tk-dev \
+    glibc-source \
+    libgdbm-dev \
+    libgtest-dev \
+    libbz2-dev \
     build-essential -y
 
 RUN wget https://cmake.org/files/v3.6/cmake-3.6.2.tar.gz \
