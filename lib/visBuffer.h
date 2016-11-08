@@ -17,7 +17,9 @@ typedef struct visBufferNode visBufferNode;
 typedef struct visBuffer visBuffer;
 
 /**
- * Creates a new visBuffer on the heap.
+ * @fn visBuffer *CreateVisBuffer(size_t width);
+ * @brief Creates a new visBuffer on the heap.
+ * @param width Number of pixels used by each result slice that will be stored in the buffer.
  * @return Returns a pointer the new visBuffer.
  */
 visBuffer *CreateVisBuffer(size_t width);
