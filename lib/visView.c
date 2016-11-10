@@ -48,16 +48,16 @@ int visViewUpdate(visView *pView, visBuffer *buffer){
         for(y = 0; y < pView->width; y++){
             // If the result is a true result, the memory can be copied
             if(valid_result){
-                pView->data[x*y] = currentSlice[y];
+                pView->data[x + pView->width * y] = currentSlice[y];
             } else {
                 // If the result isn't a true result (for example: there is no data calculated yet), do one of the following.
                 // If it's the first one, render it out as black.
                 if( x == 0){
-                    pView->data[x*y] = 0;
+                    pView->data[x + pView->width * y] = 0;
                     currentSlice[y] = 0;
                 } else{
                     // Otherwise, use the last good slice
-                    pView->data[x*y] = lastSlice[y];
+                    pView->data[x + pView->width * y] = lastSlice[y];
                 }
             }
         }
