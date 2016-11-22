@@ -7,7 +7,7 @@
 
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_render.h>
-#include "textures.h"
+#include "visImageWriter.h"
 
 typedef struct {
     int             windowWidth;
@@ -23,6 +23,5 @@ void gui_ctx_init(gui_context *ctx);
 int gui_build_window(gui_context *ctx);
 void gui_destroy_window(gui_context *ctx);
 
-//int gui_mainloop(gui_context *ctx);
-int gui_refresh(gui_context *ctx, VisTexture *texture);
+int gui_refresh(gui_context *ctx, visImageRGB *texture);
 #endif //VISVID_GUI_H
