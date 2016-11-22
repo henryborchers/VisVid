@@ -4,6 +4,5 @@
 
 #ifndef VISVID_VISVERSION_H
 #define VISVID_VISVERSION_H
-const char *version_vis = "@LIBRARY_VERSION@";
-void sayhi();
+const char *version_vis = "@LIBRARY_VERSION_MAJOR@.@LIBRARY_VERSION_MINOR@";
 #endif //VISVID_VISVERSION_H

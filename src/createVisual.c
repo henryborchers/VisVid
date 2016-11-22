@@ -3,8 +3,9 @@
 //
 
 #include <stdio.h>
-
+#include "visVersion.h"
 int main(int argc, char *argv[]){
-    puts("hello");
+    puts("Using VisVis library");
+    printf("Version %s\n", version_vis);
     return 0;
 }
