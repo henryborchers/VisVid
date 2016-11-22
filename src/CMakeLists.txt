@@ -1,4 +1,4 @@
-set(CreateVisual_src createVisual.c gui.c gui.h textures.c textures.h)
+set(CreateVisual_src createVisual.c gui.c gui.h generators.c generators.h)
 find_package(SDL2 REQUIRED)
 include_directories(${PROJECT_BINARY_DIR}/lib)
 if(SDL2_FOUND)
