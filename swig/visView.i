@@ -2,6 +2,7 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include "visView.h"
+#include <stdio.h>
 
 %}
 
@@ -11,17 +12,28 @@
 import_array();
 %}
 
+
 %inline %{
     int _getVisViewValue(int *value, visView *in, int x, int y){
-      if(x > in->width){ return -1;};
-      if(y > in->height){ return -1;};
+      if(x >= in->width){ return -1;};
+      if(y >= in->height){ return -1;};
 
       *value = in->data[x + in->width * y];
       return 0;
     }
+
+    int _setVisViewValue(visView *in, int value, int x, int y){
+      if(x >= in->width){ return -1;};
+      if(y >= in->height){ return -1;};
+
+      in->data[x + in->width * y] = (PixelValue)value;
+      return 0;
+    }
+
 %}
 
-%apply int *OUTPUT { int *output};
+%apply int *OUTPUT { int *output };
+%apply int *INPUT { int *input };
 %extend visView{
   visView(int width, int height){
     visView *new_visView = CreateVisView(width, height);
@@ -42,13 +54,22 @@ import_array();
         return $self->width * $self->height;
     }
 
-    int _value(int *output, int x, int y){
+    int _get_value(int *output, int x, int y){
         int value;
         if(_getVisViewValue(&value, $self, x, y) == 0){
             *output = value;
             return 0;
         }
         return -1;
+    }
+
+    int _set_value(int *input, int x, int y, int value){
+        //printf("Setting %d, %d to %d.\n", x, y, value);
+        // if(_setVisViewValue($self, value, x, y) == 0){
+        //    return 0;
+        //}
+        //return -1;
+        return 0;
     }
 
 }
@@ -62,10 +83,16 @@ import_array();
 
 %pythoncode %{
 class VisView(visView):
-    def value(self, x, y):
-        res, answer = self._value(x,y)
+    def get_value(self, x, y):
+        res, answer = self._get_value(x,y)
         if res == 0:
             return answer
         else:
+            raise IndexError
+
+    def set_value(self, x, y, value):
+        res, answer = self._set_value(x, y, value)
+
+        if res != 0:
             raise IndexError
 %}
