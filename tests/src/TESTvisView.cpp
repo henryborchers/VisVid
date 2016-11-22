@@ -8,6 +8,13 @@ extern "C"{
 #include "visView.h"
 }
 
+
+const int ALPHA_SHIFT = 0;
+const int BLUE_SHIFT  = 1;
+const int GREEN_SHIFT = 2;
+const int RED_SHIFT   = 3;
+
+
 TEST(visViewSetup, visViewSetup_testCreate) {
     visView *pvid = NULL;
     pvid = CreateVisView(640, 480);
@@ -93,4 +100,24 @@ TEST_F(visViewFunctionsFullBuffer1, updateView) {
         }
 
     };
+}
+
+TEST_F(visViewFunctionsFullBuffer1, Create_visViewRGBA) {
+    // This test needs to be replaced when color maps are added
+
+    ASSERT_EQ(visViewUpdate(pvid, buffer), 0);
+    visImageRGB imageRGB;
+
+    ASSERT_EQ(visAllocImageRGB(&imageRGB, pvid->width, pvid->height), 0);
+    ASSERT_EQ(visViewRGBA(&imageRGB, pvid), 0);
+
+    for (int y = 0; y < imageRGB.height; ++y) {
+        for (int x = 0; x < imageRGB.width; ++x) {
+            int offset = (y * imageRGB.pitch) + (x * sizeof(uint8_t) * 4);
+            ASSERT_EQ(imageRGB.plane[offset + ALPHA_SHIFT], 0);
+            ASSERT_EQ(imageRGB.plane[offset + RED_SHIFT], 0);
+            ASSERT_EQ(imageRGB.plane[offset + BLUE_SHIFT], 0);
+            ASSERT_EQ(imageRGB.plane[offset + GREEN_SHIFT], 0);
+        }
+    }
 }
