@@ -1,5 +1,6 @@
 set(CreateVisual_src createVisual.c gui.c gui.h textures.c textures.h)
 find_package(SDL2 REQUIRED)
+include_directories(${PROJECT_BINARY_DIR}/lib)
 if(SDL2_FOUND)
     add_executable(CreateVisual ${CreateVisual_src})
     target_include_directories(CreateVisual PRIVATE ${PROJECT_SOURCE_DIR}/lib)

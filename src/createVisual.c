@@ -6,12 +6,17 @@
 #include <SDL2/SDL.h>
 #include "gui.h"
 #include "textures.h"
+#include "visVersion.h"
 
 #define SCREENWIDTH 640
 #define SCREENHEIGHT 480
 
 
 int main(int argc, char *argv[]){
+
+    puts("Using VisVis library");
+    printf("Version %s\n", VERSION_VIS_S);
+
     gui_context gui;
     SDL_Event event;
 //    SDL_Rect r;
@@ -51,5 +56,5 @@ int main(int argc, char *argv[]){
     }
 
     gui_destroy_window(&gui);
-    return 0;
+
 }

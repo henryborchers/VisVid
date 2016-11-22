@@ -5,4 +5,7 @@ set(libvisvid
         visView.c visView.h
         visVisualization.c visVisualization.h
         visTypes.h )
+configure_file("${PROJECT_SOURCE_DIR}/lib/visVersion.h.in"
+        "${PROJECT_BINARY_DIR}/lib/visVersion.h")
+
 add_library(visvid ${libvisvid})

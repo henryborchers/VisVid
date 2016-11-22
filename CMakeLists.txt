@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.6)
-SET(LIBRARY_VERSION "0.0.1")
 project(Visvid)
+
+set(LIBRARY_VERSION_MAJOR 0)
+set(LIBRARY_VERSION_MINOR 1)
+set(LIBRARY_VERSION_PATCH 0)
+string(TIMESTAMP LIBRARY_VERSION_BUILD "%Y%m%d%H%M%S")
 enable_testing()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
