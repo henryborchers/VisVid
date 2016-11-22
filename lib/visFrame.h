@@ -9,7 +9,6 @@
 #define VISVID_VISFRAME_H_H
 
 #include "visTypes.h"
-//const char VISFRAME_VERSION[] = "0.0.1";
 
 typedef struct PixelYUV PixelYUV;
 typedef struct VisYUVFrame VisYUVFrame;
