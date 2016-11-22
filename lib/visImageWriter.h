@@ -31,7 +31,7 @@ typedef struct {
  * @param width The number of pixels wide for the desired image.
  * @return 0 Returns zero on success. Anything else is an error.
  */
-int allocImageRGB(VisImageRGB *t, int height, int width);
+int visAllocImageRGB(VisImageRGB *t, int height, int width);
 
 /**
  *
@@ -51,6 +51,6 @@ int allocImageRGB(VisImageRGB *t, int height, int width);
  * Frees up the data being used by a VisImageRGB object
  * @param t VisImageRGB to write pixel data to
  */
-void freeImageRGB(VisImageRGB *t);
+void visFreeImageRGB(VisImageRGB *t);
 
 #endif //VISVID_VISIMAGES_H

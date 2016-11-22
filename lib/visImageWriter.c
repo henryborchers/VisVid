@@ -7,7 +7,7 @@
 #include <errno.h>
 #include "visImageWriter.h"
 
-int allocImageRGB(VisImageRGB *t, int height, int width) {
+int visAllocImageRGB(VisImageRGB *t, int height, int width) {
     t->plane = malloc(sizeof(uint8_t) * t->pitch * height * 4);
     if(NULL == t->plane){
         return ENOMEM;
@@ -20,7 +20,7 @@ int allocImageRGB(VisImageRGB *t, int height, int width) {
     return 0;
 }
 
-void freeImageRGB(VisImageRGB *t) {
+void visFreeImageRGB(VisImageRGB *t) {
     if(t->plane != NULL){
         free(t->plane);
         t->plane= NULL;
