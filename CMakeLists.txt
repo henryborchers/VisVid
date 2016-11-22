@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(Visvid)
+project(libvisvid)
 
 # Set version metadata
 set(LIBRARY_VERSION_MAJOR 0)
