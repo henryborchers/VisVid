@@ -6,6 +6,6 @@
 #include "visVersion.h"
 int main(int argc, char *argv[]){
     puts("Using VisVis library");
-    printf("Version %s\n", version_vis);
+    printf("Version %s\n", VERSION_VIS_S);
     return 0;
 }
