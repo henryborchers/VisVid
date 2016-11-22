@@ -1,6 +1,3 @@
-set(LIBRARY_VERSION_MAJOR 0)
-set(LIBRARY_VERSION_MINOR 1)
-
 set(libvisvid
         visFrame.c visFrame.h
         visResult.c visResult.h
