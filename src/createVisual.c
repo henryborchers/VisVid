@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
 
 
     puts("Hello");
-    puts("Creating texture");
+    puts("Creating RGBA Image");
 
     visAllocImageRGB(&t,SCREENWIDTH, SCREENHEIGHT);
 
@@ -49,10 +49,10 @@ int main(int argc, char *argv[]){
         if(event.type == SDL_QUIT){
             break;
         }
-        modify(&t);
+        ramp(&t);
         gui_refresh(&gui, &t);
     }
-
+    puts("Deleting RGBA Image");
     gui_destroy_window(&gui);
 
 }
