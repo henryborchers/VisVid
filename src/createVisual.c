@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include "gui.h"
-#include "textures.h"
+#include "generators.h"
 #include "visVersion.h"
 
 #define SCREENWIDTH 640
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     gui_context gui;
     SDL_Event event;
 //    SDL_Rect r;
-    VisTexture t;
+    visImageRGB t;
 
 //    r.h = 100;
 //    r.w = 100;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     puts("Hello");
     puts("Creating texture");
 
-    createRedBox(&t, SCREENWIDTH, SCREENHEIGHT);
+    visAllocImageRGB(&t,SCREENWIDTH, SCREENHEIGHT);
 
     if(gui_init() != 0){
         return 1;
@@ -41,7 +41,6 @@ int main(int argc, char *argv[]){
 
     gui.windowWidth = SCREENWIDTH;
     gui.windowHeight = SCREENHEIGHT;
-//    SDL_CreateTexture(gui.renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STATIC,gui.windowWidth, gui.windowHeight );
     gui_build_window(&gui);
 
 
@@ -52,7 +51,6 @@ int main(int argc, char *argv[]){
         }
         modify(&t);
         gui_refresh(&gui, &t);
-//        SDL_Delay(10);
     }
 
     gui_destroy_window(&gui);
