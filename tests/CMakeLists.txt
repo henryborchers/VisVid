@@ -1,3 +1,4 @@
+set(CMAKE_CXX_STANDARD 11)
 include(ExternalProject)
 set(PThreadLib -pthread)
 ExternalProject_Add(googletest
