@@ -11,17 +11,19 @@
 
 #include <stdint.h>
 
+typedef struct visImageRGB visImageRGB;
 
 /**
  * @struct VisImageRGB
  * @brief RGB image data
  */
-typedef struct {
+struct visImageRGB{
+//typedef struct {
     uint8_t *plane;     /**< Raw data for pixel information.*/
     int     pitch;      /**< Pitch of the image.*/
     int     height;     /**< Height of the image.*/
     int     width;      /**< Width of the image.*/
-}VisImageRGB;
+};
 
 /**
  * Allocates the amount of memory needed to store a the data for an RGBA8888 image. You are responsible for freeing
@@ -31,7 +33,7 @@ typedef struct {
  * @param width The number of pixels wide for the desired image.
  * @return 0 Returns zero on success. Anything else is an error.
  */
-int visAllocImageRGB(VisImageRGB *t, int height, int width);
+int visAllocImageRGB(visImageRGB *t, int width, int height);
 
 /**
  *
@@ -45,12 +47,12 @@ int visAllocImageRGB(VisImageRGB *t, int height, int width);
  * @param a The amount of assigned to the alpha channel to be used in the given pixel.
  * @return Returns zero on success.
  */
- int writePixelRGB(VisImageRGB *t, int pixelY, int pixelX, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int visImageWritePixelRGB(visImageRGB *t, int pixelX, int pixelY, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 /**
  * Frees up the data being used by a VisImageRGB object
  * @param t VisImageRGB to write pixel data to
  */
-void visFreeImageRGB(VisImageRGB *t);
+void visFreeImageRGB(visImageRGB *t);
 
 #endif //VISVID_VISIMAGES_H
