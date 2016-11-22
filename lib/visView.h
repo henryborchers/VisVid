@@ -7,6 +7,7 @@
 
 #include "visBuffer.h"
 #include "visTypes.h"
+#include "visImageWriter.h"
 
 /**
  * @struct visView
@@ -39,5 +40,7 @@ void DestroyVisView(visView **pvd);
  * @return Returns 0 on success.
  */
 int visViewUpdate(visView *pView, visBuffer *buffer);
+
+int visViewRGBA(visImageRGB *result, visView *pView);
 
 #endif //VISVID_VISVIEW_H

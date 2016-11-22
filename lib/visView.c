@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <errno.h>
 #include "visView.h"
 
 
@@ -63,6 +64,35 @@ int visViewUpdate(visView *pView, visBuffer *buffer){
         }
         if(valid_result || x == 0){
             memcpy(lastSlice, currentSlice, pView->height);
+        }
+    }
+    return 0;
+}
+
+int visViewRGBA(visImageRGB *result, visView *pView){
+
+    // assert that neither pointer is NULL.
+
+    if(NULL == result || NULL == pView){
+        return EFAULT;
+    }
+
+    // Verify that the image is the same size as the view
+
+    if(result->width != pView->width){
+        return -1;
+    }
+
+    if(result->height != pView->height){
+        return -1;
+    }
+
+    // Render the data
+
+    for (int y = 0; y < result->height; ++y) {
+        for (int x = 0; x < result->width; ++x) {
+            PixelValue value = pView->data[x + pView->width * y];
+            visImageWritePixelRGB(result, x,y, value, value, value, value);
         }
     }
     return 0;
