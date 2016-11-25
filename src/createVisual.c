@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     puts("Hello");
     puts("Creating RGBA Image");
 
-    visAllocImageRGB(&t,SCREENWIDTH, SCREENHEIGHT);
+    visImageRGB_Alloc(&t, SCREENWIDTH, SCREENHEIGHT);
 
     if(gui_init() != 0){
         return 1;
