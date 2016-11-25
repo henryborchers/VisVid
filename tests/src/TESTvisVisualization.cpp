@@ -21,29 +21,29 @@ protected:
     virtual void SetUp() {
         int width = 640;
         int height = 480;
-        result = CreateVisVisualResult();
-        SetVisVisualResultSize(result, width);
+        result = VisVisualResult_Create();
+        VisVisualResult_SetSize(result, width);
 
-        frame = CreateVisYUVFrame();
-        SetVisYUVFrameSize(frame, width, height);
+        frame = VisYUVFrame_Create();
+        VisYUVFrame_setSize(frame, width, height);
         visBrush brush;
         brush.Y = 40;
         brush.U = 60;
         brush.V = 70;
-        visFillYUVFrame(frame, &brush);
+        visYUVFrame_Fill(frame, &brush);
     }
     virtual void TearDown() {
-        DestroyVisYUVFrame(&frame);
+        VisYUVFrame_Destroy(&frame);
     }
 };
 
 TEST_F(VisualizationSolidColor, Brightest) {
     int buffersize = -1;
-    GetVisVisualResultSize(&buffersize, result);
-    ASSERT_EQ(visVisBrightest(result,frame), 0);
+    VisVisualResult_GetSize(&buffersize, result);
+    ASSERT_EQ(visVisResult_CaculateBrightestOverWidth(result, frame), 0);
     for(int i = 0; i < buffersize; i++){
         PixelValue value = 0;
-        GetVisVisualResultValue(&value, result, 0);
+        VisVisualResult_GetValue(&value, result, 0);
         ASSERT_EQ(value, 40);
     }
 }
@@ -60,35 +60,35 @@ protected:
     virtual void SetUp() {
         int width = 100;
         int height = 480;
-        result = CreateVisVisualResult();
-        SetVisVisualResultSize(result, width);
+        result = VisVisualResult_Create();
+        VisVisualResult_SetSize(result, width);
 
-        frame = CreateVisYUVFrame();
-        SetVisYUVFrameSize(frame, width, height);
+        frame = VisYUVFrame_Create();
+        VisYUVFrame_setSize(frame, width, height);
         visBrush brush;
         brush.U = 60;
         brush.V = 70;
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
                 brush.Y = (PixelValue)x;
-                visDrawYUVPixel(frame, &brush, x, y);
+                YUVPixel_Draw(frame, &brush, x, y);
 
             }
         }
 
     }
     virtual void TearDown() {
-        DestroyVisYUVFrame(&frame);
+        VisYUVFrame_Destroy(&frame);
     }
 };
 
 TEST_F(VisualizationRampLuma, Brightest) {
     int buffersize = -1;
-    GetVisVisualResultSize(&buffersize, result);
-    ASSERT_EQ(visVisBrightest(result,frame), 0);
+    VisVisualResult_GetSize(&buffersize, result);
+    ASSERT_EQ(visVisResult_CaculateBrightestOverWidth(result, frame), 0);
     for(PixelValue i = 0; i < buffersize; i++){
         PixelValue value = 0;
-        GetVisVisualResultValue(&value, result, i);
+        VisVisualResult_GetValue(&value, result, i);
         ASSERT_EQ(value, i);
     }
 }
@@ -100,7 +100,7 @@ protected:
     visProcessContext ctx;
     virtual void SetUp() {
 
-        ctx.processCb = visVisBrightest;
+        ctx.processCb = visVisResult_CaculateBrightestOverWidth;
 
     }
 };

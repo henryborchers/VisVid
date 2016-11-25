@@ -13,7 +13,7 @@ TEST(visImageWriterSetup, visAllocImageRGB_stack){
     int height = 100;
     int width = 200;
 
-    visAllocImageRGB(&imageRGB, width, height);
+    visImageRGB_Alloc(&imageRGB, width, height);
     ASSERT_FALSE(imageRGB.plane == NULL);
     ASSERT_EQ(imageRGB.height, height);
     ASSERT_EQ(imageRGB.width, width);
@@ -25,20 +25,20 @@ TEST(visImageWriterSetup, visAllocImageRGB_heap){
     int width = 200;
     imageRGB = (visImageRGB*)malloc(sizeof(visImageRGB));
     ASSERT_FALSE(imageRGB == NULL);
-    visAllocImageRGB(imageRGB, width, height);
+    visImageRGB_Alloc(imageRGB, width, height);
     ASSERT_FALSE(imageRGB->plane == NULL);
     ASSERT_EQ(imageRGB->height, height);
     ASSERT_EQ(imageRGB->width, width);
 }
 
-TEST(visImageWriterSetup, visFreeImageRGB){
+TEST(visImageWriterSetup, visImageRGB_FreeData){
     visImageRGB *imageRGB;
     imageRGB = (visImageRGB*)malloc(sizeof(visImageRGB));
     int height = 100;
     int width = 200;
 
-    visAllocImageRGB(imageRGB, width, height);
-    visFreeImageRGB(imageRGB);
+    visImageRGB_Alloc(imageRGB, width, height);
+    visImageRGB_FreeData(imageRGB);
     ASSERT_TRUE(imageRGB->plane == NULL);
     free(imageRGB);
 
@@ -62,7 +62,7 @@ protected:
 
         imageRGB = (visImageRGB*)malloc(sizeof(visImageRGB));
         assert(NULL != imageRGB);
-        assert(visAllocImageRGB(imageRGB, width, height) == 0);
+        assert(visImageRGB_Alloc(imageRGB, width, height) == 0);
     }
 
     virtual void TearDown() {
@@ -76,7 +76,7 @@ TEST_F(visImageWriterFunctions, write_red_image) {
 
     for (int x = 0; x < imageRGB->width; ++x) {
         for (int y = 0; y < imageRGB->height; ++y) {
-            visImageWritePixelRGB(imageRGB, x, y, 255, 0, 0, 255);
+            visImageRGB_WritePixel(imageRGB, x, y, 255, 0, 0, 255);
         }
     }
 
@@ -98,7 +98,7 @@ TEST_F(visImageWriterFunctions, write_ramp_image) {
 
     for (int x = 0; x < imageRGB->width; ++x) {
         for (int y = 0; y < imageRGB->height; ++y) {
-            visImageWritePixelRGB(imageRGB, x, y, 0, 0, 0, x);
+            visImageRGB_WritePixel(imageRGB, x, y, 0, 0, 0, x);
         }
     }
 

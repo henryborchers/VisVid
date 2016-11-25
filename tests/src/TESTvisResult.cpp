@@ -10,15 +10,15 @@ extern "C"{
 
 TEST(visVisualResultSetup, visVisualResultSetup_Create_Test) {
     visVisualResult *result = NULL;
-    result = CreateVisVisualResult();
+    result = VisVisualResult_Create();
     ASSERT_FALSE(result == NULL);
 
 }
 
 
 TEST(visVisualResultSetup, visVisualResultSetup_Delete_Test) {
-    visVisualResult *result = CreateVisVisualResult();
-    DestroyVisVisualResult(&result);
+    visVisualResult *result = VisVisualResult_Create();
+    VisVisualResult_Destroy(&result);
     ASSERT_TRUE(result == NULL);
 }
 
@@ -27,37 +27,37 @@ protected:
     visVisualResult *result;
 
     virtual void SetUp() {
-        result = CreateVisVisualResult();
+        result = VisVisualResult_Create();
     }
     virtual void TearDown() {
-        DestroyVisVisualResult(&result);
+        VisVisualResult_Destroy(&result);
     }
 
 };
 
-TEST_F(visVisualResultFunctions, isVisVisualResultReady) {
+TEST_F(visVisualResultFunctions, VisVisualResult_IsReady) {
 
-    ASSERT_FALSE(isVisVisualResultReady(result));
+    ASSERT_FALSE(VisVisualResult_IsReady(result));
 }
 
 TEST_F(visVisualResultFunctions, resize) {
     int size = -1;
-    SetVisVisualResultSize(result, 640);
-    GetVisVisualResultSize(&size, result);
+    VisVisualResult_SetSize(result, 640);
+    VisVisualResult_GetSize(&size, result);
     ASSERT_EQ(size, 640);
 }
 
 TEST_F(visVisualResultFunctions, zeroOnInit){
     PixelValue value = 100;
-    SetVisVisualResultSize(result, 10);
-    GetVisVisualResultValue(&value, result, 5);
+    VisVisualResult_SetSize(result, 10);
+    VisVisualResult_GetValue(&value, result, 5);
     ASSERT_EQ(value, 0);
 }
 
 TEST_F(visVisualResultFunctions, visVisualResultFunctions_getBadVaue_Test){
     PixelValue value = 100;
-    SetVisVisualResultSize(result, 10);
-    ASSERT_EQ(GetVisVisualResultValue(&value, result, 100), EFAULT);
+    VisVisualResult_SetSize(result, 10);
+    ASSERT_EQ(VisVisualResult_GetValue(&value, result, 100), EFAULT);
 
 }
 
@@ -67,20 +67,20 @@ TEST_F(visVisualResultFunctions, setresultdata) {
     PixelValue *bar = (PixelValue *)malloc(sizeof(PixelValue) * 10);
     bar[5] = 9;
 
-    SetVisVisualResultSize(result, 10);
+    VisVisualResult_SetSize(result, 10);
 
     // Test stack
-    ASSERT_FALSE(isVisVisualResultReady(result));
-    SetVisVisualResultData(result, foo, 10);
-    GetVisVisualResultValue(&value, result, 5);
+    ASSERT_FALSE(VisVisualResult_IsReady(result));
+    VisVisualResult_SetData(result, foo, 10);
+    VisVisualResult_GetValue(&value, result, 5);
     ASSERT_EQ(value, 5);
-    GetVisVisualResultValue(&value, result, 0);
-    ASSERT_TRUE(isVisVisualResultReady(result));
+    VisVisualResult_GetValue(&value, result, 0);
+    ASSERT_TRUE(VisVisualResult_IsReady(result));
     ASSERT_EQ(value, 0);
 
     // test heap
-    SetVisVisualResultData(result, bar, 10);
-    GetVisVisualResultValue(&value, result, 5);
+    VisVisualResult_SetData(result, bar, 10);
+    VisVisualResult_GetValue(&value, result, 5);
     ASSERT_EQ(value, 9);
     bar[5] = 2;
     free(bar);

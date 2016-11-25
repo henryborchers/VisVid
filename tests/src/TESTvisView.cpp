@@ -17,15 +17,15 @@ const int RED_SHIFT   = 3;
 
 TEST(visViewSetup, visViewSetup_testCreate) {
     visView *pvid = NULL;
-    pvid = CreateVisView(640, 480);
+    pvid = VisView_Create(640, 480);
     ASSERT_EQ(pvid->width, 640);
     ASSERT_EQ(pvid->height, 480);
     ASSERT_FALSE(pvid == NULL);
 }
 
 TEST(visViewSetup, visViewSetup_testCreateAndDestroy) {
-    visView *pvid = CreateVisView(640, 480);
-    DestroyVisView(&pvid);
+    visView *pvid = VisView_Create(640, 480);
+    VisView_Destroy(&pvid);
     ASSERT_TRUE(pvid == NULL);
 }
 
@@ -35,11 +35,11 @@ protected:
     visView *pvid;
 
     virtual void SetUp() {
-        pvid = CreateVisView(640, 480);
+        pvid = VisView_Create(640, 480);
     }
 
     virtual void TearDown() {
-        DestroyVisView(&pvid);
+        VisView_Destroy(&pvid);
     }
 
 
@@ -57,9 +57,9 @@ TEST_F(visViewFunctionsEmptyBuffer, visViewFunctions_empty) {
 
 
 TEST_F(visViewFunctionsEmptyBuffer, visViewFunctions_emptyBuffer_Test){
-    visBuffer *Buffer = CreateVisBuffer(10);
+    visBuffer *Buffer = VisBuffer_Create(10);
     ASSERT_TRUE(Buffer != NULL);
-    int rc = visViewUpdate(pvid, Buffer);
+    int rc = visView_Update(pvid, Buffer);
     ASSERT_EQ(rc, 0);
 
     for(int x = 0; x < pvid->width; x++){
@@ -77,23 +77,23 @@ protected:
     visBuffer *buffer;
 
     virtual void SetUp() {
-        buffer= CreateVisBuffer(10);
-        pvid = CreateVisView(2, 480);
-        visBufferPushBackResult(buffer, NULL);
-        visBufferPushBackResult(buffer, NULL);
+        buffer= VisBuffer_Create(10);
+        pvid = VisView_Create(2, 480);
+        visBuffer_PushBackResult(buffer, NULL);
+        visBuffer_PushBackResult(buffer, NULL);
 
     }
 
     virtual void TearDown() {
-        DestroyVisView(&pvid);
-        DestroyVisBuffer(&buffer);
+        VisView_Destroy(&pvid);
+        VisBuffer_Destroy(&buffer);
     }
 
 
 };
 
 TEST_F(visViewFunctionsFullBuffer1, updateView) {
-    ASSERT_EQ(visViewUpdate(pvid, buffer), 0);
+    ASSERT_EQ(visView_Update(pvid, buffer), 0);
     for(int x = 0; x<pvid->width; x++){
         for(int y = 0; y<pvid->height; y++){
             ASSERT_EQ(pvid->data[x + pvid->width * y], 0);
@@ -105,11 +105,11 @@ TEST_F(visViewFunctionsFullBuffer1, updateView) {
 TEST_F(visViewFunctionsFullBuffer1, Create_visViewRGBA) {
     // This test needs to be replaced when color maps are added
 
-    ASSERT_EQ(visViewUpdate(pvid, buffer), 0);
+    ASSERT_EQ(visView_Update(pvid, buffer), 0);
     visImageRGB imageRGB;
 
-    ASSERT_EQ(visAllocImageRGB(&imageRGB, pvid->width, pvid->height), 0);
-    ASSERT_EQ(visViewRGBA(&imageRGB, pvid), 0);
+    ASSERT_EQ(visImageRGB_Alloc(&imageRGB, pvid->width, pvid->height), 0);
+    ASSERT_EQ(visViewRGB_GenerateRGBA(&imageRGB, pvid), 0);
 
     for (int y = 0; y < imageRGB.height; ++y) {
         for (int x = 0; x < imageRGB.width; ++x) {

@@ -23,11 +23,11 @@ struct visPixelYUVFunctions : public ::testing::Test{
 protected:
 
     virtual void SetUp() {
-        pixel = CreatePixelYUV();
+        pixel = PixelYUV_Create();
     }
 
     virtual void TearDown() {
-        DestroyPixelYUV(&pixel);
+        PixelYUV_Destroy(&pixel);
     }
 
 };
@@ -37,11 +37,11 @@ struct visFrameYUVFunctions : public ::testing::Test{
 
 protected:
     virtual void SetUp() {
-        foo = CreateVisYUVFrame();
+        foo = VisYUVFrame_Create();
 
     }
     virtual void TearDown() {
-        DestroyVisYUVFrame(&foo);
+        VisYUVFrame_Destroy(&foo);
     }
 
 
@@ -50,33 +50,33 @@ protected:
 
 TEST(visPixelYUVSetup, visPixelYUV_Create){
     PixelYUV *pixel = NULL;
-    pixel = CreatePixelYUV();
+    pixel = PixelYUV_Create();
     ASSERT_FALSE(pixel == NULL);
 }
 
 TEST(visPixelYUVSetup, visPixelYUV_CreateAndCleanup){
 
     PixelYUV *pixel = NULL;
-    pixel = CreatePixelYUV();
+    pixel = PixelYUV_Create();
     ASSERT_FALSE(pixel == NULL);
-    DestroyPixelYUV(&pixel);
+    PixelYUV_Destroy(&pixel);
     ASSERT_TRUE(pixel == NULL);
 }
 
 TEST_F(visPixelYUVFunctions, setPixel){
-    ASSERT_EQ(SetPixelValueYUV(pixel, 4, 100, 40), 0);
+    ASSERT_EQ(PixelYUV_setValue(pixel, 4, 100, 40), 0);
 }
 TEST_F(visPixelYUVFunctions, setPixelBAD){
     PixelYUV *badpix = NULL;
-    ASSERT_EQ(SetPixelValueYUV(badpix, 4, 100, 40), EFAULT);
+    ASSERT_EQ(PixelYUV_setValue(badpix, 4, 100, 40), EFAULT);
 }
 
 TEST_F(visPixelYUVFunctions, setAndGetPixel){
     PixelValue y = 0;
     PixelValue u = 0;
     PixelValue v = 0;
-    SetPixelValueYUV(pixel, 4, 100, 40);
-    GetPixelValueYUV(pixel, &y, &u, &v);
+    PixelYUV_setValue(pixel, 4, 100, 40);
+    PixelYUV_getValue(pixel, &y, &u, &v);
 
     ASSERT_EQ(y, 4);
     ASSERT_EQ(u, 100);
@@ -85,13 +85,13 @@ TEST_F(visPixelYUVFunctions, setAndGetPixel){
 
 TEST(visFrameSetup, visFrame_Create){
     VisYUVFrame *foo = NULL;
-    foo = CreateVisYUVFrame();
+    foo = VisYUVFrame_Create();
     ASSERT_FALSE(foo == NULL);
 }
 
 TEST(visFrameSetup, visFrame_CreateAndDestroy){
-    VisYUVFrame *foo = CreateVisYUVFrame();
-    DestroyVisYUVFrame(&foo);
+    VisYUVFrame *foo = VisYUVFrame_Create();
+    VisYUVFrame_Destroy(&foo);
     ASSERT_TRUE(foo == NULL);
 }
 
@@ -99,8 +99,8 @@ TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
     int height = 0;
     int width = 0;
     int64_t pos = 0;
-    GetVisYUVFrameSize(foo, &width, &height);
-    GetVisYUVFramePos(foo, &pos);
+    VisYUVFrame_getSize(foo, &width, &height);
+    VisYUVFrame_getPos(foo, &pos);
 
     ASSERT_EQ(height, -1);
     ASSERT_EQ(width, -1);
@@ -110,10 +110,10 @@ TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
 }
 
 TEST_F(visFrameYUVFunctions, setFrameSize){
-    ASSERT_EQ(SetVisYUVFrameSize(foo, 640, 480), 0);
+    ASSERT_EQ(VisYUVFrame_setSize(foo, 640, 480), 0);
     int height = 0;
     int width = 0;
-    GetVisYUVFrameSize(foo, &width, &height);
+    VisYUVFrame_getSize(foo, &width, &height);
     ASSERT_EQ(height, 480);
     ASSERT_EQ(width, 640);
 }
@@ -127,14 +127,14 @@ TEST_F(visFrameYUVFunctions, BrushFill) {
     brush.V = 40;
     PixelYUV pix;
 
-    SetVisYUVFrameSize(foo, width, height);
-    ASSERT_EQ(visFillYUVFrame(foo, &brush), 0);
-    ASSERT_EQ(GetPixelFromYUVFrame(&pix, foo, 50, 50), 0);
+    VisYUVFrame_setSize(foo, width, height);
+    ASSERT_EQ(visYUVFrame_Fill(foo, &brush), 0);
+    ASSERT_EQ(VisYUVFrame_getPixelYUV(&pix, foo, 50, 50), 0);
 
     PixelValue y = 0;
     PixelValue u = 0;
     PixelValue v = 0;
-    GetPixelValueYUV(&pix, &y, &u, &v);
+    PixelYUV_getValue(&pix, &y, &u, &v);
     ASSERT_EQ(y, brush.Y);
     ASSERT_EQ(u, brush.U);
     ASSERT_EQ(v, brush.V);
@@ -151,18 +151,18 @@ TEST_F(visFrameYUVFunctions, BrushDraw) {
     PixelYUV pix;
 
 
-    SetVisYUVFrameSize(foo, width, height);
+    VisYUVFrame_setSize(foo, width, height);
     for(PixelValue x = 0; x < width; x++){
         brush.Y = x;
-        visDrawYUVPixel(foo, &brush, x, 0);
+        YUVPixel_Draw(foo, &brush, x, 0);
     }
 
     for(PixelValue x = 0; x < width; x++){
-        ASSERT_EQ(GetPixelFromYUVFrame(&pix, foo, x, 0), 0);
+        ASSERT_EQ(VisYUVFrame_getPixelYUV(&pix, foo, x, 0), 0);
         PixelValue y = x;
         PixelValue u = 0;
         PixelValue v = 0;
-        GetPixelValueYUV(&pix, &y, &u, &v);
+        PixelYUV_getValue(&pix, &y, &u, &v);
         ASSERT_EQ(y, x);
         ASSERT_EQ(u, brush.U);
         ASSERT_EQ(v, brush.V);
