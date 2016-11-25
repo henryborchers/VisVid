@@ -9,7 +9,7 @@ int ramp(visImageRGB *t) {
 
     for(int y = 0; y < t->height; y++){
         for(int x = 0; x < t->width; x++){
-            visImageWritePixelRGB(t, x, y, 0, count, (uint8_t)(((float)x /t->width - count) * 255), 255);
+            visImageRGB_WritePixel(t, x, y, 0, count, (uint8_t) (((float) x / t->width - count) * 255), 255);
 //             write_pixel(t, y, x, 1, 100, 2, (uint32_t)(((float)x /t->width - count) * 255));
         }
     }
