@@ -91,7 +91,7 @@ void VisYUVFrame_Destroy(VisYUVFrame **frame);
  * @param height Change the height of the frame to given value.
  * @return
  */
-int VisYUVFrame_setSize(VisYUVFrame *frame, int width, int height);
+int VisYUVFrame_SetSize(VisYUVFrame *frame, int width, int height);
 
 /**
  * Get the pixel dimensions of a given frame.
@@ -100,7 +100,7 @@ int VisYUVFrame_setSize(VisYUVFrame *frame, int width, int height);
  * @param height Pointer to an int to store the width information of the frame.
  * @return Returns 0 on success.
  */
-int VisYUVFrame_getSize(VisYUVFrame *frame, int *width, int *height);
+int VisYUVFrame_GetSize(VisYUVFrame *frame, int *width, int *height);
 
 /**
  * Gets the time information for the frame.
@@ -108,7 +108,7 @@ int VisYUVFrame_getSize(VisYUVFrame *frame, int *width, int *height);
  * @param result Pointer to to store the time information of the frame.
  * @return Returns 0 on success.
  */
-int VisYUVFrame_getPos(VisYUVFrame *frame, int64_t *result);
+int VisYUVFrame_SetPos(VisYUVFrame *frame, int64_t *result);
 
 int VisYUVFrame_getPixelYUV(PixelYUV *result, VisYUVFrame *frame, int x, int y);
 

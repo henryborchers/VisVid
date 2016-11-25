@@ -98,7 +98,7 @@ void FreeFrameData(VisYUVFrame **pFrame) {
 
 }
 
-int VisYUVFrame_getSize(VisYUVFrame *frame, int *width, int *height) {
+int VisYUVFrame_GetSize(VisYUVFrame *frame, int *width, int *height) {
     if(frame == NULL){
         return EFAULT;
     }
@@ -107,7 +107,7 @@ int VisYUVFrame_getSize(VisYUVFrame *frame, int *width, int *height) {
     return 0;
 }
 
-int VisYUVFrame_setSize(VisYUVFrame *frame, int width, int height) {
+int VisYUVFrame_SetSize(VisYUVFrame *frame, int width, int height) {
 
     if(frame == NULL){
         return EFAULT;
@@ -130,7 +130,7 @@ int VisYUVFrame_setSize(VisYUVFrame *frame, int width, int height) {
     return 0;
 }
 
-int VisYUVFrame_getPos(VisYUVFrame *frame, int64_t *result) {
+int VisYUVFrame_SetPos(VisYUVFrame *frame, int64_t *result) {
     *result = frame->pos;
     return 0;
 }

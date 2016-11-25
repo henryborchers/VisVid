@@ -12,7 +12,7 @@ int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame
 
 
 
-    rc = VisYUVFrame_getSize(frame, &frameWidth, &frameHeight);
+    rc = VisYUVFrame_GetSize(frame, &frameWidth, &frameHeight);
     if(rc != 0){
         return rc;
     }
