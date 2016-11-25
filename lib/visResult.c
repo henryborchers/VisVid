@@ -20,7 +20,7 @@ struct visVisualResult{
     PixelValue *data;   /**< Raw Data */
 };
 
-visVisualResult *CreateVisVisualResult() {
+visVisualResult *VisVisualResult_Create() {
     visVisualResult *newResult = NULL;
     newResult = (visVisualResult*) malloc(sizeof(visVisualResult));
     newResult->ready = false;
@@ -29,7 +29,7 @@ visVisualResult *CreateVisVisualResult() {
     return newResult;
 }
 
-void DestroyVisVisualResult(visVisualResult **pRes) {
+void VisVisualResult_Destroy(visVisualResult **pRes) {
     free((*pRes)->data);
 
     (*pRes)->data = NULL;
@@ -40,11 +40,11 @@ void DestroyVisVisualResult(visVisualResult **pRes) {
 
 }
 
-bool isVisVisualResultReady(visVisualResult *pRes) {
+bool VisVisualResult_IsReady(visVisualResult *pRes) {
     return pRes->ready;
 }
 
-int SetVisVisualResultSize(visVisualResult *pRest, int size) {
+int VisVisualResult_SetSize(visVisualResult *pRest, int size) {
     if(pRest == NULL){
         return EFAULT;
     }
@@ -62,7 +62,7 @@ int SetVisVisualResultSize(visVisualResult *pRest, int size) {
     return 0;
 }
 
-int GetVisVisualResultSize(int *size, visVisualResult *pRest) {
+int VisVisualResult_GetSize(int *size, visVisualResult *pRest) {
     if(pRest == NULL){
         return EFAULT;
     }
@@ -70,7 +70,7 @@ int GetVisVisualResultSize(int *size, visVisualResult *pRest) {
     return 0;
 }
 
-int GetVisVisualResultValue(PixelValue *value, visVisualResult *pRes, int offset) {
+int VisVisualResult_GetValue(PixelValue *value, visVisualResult *pRes, int offset) {
     if(value == NULL){
         return EFAULT;
     }
@@ -84,7 +84,7 @@ int GetVisVisualResultValue(PixelValue *value, visVisualResult *pRes, int offset
     return 0;
 }
 
-int SetVisVisualResultData(visVisualResult *pRes, PixelValue *data, size_t length) {
+int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length) {
     if(data == NULL){
         return EFAULT;
     }

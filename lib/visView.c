@@ -9,7 +9,7 @@
 #include "visView.h"
 
 
-visView *CreateVisView(int width, int height) {
+visView *VisView_Create(int width, int height) {
     visView *new_visView = NULL;
     new_visView = (visView*)malloc(sizeof(visView));
     if(new_visView == NULL){
@@ -23,7 +23,7 @@ visView *CreateVisView(int width, int height) {
     return new_visView;
 }
 
-void DestroyVisView(visView **pvd) {
+void VisView_Destroy(visView **pvd) {
     free((*pvd)->data);
     (*pvd)->data = NULL;
     (*pvd)->height = -1;
@@ -32,17 +32,17 @@ void DestroyVisView(visView **pvd) {
     *pvd = NULL;
 }
 
-int visViewUpdate(visView *pView, visBuffer *buffer){
+int visView_Update(visView *pView, visBuffer *buffer){
     size_t x;
     int y;
     int valid_result = 0;
-    size_t buffersize = visBufferLength(buffer);
+    size_t buffersize = visBuffer_getLength(buffer);
     PixelValue currentSlice[pView->height];
     PixelValue lastSlice[pView->height];
 
     for(x = 0; x < buffersize; x++){
         // If the result is null the result code will be 0
-        valid_result = getResult(currentSlice, buffer, x);
+        valid_result = visBuffer_getResult(currentSlice, buffer, x);
         if( valid_result < 0){
             return valid_result;
         };
@@ -69,7 +69,8 @@ int visViewUpdate(visView *pView, visBuffer *buffer){
     return 0;
 }
 
-int visViewRGBA(visImageRGB *out, visView *pView){
+int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView){
+//    FIXME: refactor to use a callback for color scheme
 
     // assert that neither pointer is NULL.
 
@@ -92,7 +93,7 @@ int visViewRGBA(visImageRGB *out, visView *pView){
     for (int y = 0; y < out->height; ++y) {
         for (int x = 0; x < out->width; ++x) {
             PixelValue value = pView->data[x + pView->width * y];
-            visImageWritePixelRGB(out, x,y, value, value, value, value);
+            visImageRGB_WritePixel(out, x, y, value, value, value, value);
         }
     }
     return 0;

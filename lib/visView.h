@@ -25,13 +25,13 @@ typedef struct {
  * @param height The number of pixels height to create a new visView type.
  * @return Returns a pointer to a new visView type.
  */
-visView *CreateVisView(int width, int height);
+visView *VisView_Create(int width, int height);
 
 /**
  * Cleans up and free memory used in a visView type stored on the heap.
  * @param pvd Pointer to the visView to clean up and freed.
  */
-void DestroyVisView(visView **pvd);
+void VisView_Destroy(visView **pvd);
 
 /**
  * Updates the view information based on the current data in the buffer
@@ -39,7 +39,7 @@ void DestroyVisView(visView **pvd);
  * @param buffer Pointer to a buffer which to build this information from.
  * @return Returns 0 on success.
  */
-int visViewUpdate(visView *pView, visBuffer *buffer);
+int visView_Update(visView *pView, visBuffer *buffer);
 
 /**
  * Creates a Black and white image in RGBA888 format to be used with other tools.
@@ -47,6 +47,6 @@ int visViewUpdate(visView *pView, visBuffer *buffer);
  * @param pView A pointer to the view image.
  * @return Returns zero on success.
  */
-int visViewRGBA(visImageRGB *out, visView *pView);
+int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView);
 
 #endif //VISVID_VISVIEW_H

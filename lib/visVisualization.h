@@ -26,6 +26,6 @@ struct visProcessContext{
  * @param frame
  * @return
  */
-int visVisBrightest(visVisualResult *result, VisYUVFrame *frame);
+int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame);
 int visVisProcess(visBuffer *pRes, VisYUVFrame *pFrame, visProcessContext *processContext);
 #endif //VISVID_VISVISUALIZATION_H

@@ -16,18 +16,18 @@ typedef struct visVisualResult visVisualResult;
  * Creates a new visVisualResult on the heap and returns a pointer to it.
  * @return Pointer to new visVisualResult.
  */
-visVisualResult *CreateVisVisualResult();
+visVisualResult *VisVisualResult_Create();
 
 /**
  * Frees up the memory used by a given visVisualResult.
  * @param pRes Pointer to the visVisualResult to free up.
  */
-void DestroyVisVisualResult(visVisualResult **pRes);
+void VisVisualResult_Destroy(visVisualResult **pRes);
 
 /**
  * Checks the result has valid data from a calculation
  */
-bool isVisVisualResultReady(visVisualResult *pRes);
+bool VisVisualResult_IsReady(visVisualResult *pRes);
 
 /**
  * Sizes or re-sizes the length of the visVisualResult. Any existing data will be lost.
@@ -35,7 +35,7 @@ bool isVisVisualResultReady(visVisualResult *pRes);
  * @param size The new length to set the result to. This is most like the width or the height of the frame.
  * @return Returns 0 on success.
  */
-int SetVisVisualResultSize(visVisualResult *pRest, int size);
+int VisVisualResult_SetSize(visVisualResult *pRest, int size);
 
 /**
  * Gets the size of length of a visVisualResult.
@@ -43,7 +43,7 @@ int SetVisVisualResultSize(visVisualResult *pRest, int size);
  * @param pRest Pointer to visVisualResult to get the length.
  * @return Returns 0 on success.
  */
-int GetVisVisualResultSize(int *size, visVisualResult *pRest);
+int VisVisualResult_GetSize(int *size, visVisualResult *pRest);
 
 /**
  * Get the value of a visVisualResult at a certain offset.
@@ -52,7 +52,7 @@ int GetVisVisualResultSize(int *size, visVisualResult *pRest);
  * @param offset The index for the value in the data.
  * @return Returns 0 on success.
  */
-int GetVisVisualResultValue(PixelValue *value, visVisualResult *pRes, int offset);
+int VisVisualResult_GetValue(PixelValue *value, visVisualResult *pRes, int offset);
 
 /**
  * Performs a memory copy of the data and sets visVisualResult->ready to true.
@@ -61,6 +61,6 @@ int GetVisVisualResultValue(PixelValue *value, visVisualResult *pRes, int offset
  * @param length The number of elements in the data.
  * @return Returns 0 on success.
  */
-int SetVisVisualResultData(visVisualResult *pRes, PixelValue *data, size_t length);
+int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length);
 
 #endif //VISVID_VISRESULT_H

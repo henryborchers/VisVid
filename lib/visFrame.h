@@ -14,70 +14,75 @@ typedef struct PixelYUV PixelYUV;
 typedef struct VisYUVFrame VisYUVFrame;
 typedef struct visBrush visBrush;
 struct visBrush{
-    PixelValue Y;
-    PixelValue U;
-    PixelValue V;
+    PixelValue Y;     /**< @brief Luma. */
+    PixelValue U;     /**< @brief Chroma. */
+    PixelValue V;     /**< @brief Chroma. */
 };
 
 /**
  * @struct PixelYUV
- * @brief The pixel split into it's YUV components
+ * @brief The pixel split into it's YUV components.
  *
- * This represent a pixel's value. NOTE: While YUV is really an analog color format and the true format is YCrBr,
+ * @note While YUV is really an analog color format and the true format is YCrBr,
  * it's much easier to write YUV as a variable name and YCrBr is more thought of in terms of their analog counterpart.
  */
 struct PixelYUV {
-    PixelValue Y;    /**< Luma value for a pixel.*/
-    PixelValue U;    /**< Cr chroma value for pixel.*/
-    PixelValue V;    /**< Br chroma value for pixel.*/
+    PixelValue Y;    /**< @brief Luma value for a pixel.*/
+    PixelValue U;    /**< @brief Cr chroma value for pixel.*/
+    PixelValue V;    /**< @brief Br chroma value for pixel.*/
 };
 
 
 
 /**
- * Creates a YUV pixel on the heap.
+ * @brief Creates a YUV pixel on the heap.
  * @return Pointer to the new pixel. Returns NULL on failure.
  */
-PixelYUV *CreatePixelYUV();
+PixelYUV *PixelYUV_Create();
 
 /**
- * Frees up memory on the heap used for the pixel.
+ * @brief Frees up memory on the heap used for the pixel.
  * @param pixel Pixel to be destroyed.
  */
-void DestroyPixelYUV(PixelYUV **pixel);
+void PixelYUV_Destroy(PixelYUV **pixel);
 
 /**
  * Use this function to set the pixel values directly.
+ * @brief Sets YUV value of a pixel.
  * @param pixel Pixel to be changed.
  * @param y New y/luma value to assign to the pixel.
  * @param u New u/chroma value to assign to the pixel.
  * @param v New v/chroma value to assign to the pixel.
  * @return Returns 0 on success.
  */
-int SetPixelValueYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v);
+int PixelYUV_setValue(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v);
 
 /**
  * Use this function to get the pixel values.
+ * @brief Get the component values for a given pixel.
  * @param pixel Pixel to read values.
  * @param y Pointer to store the y/luma value after reading the given pixels.
  * @param u Pointer to store the u/chroma value after reading the given pixels.
  * @param v Pointer to store the v/chroma value after reading the given pixels.
  * @return Returns 0 on success.
  */
-int GetPixelValueYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v);
+int PixelYUV_getValue(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v);
 
 /**
  * Allocates a new frame on the heap with zero pixels high and and zero pixels wide and returns a pointer to it's
  * location.
+ * @brief Create a new VisYUVFrame.
  * @return Pointer to new frame.
+ * @note You are responsible for freeing up any memory when done. Use DestroyVisYUVFrame() to release any memory
+ * reserved on the heap.
  */
-VisYUVFrame *CreateVisYUVFrame();
+VisYUVFrame *VisYUVFrame_Create();
 
 /**
  * Frees up the memory used by the given frame.
  * @param frame The frame to cleaned up.
  */
-void DestroyVisYUVFrame(VisYUVFrame **frame);
+void VisYUVFrame_Destroy(VisYUVFrame **frame);
 
 /**
  * Sets the pixel dimensions of a given frame.
@@ -86,7 +91,7 @@ void DestroyVisYUVFrame(VisYUVFrame **frame);
  * @param height Change the height of the frame to given value.
  * @return
  */
-int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height);
+int VisYUVFrame_setSize(VisYUVFrame *frame, int width, int height);
 
 /**
  * Get the pixel dimensions of a given frame.
@@ -95,7 +100,7 @@ int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height);
  * @param height Pointer to an int to store the width information of the frame.
  * @return Returns 0 on success.
  */
-int GetVisYUVFrameSize(VisYUVFrame *frame, int *width, int *height);
+int VisYUVFrame_getSize(VisYUVFrame *frame, int *width, int *height);
 
 /**
  * Gets the time information for the frame.
@@ -103,12 +108,12 @@ int GetVisYUVFrameSize(VisYUVFrame *frame, int *width, int *height);
  * @param result Pointer to to store the time information of the frame.
  * @return Returns 0 on success.
  */
-int GetVisYUVFramePos(VisYUVFrame *frame, int64_t *result);
+int VisYUVFrame_getPos(VisYUVFrame *frame, int64_t *result);
 
-int GetPixelFromYUVFrame(PixelYUV *result, VisYUVFrame *frame, int x, int y);
+int VisYUVFrame_getPixelYUV(PixelYUV *result, VisYUVFrame *frame, int x, int y);
 
-int visFillYUVFrame(VisYUVFrame *frame, visBrush *brush);
+int visYUVFrame_Fill(VisYUVFrame *frame, visBrush *brush);
 
-int visDrawYUVPixel(VisYUVFrame *frame, visBrush *brush, int x, int y);
+int YUVPixel_Draw(VisYUVFrame *frame, visBrush *brush, int x, int y);
 
 #endif //VISVID_VISFRAME_H_H

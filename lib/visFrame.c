@@ -27,7 +27,7 @@ struct VisYUVFrame{
 
 void FreeFrameData(VisYUVFrame **pFrame);
 
-PixelYUV *CreatePixelYUV() {
+PixelYUV *PixelYUV_Create() {
     PixelYUV *newPixel = NULL;
     newPixel = (PixelYUV*)malloc(sizeof(PixelYUV));
     if(newPixel == NULL){
@@ -39,13 +39,13 @@ PixelYUV *CreatePixelYUV() {
     return newPixel;
 }
 
-void DestroyPixelYUV(PixelYUV **pixel) {
+void PixelYUV_Destroy(PixelYUV **pixel) {
     PixelYUV  *p = *pixel;
     free(p);
     (*pixel) = NULL;
 }
 
-int SetPixelValueYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) {
+int PixelYUV_setValue(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -55,7 +55,7 @@ int SetPixelValueYUV(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v) 
     return 0;
 }
 
-int GetPixelValueYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
+int PixelYUV_getValue(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -66,7 +66,7 @@ int GetPixelValueYUV(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *
 }
 
 
-VisYUVFrame *CreateVisYUVFrame() {
+VisYUVFrame *VisYUVFrame_Create() {
     VisYUVFrame *newFrame = NULL;
     newFrame = (VisYUVFrame*)malloc(sizeof(VisYUVFrame));
     if(newFrame == NULL){
@@ -80,7 +80,7 @@ VisYUVFrame *CreateVisYUVFrame() {
     return newFrame;
 }
 
-void DestroyVisYUVFrame(VisYUVFrame **frame) {
+void VisYUVFrame_Destroy(VisYUVFrame **frame) {
 //    FreeFrameData(frame);
     (*frame)->pos = -1;
     (*frame)->height = -1;
@@ -98,7 +98,7 @@ void FreeFrameData(VisYUVFrame **pFrame) {
 
 }
 
-int GetVisYUVFrameSize(VisYUVFrame *frame, int *width, int *height) {
+int VisYUVFrame_getSize(VisYUVFrame *frame, int *width, int *height) {
     if(frame == NULL){
         return EFAULT;
     }
@@ -107,7 +107,7 @@ int GetVisYUVFrameSize(VisYUVFrame *frame, int *width, int *height) {
     return 0;
 }
 
-int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height) {
+int VisYUVFrame_setSize(VisYUVFrame *frame, int width, int height) {
 
     if(frame == NULL){
         return EFAULT;
@@ -130,12 +130,12 @@ int SetVisYUVFrameSize(VisYUVFrame *frame, int width, int height) {
     return 0;
 }
 
-int GetVisYUVFramePos(VisYUVFrame *frame, int64_t *result) {
+int VisYUVFrame_getPos(VisYUVFrame *frame, int64_t *result) {
     *result = frame->pos;
     return 0;
 }
 
-int visFillYUVFrame(VisYUVFrame *frame, visBrush *brush) {
+int visYUVFrame_Fill(VisYUVFrame *frame, visBrush *brush) {
     int x;
     int y;
     if(frame == NULL){
@@ -153,7 +153,7 @@ int visFillYUVFrame(VisYUVFrame *frame, visBrush *brush) {
     return 0;
 }
 
-int GetPixelFromYUVFrame(PixelYUV *result, VisYUVFrame *frame, int x, int y) {
+int VisYUVFrame_getPixelYUV(PixelYUV *result, VisYUVFrame *frame, int x, int y) {
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }
@@ -164,7 +164,7 @@ int GetPixelFromYUVFrame(PixelYUV *result, VisYUVFrame *frame, int x, int y) {
     return 0;
 }
 
-int visDrawYUVPixel(VisYUVFrame *frame, visBrush *brush, int x, int y) {
+int YUVPixel_Draw(VisYUVFrame *frame, visBrush *brush, int x, int y) {
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }

@@ -33,7 +33,7 @@ struct visImageRGB{
  * @param width The number of pixels wide for the desired image.
  * @return 0 Returns zero on success. Anything else is an error.
  */
-int visAllocImageRGB(visImageRGB *t, int width, int height);
+int visImageRGB_Alloc(visImageRGB *t, int width, int height);
 
 /**
  *
@@ -47,12 +47,12 @@ int visAllocImageRGB(visImageRGB *t, int width, int height);
  * @param a The amount of assigned to the alpha channel to be used in the given pixel.
  * @return Returns zero on success.
  */
-int visImageWritePixelRGB(visImageRGB *t, int pixelX, int pixelY, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+int visImageRGB_WritePixel(visImageRGB *t, int pixelX, int pixelY, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 /**
  * Frees up the data being used by a VisImageRGB object
  * @param t VisImageRGB to write pixel data to
  */
-void visFreeImageRGB(visImageRGB *t);
+void visImageRGB_FreeData(visImageRGB *t);
 
 #endif //VISVID_VISIMAGES_H

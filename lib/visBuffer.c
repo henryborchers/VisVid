@@ -17,7 +17,6 @@ struct visBufferNode{
     size_t position;
 };
 
-typedef struct visBufferNode visBufferNode;
 /**
  * @struct visBuffer
  * @brief Used to store the sequence of calculation results from the visualization.
@@ -80,7 +79,7 @@ static visBufferNode *CreateVisBufferNode(visVisualResult *pRes);
 static visVisualResult *visBufferNodeResult(visBufferNode *pNode);
 
 
-visBuffer *CreateVisBuffer(size_t width) {
+visBuffer *VisBuffer_Create(size_t width) {
     visBuffer *buffer = NULL;
     buffer = (visBuffer*)malloc(sizeof(visBuffer));
     if(buffer == NULL){
@@ -93,15 +92,15 @@ visBuffer *CreateVisBuffer(size_t width) {
     return buffer;
 }
 
-int visBufferIsEmpty(visBuffer *buffer) {
+int visBuffer_isEmpty(visBuffer *buffer) {
     return buffer->first == NULL;
 }
 
 
-void DestroyVisBuffer(visBuffer **buffer) {
-    while(!visBufferIsEmpty((*buffer))){
+void VisBuffer_Destroy(visBuffer **buffer) {
+    while(!visBuffer_isEmpty((*buffer))){
         visBufferNode *node = visBufferPop((*buffer));
-        DestroyVisBufferNode(&node);
+        VisBufferNode_Destroy(&node);
     }
     free((*buffer));
     *buffer = NULL;
@@ -119,13 +118,13 @@ visBufferNode *visBufferPreviousNode(visBufferNode *node) {
     return node->previous;
 }
 
-int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes) {
+int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
     // check result size first if it's not null
     if(pRes != NULL){
         // check the size only if there is valid data to check
-        if(isVisVisualResultReady(pRes)){
+        if(VisVisualResult_IsReady(pRes)){
             int resultSize = -1;
-            GetVisVisualResultSize(&resultSize, pRes);
+            VisVisualResult_GetSize(&resultSize, pRes);
             if(buffer->bufferWidth != resultSize){
                 return -1;
             }
@@ -139,7 +138,7 @@ int visBufferPushBackResult(visBuffer *buffer, visVisualResult *pRes) {
 int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode) {
     newNode->next = NULL;
     newNode->position = buffer->bufferLen;
-    if(visBufferIsEmpty(buffer)) {
+    if(visBuffer_isEmpty(buffer)) {
         newNode->previous = NULL;
         buffer->first = newNode;
         buffer->last = newNode;
@@ -152,7 +151,7 @@ int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode) {
     return 0;
 }
 
-visVisualResult *visBufferPopResult(visBuffer *buffer) {
+visVisualResult *visBuffer_PopResult(visBuffer *buffer) {
     visBufferNode *node = NULL;
     node = visBufferPop(buffer);
     return visBufferNodeResult(node);
@@ -161,7 +160,7 @@ visVisualResult *visBufferPopResult(visBuffer *buffer) {
 visBufferNode *visBufferPop(visBuffer *buffer) {
     visBufferNode *rNode = NULL;
 
-    if(visBufferIsEmpty(buffer)){
+    if(visBuffer_isEmpty(buffer)){
         return NULL;
     }
 
@@ -176,13 +175,13 @@ visBufferNode *visBufferPop(visBuffer *buffer) {
     return rNode;
 }
 
-size_t visBufferLength(visBuffer *buffer) {
+size_t visBuffer_getLength(visBuffer *buffer) {
     return buffer->bufferLen;
 }
 
-void DestroyVisBufferNode(visBufferNode **node) {
+void VisBufferNode_Destroy(visBufferNode **node) {
     if((*node)->result != NULL){
-        DestroyVisVisualResult(&(*node)->result);
+        VisVisualResult_Destroy(&(*node)->result);
     }
     (*node)->result = NULL;
     free(*node);
@@ -202,7 +201,7 @@ visVisualResult *visBufferNodeResult(visBufferNode *pNode) {
     return pNode->result;
 }
 
-visBufferNode * _getBufferNode(visBuffer *buffer, size_t index) {
+visBufferNode * _BufferNode_get(visBuffer *buffer, size_t index) {
     if(buffer->bufferLen < index){
         return NULL;
     }
@@ -222,10 +221,10 @@ size_t _nodePosition(visBufferNode *node) {
     return node->position;
 }
 
-int getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
+int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
     int x;
     visBufferNode *node = NULL;
-    node = _getBufferNode(buffer, index);
+    node = _BufferNode_get(buffer, index);
     if(node == NULL){
         return -1;
     } else {
@@ -234,7 +233,7 @@ int getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
         }
         for(x = 0; x < buffer->bufferWidth; x++){
             
-            if(GetVisVisualResultValue(pRes, node->result, x) != 0){
+            if(VisVisualResult_GetValue(pRes, node->result, x) != 0){
                 return -1;
             };
 

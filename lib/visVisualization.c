@@ -4,7 +4,7 @@
 #include <errno.h>
 #include "visFrame.h"
 #include "visVisualization.h"
-int visVisBrightest(visVisualResult *result, VisYUVFrame *frame){
+int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame){
     int x, y;
     int frameHeight = -1;
     int frameWidth = -1;
@@ -12,7 +12,7 @@ int visVisBrightest(visVisualResult *result, VisYUVFrame *frame){
 
 
 
-    rc = GetVisYUVFrameSize(frame,&frameWidth, &frameHeight);
+    rc = VisYUVFrame_getSize(frame, &frameWidth, &frameHeight);
     if(rc != 0){
         return rc;
     }
@@ -21,7 +21,7 @@ int visVisBrightest(visVisualResult *result, VisYUVFrame *frame){
         PixelValue brightest = 0;
         for(y = 0; y < frameHeight; y++){
             PixelYUV pix;
-            rc = GetPixelFromYUVFrame(&pix, frame, x, y);
+            rc = VisYUVFrame_getPixelYUV(&pix, frame, x, y);
             if(pix.Y > brightest){
                 brightest = pix.Y;
             }
@@ -32,7 +32,7 @@ int visVisBrightest(visVisualResult *result, VisYUVFrame *frame){
         }
         slice[x] = brightest;
     }
-    rc = SetVisVisualResultData(result, slice, (size_t)frameWidth);
+    rc = VisVisualResult_SetData(result, slice, (size_t) frameWidth);
     if(rc != 0){
         return rc;
     };
