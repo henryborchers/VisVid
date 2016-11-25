@@ -36,12 +36,12 @@ import_array();
 %apply int *INPUT { int *input };
 %extend visView{
   visView(int width, int height){
-    visView *new_visView = CreateVisView(width, height);
+    visView *new_visView = VisView_Create(width, height);
     return new_visView;
   }
 
   ~visView(){
-    DestroyVisView(&$self);
+    VisView_Destroy(&$self);
   }
 
     /*char *__str__() {
