@@ -25,7 +25,7 @@ protected:
         VisVisualResult_SetSize(result, width);
 
         frame = VisYUVFrame_Create();
-        VisYUVFrame_setSize(frame, width, height);
+        VisYUVFrame_SetSize(frame, width, height);
         visBrush brush;
         brush.Y = 40;
         brush.U = 60;
@@ -64,7 +64,7 @@ protected:
         VisVisualResult_SetSize(result, width);
 
         frame = VisYUVFrame_Create();
-        VisYUVFrame_setSize(frame, width, height);
+        VisYUVFrame_SetSize(frame, width, height);
         visBrush brush;
         brush.U = 60;
         brush.V = 70;

@@ -99,8 +99,8 @@ TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
     int height = 0;
     int width = 0;
     int64_t pos = 0;
-    VisYUVFrame_getSize(foo, &width, &height);
-    VisYUVFrame_getPos(foo, &pos);
+    VisYUVFrame_GetSize(foo, &width, &height);
+    VisYUVFrame_SetPos(foo, &pos);
 
     ASSERT_EQ(height, -1);
     ASSERT_EQ(width, -1);
@@ -110,10 +110,10 @@ TEST_F(visFrameYUVFunctions, checkEmptyOnCreation){
 }
 
 TEST_F(visFrameYUVFunctions, setFrameSize){
-    ASSERT_EQ(VisYUVFrame_setSize(foo, 640, 480), 0);
+    ASSERT_EQ(VisYUVFrame_SetSize(foo, 640, 480), 0);
     int height = 0;
     int width = 0;
-    VisYUVFrame_getSize(foo, &width, &height);
+    VisYUVFrame_GetSize(foo, &width, &height);
     ASSERT_EQ(height, 480);
     ASSERT_EQ(width, 640);
 }
@@ -127,7 +127,7 @@ TEST_F(visFrameYUVFunctions, BrushFill) {
     brush.V = 40;
     PixelYUV pix;
 
-    VisYUVFrame_setSize(foo, width, height);
+    VisYUVFrame_SetSize(foo, width, height);
     ASSERT_EQ(visYUVFrame_Fill(foo, &brush), 0);
     ASSERT_EQ(VisYUVFrame_getPixelYUV(&pix, foo, 50, 50), 0);
 
@@ -151,7 +151,7 @@ TEST_F(visFrameYUVFunctions, BrushDraw) {
     PixelYUV pix;
 
 
-    VisYUVFrame_setSize(foo, width, height);
+    VisYUVFrame_SetSize(foo, width, height);
     for(PixelValue x = 0; x < width; x++){
         brush.Y = x;
         YUVPixel_Draw(foo, &brush, x, 0);
