@@ -5,8 +5,6 @@
 #ifndef LIBVISVID_VIDEODECODER_H
 #define LIBVISVID_VIDEODECODER_H
 
-//#include <libavcodec/avcodec.h>
-//#include <libavformat/avformat.h>
 
 typedef struct DecoderContext DecoderContext;
 
