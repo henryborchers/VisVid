@@ -17,5 +17,4 @@ int ramp(visImageRGB *t) {
     count++;
 
     return 0;
-    return 0;
 }
