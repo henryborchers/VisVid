@@ -1,0 +1,56 @@
+//
+// Created by Borchers, Henry Samuel on 12/3/16.
+//
+
+#include <libavutil/avutil.h>
+#include <SDL2/SDL.h>
+#include <libavutil/frame.h>
+#include "simpleVideoPlayerUtils.h"
+#include "simpleVideoPlayer.h"
+#include "videoDecoder.h"
+
+int playVideoSimple(const char *filename) {
+    DecoderContext      *decoderCtx = NULL;
+    AVFrame             *FF_frame = NULL;
+    SDL_Event           event;
+    PlayerContext       playerContext;
+
+    decoder_init();
+    int ret;
+
+    // initialize player
+    player_init();
+
+    puts("Opening video");
+    decoderCtx = decoderContext_Create(filename);
+    if(decoderCtx == NULL){
+        fprintf(stderr, "Unable to load file \"%s\"", filename);
+        return 1;
+    } else{
+        puts("Video Opened");
+    }
+    // Load gui
+    player_ctx_init(&playerContext);
+    decoderContext_GetSize(decoderCtx, &playerContext.windowWidth, &playerContext.windowHeight);
+    player_build_window(&playerContext);
+
+    while(1){
+        SDL_PollEvent(&event);
+        if(event.type == SDL_QUIT){
+            break;
+        }
+
+        ret = decoderContext_NextFrame(decoderCtx, &FF_frame);
+        if(ret < 0 || FF_frame == NULL){
+            break;
+        }
+        player_refresh(&playerContext, FF_frame);
+    }
+    puts("Closing window");
+    player_destroy_window(&playerContext);
+
+    puts("Closing video ");
+    decoderContext_Destroy(&decoderCtx);
+
+    return 0;
+}
