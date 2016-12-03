@@ -8,12 +8,16 @@
 #include "visImageWriter.h"
 
 int visImageRGB_Alloc(visImageRGB *t, int width, int height) {
-    int pitch = width * 4;
-    t->plane = malloc(sizeof(uint8_t) * pitch * height * 4);
+//    pitch * size of the the pixel + padding
+// TODO: Caculate padding for at least 4 bytes
+    size_t pitch = (width * (sizeof(uint8_t) * 4));
+
+
+    t->plane = malloc(pitch * height );
     if(NULL == t->plane){
         return ENOMEM;
     }
-    t->pitch = pitch;
+    t->pitch = (int)pitch;
 
     t->height = height;
     t->width = width;
