@@ -1,4 +1,4 @@
-set(CreateVisual_src createVisual.c gui.c gui.h generators.c generators.h videoDecoder.c videoDecoder.h)
+set(CreateVisual_src createVisual.c gui.c gui.h generators.c generators.h videoDecoder.c videoDecoder.h player.c player.h)
 find_package(SDL2 REQUIRED)
 find_package(FFMPEG REQUIRED)
 include_directories(${PROJECT_BINARY_DIR}/lib)
