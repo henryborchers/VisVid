@@ -2,7 +2,7 @@
 // Created by Borchers, Henry Samuel on 11/22/16.
 //
 
-#include "generators.h"
+#include "ramp.h"
 
 int ramp(visImageRGB *t) {
     static uint8_t count = 0;
