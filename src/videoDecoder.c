@@ -63,7 +63,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
         return NULL;
     }
 
-    strncat(tmp->filename, filename, file_name_len - 1);
+    strncat(tmp->filename, filename, file_name_len);
     if((ret = avformat_open_input(&tmp->formatContext, filename, NULL, NULL)) < 0){
         char error_msg[1000];
         av_strerror(ret, error_msg, 1000);
@@ -175,6 +175,12 @@ int decoderContext_NextFrame(DecoderContext *pDecoderContext, AVFrame **out) {
         }
     }
     return AVERROR_EOF;
+}
+
+void decoderContext_GetSize(DecoderContext *pDecoderContext, int *width, int *height) {
+    *width = pDecoderContext->codecContext->width;
+    *height = pDecoderContext->codecContext->height;
+
 }
 
 
