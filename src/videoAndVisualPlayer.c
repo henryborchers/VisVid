@@ -268,17 +268,21 @@ int vidVis_refresh(VidVisContext *ctx, AVFrame *pFrame, visImageRGB *texture) {
     scaleX = (float)rendX/ctx->windowWidth;
     scaleY = (float)rendY/(ctx->windowHeight);
 
+    // Calculate how large the video player should be when scaled based on the window
     videoWidget.x = 0;
     videoWidget.y = 0;
     videoWidget.h = (int)(videoOrig.h * scaleY);
     videoWidget.w = (int)(videoOrig.w * scaleX);
 
+    // Calculate how large the visualization should be when scaled based on the window
     visualizationWidget.x = (int)(visualizationOrig.x * scaleX);
     visualizationWidget.y = (int)(visualizationOrig.y * scaleY);
     visualizationWidget.h = (int)(visualizationOrig.h * scaleY);
     visualizationWidget.w = (int)(visualizationOrig.w * scaleX);
 
     SDL_RenderClear(ctx->renderer);
+
+    // Update SDL texture for the video frame
     if((res = SDL_UpdateYUVTexture(ctx->video.texture, &videoOrig,
                                    pFrame->data[0], pFrame->linesize[0],
                                    pFrame->data[1], pFrame->linesize[1],
@@ -287,10 +291,16 @@ int vidVis_refresh(VidVisContext *ctx, AVFrame *pFrame, visImageRGB *texture) {
         return res;
     };
 
+    // Update SDL texture for the visualization
     SDL_UpdateTexture(ctx->visualization.texture, NULL, texture->plane, texture->pitch);
 
+    // Draw the visualization
     SDL_RenderCopy(ctx->renderer, ctx->visualization.texture, &visualizationOrig, &visualizationWidget);
+
+    // Draw the video
     SDL_RenderCopy(ctx->renderer, ctx->video.texture, &videoOrig, &videoWidget);
+
+    // Display to screen
     SDL_RenderPresent(ctx->renderer);
     return 0;
 }
