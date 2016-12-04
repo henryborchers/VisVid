@@ -71,7 +71,11 @@ int playVideoVis(const char *filename) {
         }
 
         res = decoderContext_NextFrame(decoderCtx, &frame);
+
+        // TODO: Render visualization with real data
         ramp(&visualization);
+
+
         if(NULL == frame){
             decoderContext_Rewind(decoderCtx);
             continue;
