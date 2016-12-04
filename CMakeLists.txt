@@ -17,6 +17,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 
 # Set Options
 set(VISVID_BUILDDOCS ON CACHE BOOL "Build Doxygen documentation")
+set(VISVID_NOC_FILE_DIALOG ON CACHE BOOL "Include NOC_FILE_DIALOG library")
 set(VISVID_TESTS ON CACHE BOOL "Build Tests")
 
 enable_testing()
