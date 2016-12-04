@@ -9,4 +9,6 @@
 
 #include "generator.h"
 #include "simpleVideoPlayer.h"
+#include "videoAndVisualPlayer.h"
+
 #endif //LIBVISVID_RUNPLAYERS_H
