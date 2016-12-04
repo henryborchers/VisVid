@@ -46,7 +46,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
         return NULL;
     };
 
-    tmp = (DecoderContext*)malloc(sizeof(DecoderContext*));
+    tmp = (DecoderContext*)malloc(sizeof(DecoderContext));
     if(tmp == NULL){
         return NULL;
     }
@@ -163,11 +163,15 @@ int decoderContext_NextFrame(DecoderContext *pDecoderContext, AVFrame **out) {
                 pict.linesize[1] = pDecoderContext->frame->linesize[1];
                 pict.linesize[2] = pDecoderContext->frame->linesize[2];
 
-                sws_scale(pDecoderContext->sws_ctx,
+                if((ret = sws_scale(pDecoderContext->sws_ctx,
                           (uint8_t const * const *)pDecoderContext->frame->data,
                           pDecoderContext->frame->linesize, 0,
                           pDecoderContext->codecContext->height,
-                          pict.data, pict.linesize);
+                          pict.data, pict.linesize)) < 0){
+                    *out = NULL;
+                    fprintf(stderr, "sws_scale failed\n");
+                    return ret;
+                };
                 *out = pDecoderContext->frame;
                 return 0;
 
@@ -181,6 +185,17 @@ void decoderContext_GetSize(DecoderContext *pDecoderContext, int *width, int *he
     *width = pDecoderContext->codecContext->width;
     *height = pDecoderContext->codecContext->height;
 
+}
+
+int decoderContext_Rewind(DecoderContext *pDecoderContext) {
+//    FIXME: av_seek_frame should point to the first packet position which isn't always going to be 0.
+    int ret;
+
+    if((ret = av_seek_frame(pDecoderContext->formatContext, pDecoderContext->video_stream_idx, 0, AVSEEK_FLAG_BACKWARD)) != 0){
+        fprintf(stderr, "Failed to rewind");
+        return ret;
+    };
+    return 0;
 }
 
 
