@@ -24,10 +24,9 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    if((ret = playVideoSimple(argv[1])) !=0){
+    if((ret = playVideoVis(argv[1])) !=0){
         fprintf(stderr, "program didn't run correctly\n");
     };
-
 
 
 }
