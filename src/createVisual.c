@@ -23,7 +23,7 @@ int main(int argc, char *argv[]){
     #ifdef NOC_FILE_DIALOG_IMPLEMENTATION
     if(argc == 1){
         puts("Opening up a file dialog box");
-        filename = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN, "mov\0*.mov\0mp4\0*.mp4\0mpg\0*.mpg\0mkv\0*.mkv\0", NULL, NULL);
+        filename = noc_file_dialog_open(NOC_FILE_DIALOG_OPEN, "Video Files\0*.mov;*.mp4;*.mpg;*.mkv\0All Files\0*.*\0", NULL, NULL);
         if(!filename){
             return 0;
         }
@@ -39,9 +39,10 @@ int main(int argc, char *argv[]){
         filename = argv[1];
     }
     if((ret = playVideoVis(filename)) !=0){
-        fprintf(stderr, "program didn't run correctly\n");
+        fprintf(stderr, "%s exited with error code: %d.\n", argv[0], ret);
+        return ret;
     };
-
+    return  0;
 
 }
 
