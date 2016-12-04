@@ -11,6 +11,22 @@ find_package(SDL2 REQUIRED)
 find_package(FFMPEG REQUIRED)
 include_directories(${PROJECT_BINARY_DIR}/lib)
 
+if(VISVID_NOC_FILE_DIALOG)
+include(ExternalProject)
+ExternalProject_Add(NOC_FILE_DIALOG
+        GIT_REPOSITORY "https://github.com/guillaumechereau/noc.git"
+        GIT_TAG "master"
+        UPDATE_COMMAND ""
+        PATCH_COMMAND ""
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdpartylibs/noc"
+        INSTALL_COMMAND ""
+
+        )
+
+endif()
+
 
 if(FFMPEG_FOUND AND SDL2_FOUND)
     add_executable(CreateVisual ${CreateVisual_src})
@@ -27,7 +43,7 @@ endif()
 
 if(VISVID_NOC_FILE_DIALOG)
     add_definitions(-DNOC_FILE_DIALOG_IMPLEMENTATION)
-    target_include_directories(CreateVisual PRIVATE ${PROJECT_SOURCE_DIR}/src/thirdpartylibs)
+    target_include_directories(CreateVisual PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdpartylibs)
 
     if(APPLE)
         find_library(cocoa_lib Cocoa)
@@ -37,6 +53,6 @@ if(VISVID_NOC_FILE_DIALOG)
     else()
         message(WARNING "Cannot use NOC file dialog library due to unsupported system")
     endif(APPLE)
-
+    add_dependencies(CreateVisual NOC_FILE_DIALOG)
     # TODO: Add WINDOWS and linux versions
 endif()
