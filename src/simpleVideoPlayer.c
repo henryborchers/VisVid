@@ -11,12 +11,12 @@
 
 int playVideoSimple(const char *filename) {
     DecoderContext      *decoderCtx = NULL;
-    AVFrame             *FF_frame = NULL;
+    AVFrame             *frame = NULL;
     SDL_Event           event;
     PlayerContext       playerContext;
+    int                 ret;
 
     decoder_init();
-    int ret;
 
     // initialize player
     player_init();
@@ -29,6 +29,7 @@ int playVideoSimple(const char *filename) {
     } else{
         puts("Video Opened");
     }
+
     // Load gui
     player_ctx_init(&playerContext);
     decoderContext_GetSize(decoderCtx, &playerContext.windowWidth, &playerContext.windowHeight);
@@ -40,11 +41,11 @@ int playVideoSimple(const char *filename) {
             break;
         }
 
-        ret = decoderContext_NextFrame(decoderCtx, &FF_frame);
-        if(ret < 0 || FF_frame == NULL){
+        ret = decoderContext_NextFrame(decoderCtx, &frame);
+        if(ret < 0 || frame == NULL){
             break;
         }
-        player_refresh(&playerContext, FF_frame);
+        player_refresh(&playerContext, frame);
     }
     puts("Closing window");
     player_destroy_window(&playerContext);
