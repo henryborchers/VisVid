@@ -11,6 +11,8 @@
 
 #define FILE_PATH_MAX 10000
 
+
+
 struct DecoderContext{
     AVCodecContext      *codecContext;
     AVFormatContext     *formatContext;
@@ -94,6 +96,17 @@ DecoderContext *decoderContext_Create(const char *filename) {
         av_log(NULL, AV_LOG_ERROR, "Unable to allocate codec context\n");
         return NULL;
     }
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION(57,0,0)
+    AVCodecContext *pCodecCtxOrg = NULL;
+    pCodecCtxOrg = tmp->formatContext->streams[tmp->video_stream_idx]->codec;
+    if((ret = avcodec_copy_context(tmp->codecContext, pCodecCtxOrg)) != 0){
+        char error_msg[1000];
+        av_strerror(ret, error_msg, 1000);
+        av_log(NULL, AV_LOG_ERROR, "%s\n", error_msg);
+    }
+#else
+
+
 
     if((ret = avcodec_parameters_to_context(tmp->codecContext, tmp->formatContext->streams[tmp->video_stream_idx]->codecpar)) < 0){
         char error_msg[1000];
@@ -101,6 +114,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
         av_log(NULL, AV_LOG_ERROR, "%s\n", error_msg);
         return NULL;
     }
+#endif
 
     if((ret = avcodec_open2(tmp->codecContext, decoder, NULL)) < 0){
         char error_msg[1000];
