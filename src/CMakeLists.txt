@@ -6,7 +6,7 @@ set(CreateVisual_src createVisual.c
         runPlayers.h
         simpleVideoPlayer.c simpleVideoPlayer.h
         generator.c generator.h
-        videoAndVisualPlayer.c videoAndVisualPlayer.h)
+        videoAndVisualPlayer.c videoAndVisualPlayer.h filedialog.c filedialog.h)
 find_package(SDL2 REQUIRED)
 find_package(FFMPEG REQUIRED)
 include_directories(${PROJECT_BINARY_DIR}/lib)
