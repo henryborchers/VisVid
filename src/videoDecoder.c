@@ -244,4 +244,5 @@ int decode(AVCodecContext *pContext, AVFrame *pFrame, int *got_frame, AVPacket *
     }
 
     return 0;
+#endif
 }
