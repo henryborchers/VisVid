@@ -96,7 +96,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
         av_log(NULL, AV_LOG_ERROR, "Unable to allocate codec context\n");
         return NULL;
     }
-#if LIBAVFORMAT_VERSION_INT < AV_VERSION(57,0,0)
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,0,0)
     AVCodecContext *pCodecCtxOrg = NULL;
     pCodecCtxOrg = tmp->formatContext->streams[tmp->video_stream_idx]->codec;
     if((ret = avcodec_copy_context(tmp->codecContext, pCodecCtxOrg)) != 0){
