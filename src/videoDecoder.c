@@ -222,6 +222,9 @@ bool fileExists(const char *filename) {
 
 
 int decode(AVCodecContext *pContext, AVFrame *pFrame, int *got_frame, AVPacket *pkt) {
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,0,0)
+    return avcodec_decode_video2(pContext, pFrame, got_frame, pkt);
+#else
     int ret;
 
     *got_frame = 0;
