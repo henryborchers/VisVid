@@ -3,9 +3,15 @@
 //
 
 #include <stdbool.h>
+#include <visBuffer.h>
+#include <visFrame.h>
+#include <visVisualization.h>
+#include <visView.h>
 #include "videoDecoder.h"
 #include "runPlayers.h"
 #include "ramp.h"
+#include "ffmpeg_converter.h"
+
 
 static int vidVis_init();
 static void vidVis_ctx_init(VidVisContext *ctx);
@@ -19,10 +25,17 @@ static bool quitCalled(SDL_Event *pEvent);
 int playVideoVis(const char *filename) {
     DecoderContext      *decoderCtx = NULL;
     AVFrame             *frame = NULL;
+    visProcessContext   processContext;
+    visView             *view = NULL;
+    VisYUVFrame         *frameBuffer = NULL;
+    visBuffer           *buffer = NULL;
     VidVisContext       ctx;
     SDL_Event           event;
     int                 res;
     visImageRGB         visualization;
+
+    int                 returncode = 0;
+
 
     decoder_init();
 
@@ -56,8 +69,6 @@ int playVideoVis(const char *filename) {
     };
 
 
-
-
     puts("Building Window");
 
     if((res = vidVis_build_window(&ctx, videoWidth, videoHeight)) != 0){
@@ -65,32 +76,124 @@ int playVideoVis(const char *filename) {
         return res;
     };
 
+
+    // build buffer with the size of the frame
+    puts("Creating buffer");
+    if((buffer = VisBuffer_Create((size_t)videoWidth)) == NULL){
+        fprintf(stderr, "Failed to create a New buffer");
+        return 1;
+    };
+
+    puts("Creating analysis frame buffer");
+    if((frameBuffer = VisYUVFrame_Create()) == NULL){
+        fprintf(stderr, "Failed to create a frame Buffer");
+        return 1;
+    };
+    puts("Setting frame buffer");
+    VisYUVFrame_SetSize(frameBuffer, videoWidth, videoHeight);
+
+
+    puts("Creating view");
+
+    view = VisView_Create(videoWidth, videoWidth);
+
+    puts("Configuring the process context");
+
+    // TODO: fix this API so that this doesn't have to be assigned this way.
+    processContext.processCb = visVisResult_CaculateBrightestOverWidth;
+
+    puts("Starting decoding loop");
     while(1){
+        visVisualResult *result = NULL;
+
         if(quitCalled(&event)){
             break;
         }
 
+        // Get a frame
         res = decoderContext_NextFrame(decoderCtx, &frame);
 
-        // TODO: Render visualization with real data
-        ramp(&visualization);
-
-
+        // If no frame is retrieved, rewind the video
         if(NULL == frame){
             decoderContext_Rewind(decoderCtx);
             continue;
         }
+
+        // If there is an error with decoding, stop!
         if(res < 0 || frame == NULL){
+            returncode = res;
             break;
         }
+
+        // Convert the ffmpeg frame into a frame that can be analyzed
+        if((res = ffmpeg2visframe(frameBuffer, frame)) != 0){
+            fprintf(stderr, "ffmpeg2visframe failed with error code %d.\n", res);
+            returncode = res;
+            break;
+        } else {
+            // Create a visualization result
+            if((result = VisVisualResult_Create()) == NULL){
+                returncode = -1;
+                fprintf(stderr, "VisVisualResult_Create Failed\n");
+                break;
+            };
+
+            // Configure it's size
+            if((res = VisVisualResult_SetSize(result, frame->width)) != 0){
+                returncode = res;
+                fprintf(stderr, "VisVisualResult_SetSize Failed\n");
+                break;
+            }
+            // process it and save it to a result
+            if((res = visVisProcess(result, frameBuffer, &processContext)) != 0){
+                returncode = res;
+                fprintf(stderr, "visVisProcess Failed\n");
+                break;
+            };
+
+            // Add result to buffer
+            if((res =  visBuffer_PushBackResult(buffer, result)) != 0){
+                returncode = res;
+                fprintf(stderr, "visBuffer_PushBackResult Failed\n");
+                break;
+            };
+
+            // update a view of the buffer
+            if((res = visView_Update(view, buffer)) != 0){
+                returncode = res;
+                fprintf(stderr, "visView_Update Failed with code %d.\n", res);
+                break;
+            }
+//
+//            // Render a picture of the view to the visualization image
+            if((res = visViewRGB_GenerateRGBA(&visualization, view)) != 0){
+                returncode = res;
+                fprintf(stderr, "visViewRGB_GenerateRGBA Failed with code %d.\n", res);
+                break;
+            }
+//            ramp(&visualization);
+//            vertical_ramp(&visualization);
+
+        }
+
+
         vidVis_refresh(&ctx, frame, &visualization);
     }
+
+    puts("Destroying Frame buffer");
+    VisYUVFrame_Destroy(&frameBuffer);
+
+    puts("Destroying buffer");
+    VisBuffer_Destroy(&buffer);
 
     puts("Destroying Window");
     vidVis_destroy_window(&ctx);
 
+    puts("Destroying view");
+    VisView_Destroy(&view);
+
     vidVis_cleanup();
-    return 0;
+    return returncode;
 }
 
 bool quitCalled(SDL_Event *pEvent) {
@@ -295,7 +398,7 @@ int vidVis_refresh(VidVisContext *ctx, AVFrame *pFrame, visImageRGB *texture) {
     SDL_UpdateTexture(ctx->visualization.texture, NULL, texture->plane, texture->pitch);
 
     // Draw the visualization
-    SDL_RenderCopy(ctx->renderer, ctx->visualization.texture, &visualizationOrig, &visualizationWidget);
+    SDL_RenderCopy(ctx->renderer, ctx->visualization.texture, NULL, &visualizationWidget);
 
     // Draw the video
     SDL_RenderCopy(ctx->renderer, ctx->video.texture, &videoOrig, &videoWidget);
