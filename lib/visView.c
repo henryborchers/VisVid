@@ -31,9 +31,9 @@ void VisView_Destroy(visView **pvd) {
     free(*pvd);
     *pvd = NULL;
 }
-
+// FIXME visView_Update is broken
 int visView_Update(visView *pView, visBuffer *buffer){
-    size_t x;
+    int x;
     int y;
     int valid_result = 0;
     size_t buffersize = visBuffer_getLength(buffer);
@@ -70,7 +70,7 @@ int visView_Update(visView *pView, visBuffer *buffer){
 }
 
 int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView){
-//    FIXME: refactor to use a callback for color scheme
+//    TODO: refactor to use a callback for color scheme
 
     // assert that neither pointer is NULL.
 
@@ -92,8 +92,10 @@ int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView){
 
     for (int y = 0; y < out->height; ++y) {
         for (int x = 0; x < out->width; ++x) {
+//            PixelValue value = pView->data[y + pView->width * x];
             PixelValue value = pView->data[x + pView->width * y];
             visImageRGB_WritePixel(out, x, y, value, value, value, value);
+//            visImageRGB_WritePixel(out, x, y, 0, x, (uint8_t) (((float) x / out->width - value) * 255), 255);
         }
     }
     return 0;
