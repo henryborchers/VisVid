@@ -121,3 +121,104 @@ TEST_F(visViewFunctionsFullBuffer1, Create_visViewRGBA) {
         }
     }
 }
+
+class visViewFunctionsFullBuffer_staticramp : public ::testing::Test {
+// Generate a buffer full of result values that go from 0 to 255 vertically.
+// Pixel values should remain the same from left to right.
+// However, the value of the pixels from the bottom to the top should be a gradient.
+// 0 on the top and 255 on the bottom.
+protected:
+    visView         *pvid;
+    visBuffer       *buffer;
+    visImageRGB     image;
+    const int FRAME_WIDTH = 255;
+    const int TOTAL_FRAMES = 255;
+
+//    TODO: visViewFunctionsFullBuffer_ramp test
+    virtual void SetUp() {
+
+        // Create a buffer for frames that are 255 pixels wide
+        buffer= VisBuffer_Create(FRAME_WIDTH);
+
+        // Create a view that renders to 255 pixels by 255 wide
+        pvid = VisView_Create(FRAME_WIDTH, FRAME_WIDTH);
+
+        // Allocate a new image
+        visImageRGB_Alloc(&image, FRAME_WIDTH, FRAME_WIDTH);
+
+        // Create a new result container that contains enough info for 255 data points
+        for(int i = 0; i < TOTAL_FRAMES; i++){
+
+            visVisualResult *result = NULL;
+            result = VisVisualResult_Create();
+            assert(0 == VisVisualResult_SetSize(result, FRAME_WIDTH));
+
+            // Set the value from of those data points from 0 to 255.
+            PixelValue data_points[FRAME_WIDTH];
+            for(PixelValue x = 0; x < FRAME_WIDTH; x++){
+                data_points[x] = x;
+            }
+
+            assert(data_points[0] == 0);
+            assert(data_points[254] == 254);
+            VisVisualResult_SetData(result, data_points, FRAME_WIDTH);
+
+            visBuffer_PushBackResult(buffer, result);
+        }
+    visView_Update(pvid, buffer);
+    visViewRGB_GenerateRGBA(&image, pvid);
+    }
+
+    virtual void TearDown() {
+        VisView_Destroy(&pvid);
+        VisBuffer_Destroy(&buffer);
+    }
+};
+
+TEST_F(visViewFunctionsFullBuffer_staticramp, alpha) {
+
+    for(int x = 0; x < TOTAL_FRAMES; x++){
+        for(int y = 0; y < FRAME_WIDTH; ++y) {
+            uint8_t result;
+            visImageRGB_readPixel(&image, x, y, NULL, NULL, NULL, &result);
+            ASSERT_EQ(result, y) << "Test failed because the value of the pixel's alpha channel in the ramp does not match it's height.";;
+        }
+    }
+
+}
+
+TEST_F(visViewFunctionsFullBuffer_staticramp, blue) {
+
+    for(int x = 0; x < TOTAL_FRAMES; x++){
+        for(int y = 0; y < FRAME_WIDTH; ++y) {
+            uint8_t result;
+            visImageRGB_readPixel(&image, x, y, NULL, NULL,  &result, NULL);
+            ASSERT_EQ(result, y) << "Test failed because the value of the pixel's blue channel in the ramp does not match it's height.";
+        }
+    }
+
+}
+
+TEST_F(visViewFunctionsFullBuffer_staticramp, red) {
+
+    for(int x = 0; x < TOTAL_FRAMES; x++){
+        for(int y = 0; y < FRAME_WIDTH; ++y) {
+            uint8_t result;
+            visImageRGB_readPixel(&image, x, y, NULL, &result, NULL, NULL);
+            ASSERT_EQ(result, y) << "Test failed because the value of the pixel's red channel in the ramp does not match it's height.";
+        }
+    }
+
+}
+
+TEST_F(visViewFunctionsFullBuffer_staticramp, green) {
+
+    for(int x = 0; x < TOTAL_FRAMES; x++){
+        for(int y = 0; y < FRAME_WIDTH; ++y) {
+            uint8_t result;
+            visImageRGB_readPixel(&image, x, y, &result, NULL, NULL, NULL);
+            ASSERT_EQ(result, y) << "Test failed because the value of the pixel's green channel in the ramp does not match it's height.";
+        }
+    }
+
+}
