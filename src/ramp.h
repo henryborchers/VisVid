@@ -8,4 +8,5 @@
 #include "visImageWriter.h"
 
 int ramp(visImageRGB *t);
+int vertical_ramp(visImageRGB *t);
 #endif //VISVID_DUMMY_H
