@@ -49,10 +49,13 @@ int visImageRGB_Alloc(visImageRGB *t, int width, int height);
  */
 int visImageRGB_WritePixel(visImageRGB *t, int pixelX, int pixelY, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
+int visImageRGB_readPixel(visImageRGB *t, int pixelX, int pixelY, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
+
 /**
  * Frees up the data being used by a VisImageRGB object
  * @param t VisImageRGB to write pixel data to
  */
 void visImageRGB_FreeData(visImageRGB *t);
+
 
 #endif //VISVID_VISIMAGES_H
