@@ -2,6 +2,7 @@
 // Created by Borchers, Henry Samuel on 10/22/16.
 //
 #include <errno.h>
+#include <stdio.h>
 #include "visFrame.h"
 #include "visVisualization.h"
 int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame){
@@ -36,13 +37,17 @@ int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame
     if(rc != 0){
         return rc;
     };
-
     return 0;
 }
 
-int visVisProcess(visBuffer *pRes, VisYUVFrame *pFrame, visProcessContext *processContext) {
+int visVisProcess(visVisualResult *pRes, VisYUVFrame *pFrame, visProcessContext *processContext) {
+    int res;
     if(pRes == NULL || pFrame == NULL || processContext == NULL || processContext->processCb == NULL){
         return EFAULT;
+    }
+
+    if((res = processContext->processCb(pRes, pFrame)) != 0){
+        return res;
     }
     return 0;
 }
