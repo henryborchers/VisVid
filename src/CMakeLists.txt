@@ -1,4 +1,4 @@
-set(CreateVisual_src createVisual.c
+set(CreateVisual_src main.c
         gui.c gui.h
         ramp.c ramp.h
         videoDecoder.c videoDecoder.h
@@ -6,7 +6,7 @@ set(CreateVisual_src createVisual.c
         runPlayers.h
         simpleVideoPlayer.c simpleVideoPlayer.h
         generator.c generator.h
-        videoAndVisualPlayer.c videoAndVisualPlayer.h)
+        videoAndVisualPlayer.c videoAndVisualPlayer.h ffmpeg_converter.c ffmpeg_converter.h)
 
 find_package(SDL2 REQUIRED)
 find_package(FFMPEG REQUIRED)
