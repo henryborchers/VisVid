@@ -130,8 +130,12 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
             }
         }
     }
+    // copy the result data into a new node
     visBufferNode *node = NULL;
     node = CreateVisBufferNode(pRes);
+    if(NULL == node){
+        return -1;
+    }
     return visBufferPushBack(buffer, node);
 }
 
@@ -188,11 +192,20 @@ void VisBufferNode_Destroy(visBufferNode **node) {
 }
 
 visBufferNode *CreateVisBufferNode(visVisualResult *pRes) {
+
     visBufferNode *node = NULL;
     node = malloc(sizeof(visBuffer));
     node->previous = NULL;
     node->next = NULL;
-    node->result = pRes;
+    int length = 0;
+
+    // Copy the results data from the original to store in the buffer
+    VisVisualResult_GetSize(&length, pRes);
+    node->result = VisVisualResult_Create();
+    VisVisualResult_SetSize(node->result, length);
+    if(VisVisualResult_copy(node->result, pRes) != 0){
+        return NULL;
+    };
     node->position = 0;
     return node;
 }
@@ -202,12 +215,14 @@ visVisualResult *visBufferNodeResult(visBufferNode *pNode) {
 }
 
 visBufferNode * _BufferNode_get(visBuffer *buffer, size_t index) {
-    if(buffer->bufferLen < index){
+    if(buffer->bufferLen <= index){
         return NULL;
     }
 
     visBufferNode *n = visBufferFront(buffer);
-
+    if(NULL == n){
+        return NULL;
+    }
     while(n->position < index){
         n = visBufferNextNode(n);
     }
@@ -217,7 +232,10 @@ visBufferNode * _BufferNode_get(visBuffer *buffer, size_t index) {
     return NULL;
 }
 
-size_t _nodePosition(visBufferNode *node) {
+int _nodePosition(visBufferNode *node) {
+    if(NULL == node){
+        return -1;
+    }
     return node->position;
 }
 
@@ -225,20 +243,24 @@ int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
     int x;
     visBufferNode *node = NULL;
     node = _BufferNode_get(buffer, index);
+    int length = 0;
     if(node == NULL){
         return -1;
     } else {
         if(node->result == NULL){
-            return 0;
+            return 1;
         }
-        for(x = 0; x < buffer->bufferWidth; x++){
-            
-            if(VisVisualResult_GetValue(pRes, node->result, x) != 0){
+        VisVisualResult_GetSize(&length, node->result);
+        for(x = 0; x < length; x++){
+            PixelValue value;
+            if(VisVisualResult_GetValue(&value, node->result, x) != 0){
                 return -1;
             };
+            pRes[x] = value;
 
 
         }
+        return 0;
     }
     return 1;
 }

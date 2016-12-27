@@ -71,7 +71,7 @@ void VisBufferNode_Destroy(visBufferNode **node);
 
 visBufferNode * _BufferNode_get(visBuffer *buffer, size_t index);
 
-size_t _nodePosition(visBufferNode *node);
+int _nodePosition(visBufferNode *node);
 /**
  *
  * @param pRes
