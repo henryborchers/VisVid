@@ -109,7 +109,7 @@ TEST_F(visViewFunctionsFullBuffer1, Create_visViewRGBA) {
     visImageRGB imageRGB;
 
     ASSERT_EQ(visImageRGB_Alloc(&imageRGB, pvid->width, pvid->height), 0);
-    ASSERT_EQ(visViewRGB_GenerateRGBA(&imageRGB, pvid), 0);
+    ASSERT_EQ(visViewRGB_GenerateRGBA(&imageRGB, pvid, visViewRGBA_value2BW), 0);
 
     for (int y = 0; y < imageRGB.height; ++y) {
         for (int x = 0; x < imageRGB.width; ++x) {
@@ -166,7 +166,7 @@ protected:
             visBuffer_PushBackResult(buffer, result);
         }
     visView_Update(pvid, buffer);
-    visViewRGB_GenerateRGBA(&image, pvid);
+    visViewRGB_GenerateRGBA(&image, pvid, visViewRGBA_value2BW);
     }
 
     virtual void TearDown() {
