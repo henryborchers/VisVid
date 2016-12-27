@@ -40,6 +40,8 @@ void VisView_Destroy(visView **pvd);
  * @return Returns 0 on success.
  */
 int visView_Update(visView *pView, visBuffer *buffer);
+int visView_Update2(visView *pView, visBuffer *buffer);
+int visView_Update3(visView *pView, visBuffer *buffer);
 
 /**
  * Creates a Black and white image in RGBA888 format to be used with other tools.
@@ -47,6 +49,8 @@ int visView_Update(visView *pView, visBuffer *buffer);
  * @param pView A pointer to the view image.
  * @return Returns zero on success.
  */
-int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView);
-
+//int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView);
+int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView,
+                             int(*callback)(PixelValue result, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a));
+int visViewRGBA_value2BW(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
 #endif //VISVID_VISVIEW_H
