@@ -10,23 +10,19 @@
 #include "visResult.h"
 
 
-/**
- * @struct visVisualResult
- * @brief  Contains the calculated data from a visualization calculation.
- */
-struct visVisualResult{
-    bool ready;         /**< Declares if a result has been fully calculated.*/
-    int size;           /**< The number of pixels wide the result is. */
-    PixelValue *data;   /**< Raw Data */
-};
 
 visVisualResult *VisVisualResult_Create() {
     visVisualResult *newResult = NULL;
     newResult = (visVisualResult*) malloc(sizeof(visVisualResult));
+    VisVisualResult_Init(newResult);
+    return newResult;
+}
+
+int VisVisualResult_Init(visVisualResult *newResult) {
     newResult->ready = false;
     newResult->size = -1;
     newResult->data = NULL;
-    return newResult;
+    return 0;
 }
 
 void VisVisualResult_Destroy(visVisualResult **pRes) {
@@ -93,5 +89,18 @@ int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t leng
     }
     memcpy(pRes->data, data, sizeof(PixelValue) * length);
     pRes->ready = true;
+    return 0;
+}
+
+int VisVisualResult_copy(visVisualResult *dst, visVisualResult *src) {
+    if(NULL == src){
+        return 1;
+    }
+    if(src->size != dst->size){
+        return -1;
+
+    }
+    memcpy(dst->data, src->data, sizeof(PixelValue) * src->size);
+    dst->ready = src->ready;
     return 0;
 }

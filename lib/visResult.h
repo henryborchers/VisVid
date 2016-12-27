@@ -10,6 +10,17 @@
 #include <stddef.h>
 #include "visTypes.h"
 
+
+
+/**
+ * @struct visVisualResult
+ * @brief  Contains the calculated data from a visualization calculation.
+ */
+struct visVisualResult{
+    bool ready;         /**< Declares if a result has been fully calculated.*/
+    int size;           /**< The number of pixels wide the result is. */
+    PixelValue *data ;   /**< Raw Data */
+};
 typedef struct visVisualResult visVisualResult;
 
 /**
@@ -63,4 +74,7 @@ int VisVisualResult_GetValue(PixelValue *value, visVisualResult *pRes, int offse
  */
 int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length);
 
+int VisVisualResult_Init(visVisualResult *newResult);
+
+int VisVisualResult_copy(visVisualResult *dst, visVisualResult *src);
 #endif //VISVID_VISRESULT_H
