@@ -22,6 +22,8 @@ static void vidVis_cleanup();
 
 static bool quitCalled(SDL_Event *pEvent);
 
+static int generate_fakeresult(visVisualResult *pResult);
+
 int playVideoVis(const char *filename) {
     DecoderContext      *decoderCtx = NULL;
     AVFrame             *frame = NULL;
@@ -33,6 +35,7 @@ int playVideoVis(const char *filename) {
     SDL_Event           event;
     int                 res;
     visImageRGB         visualization;
+    visVisualResult     result;
 
     int                 returncode = 0;
 
@@ -103,8 +106,20 @@ int playVideoVis(const char *filename) {
     processContext.processCb = visVisResult_CaculateBrightestOverWidth;
 
     puts("Starting decoding loop");
+    if((res = VisVisualResult_Init(&result)) != 0 ) {
+        fprintf(stderr, "VisVisualResult_Init Failed with code %d\n", res);
+        return res;
+    }
+
+    //             Configure the size of the result data set
+    if((res = VisVisualResult_SetSize(&result, videoWidth)) != 0){
+        fprintf(stderr, "VisVisualResult_SetSize Failed\n");
+        return res;
+    }
+
+
+
     while(1){
-        visVisualResult *result = NULL;
 
         if(quitCalled(&event)){
             break;
@@ -131,49 +146,33 @@ int playVideoVis(const char *filename) {
             returncode = res;
             break;
         } else {
-            // Create a visualization result
-            if((result = VisVisualResult_Create()) == NULL){
-                returncode = -1;
-                fprintf(stderr, "VisVisualResult_Create Failed\n");
-                break;
-            };
 
-            // Configure it's size
-            if((res = VisVisualResult_SetSize(result, frame->width)) != 0){
-                returncode = res;
-                fprintf(stderr, "VisVisualResult_SetSize Failed\n");
-                break;
-            }
-            // process it and save it to a result
-            if((res = visVisProcess(result, frameBuffer, &processContext)) != 0){
+            // process the frame and save the data to a result data set
+            if((res = visVisProcess(&result, frameBuffer, &processContext)) != 0){
                 returncode = res;
                 fprintf(stderr, "visVisProcess Failed\n");
                 break;
             };
 
-            // Add result to buffer
-            if((res =  visBuffer_PushBackResult(buffer, result)) != 0){
+            // Add result data set to buffer
+            if((res =  visBuffer_PushBackResult(buffer, &result)) != 0){
                 returncode = res;
                 fprintf(stderr, "visBuffer_PushBackResult Failed\n");
                 break;
             };
 
             // update a view of the buffer
-            if((res = visView_Update(view, buffer)) != 0){
+            if((res = visView_Update3(view, buffer)) != 0){
                 returncode = res;
                 fprintf(stderr, "visView_Update Failed with code %d.\n", res);
                 break;
             }
-//
 //            // Render a picture of the view to the visualization image
-            if((res = visViewRGB_GenerateRGBA(&visualization, view)) != 0){
+            if((res = visViewRGB_GenerateRGBA(&visualization, view, visViewRGBA_value2BW)) != 0){
                 returncode = res;
                 fprintf(stderr, "visViewRGB_GenerateRGBA Failed with code %d.\n", res);
                 break;
             }
-//            ramp(&visualization);
-//            vertical_ramp(&visualization);
-
         }
 
 
@@ -194,6 +193,24 @@ int playVideoVis(const char *filename) {
 
     vidVis_cleanup();
     return returncode;
+}
+
+int generate_fakeresult(visVisualResult *pResult) {
+    static uint8_t value = 0;
+    int length = 0;
+    VisVisualResult_GetSize(&length, pResult);
+    PixelValue data[length];
+
+
+    for (int i = 0; i < length; ++i) {
+//        data[i] = value;
+        int location = length - i - 1;
+        uint8_t n_value = ((float)i/length * 256) + value;
+        data[location] = n_value;
+    }
+    VisVisualResult_SetData(pResult, data, length);
+    value++;
+    return 0;
 }
 
 bool quitCalled(SDL_Event *pEvent) {
