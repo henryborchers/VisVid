@@ -5,9 +5,7 @@
 #include <gtest/gtest.h>
 
 extern "C"{
-#include "visView.h"
-#include "visFrame.h"
-#include "visVisualization.h"
+#include "visvid.h"
 }
 
 class VisualizationSolidColor : public ::testing::Test {

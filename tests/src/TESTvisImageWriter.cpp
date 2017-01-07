@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 extern "C"{
-#include "visImageWriter.h"
+#include "visvid.h"
 }
 
 TEST(visImageWriterSetup, visAllocImageRGB_stack){

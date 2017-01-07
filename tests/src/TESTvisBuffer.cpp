@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 extern "C"{
-#include "visBuffer.h"
+#include "visvid.h"
 }
 
 
@@ -24,7 +24,7 @@ class visBufferFunctions : public ::testing::Test {
 protected:
     visBuffer *buffer;
     virtual void SetUp() {
-        buffer = VisBuffer_Create(0);
+        buffer = VisBuffer_Create(10);
     }
 
     virtual void TearDown() {

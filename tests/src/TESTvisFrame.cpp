@@ -6,16 +6,12 @@
 #include <gtest/gtest.h>
 
 extern "C"{
-#include "visFrame.h"
+#include "visvid.h"
 }
 
 
 using namespace std;
 
-//
-//TEST(visFrame, version) {
-//    EXPECT_EQ(VISFRAME_VERSION, VISFRAME_VERSION);
-//}
 
 struct visPixelYUVFunctions : public ::testing::Test{
     PixelYUV *pixel;

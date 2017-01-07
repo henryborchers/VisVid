@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 extern "C"{
-#include "visView.h"
+#include "visvid.h"
 }
 
 

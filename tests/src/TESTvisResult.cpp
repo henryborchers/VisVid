@@ -5,7 +5,7 @@
 
 
 extern "C"{
-#include "visResult.h"
+#include "visvid.h"
 }
 
 TEST(visVisualResultSetup, visVisualResultSetup_Create_Test) {
