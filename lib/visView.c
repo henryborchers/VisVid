@@ -125,7 +125,7 @@ int visView_Update(visView *pView, visBuffer *buffer){
             if(valid_result == 1){
                 pView->data[x + pView->width * y] = currentSlice[y];
             } else {
-                fprintf(stderr, "Invalid data\n");
+//                fprintf(stderr, "Invalid data\n");
                 // If the result isn't a true result (for example: there is no data calculated yet), do one of the following.
                 // If it's the first one, render it out as black.
                 if( x == 0){
