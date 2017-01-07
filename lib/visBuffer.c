@@ -200,12 +200,16 @@ visBufferNode *CreateVisBufferNode(visVisualResult *pRes) {
     int length = 0;
 
     // Copy the results data from the original to store in the buffer
-    VisVisualResult_GetSize(&length, pRes);
     node->result = VisVisualResult_Create();
+    VisVisualResult_GetSize(&length, pRes);
     VisVisualResult_SetSize(node->result, length);
-    if(VisVisualResult_copy(node->result, pRes) != 0){
-        return NULL;
-    };
+
+    // Only copy the pRes results if they are real and not null
+    if(pRes){
+        if(VisVisualResult_copy(node->result, pRes) != 0){
+            return NULL;
+        };
+    }
     node->position = 0;
     return node;
 }
