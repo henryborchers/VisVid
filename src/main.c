@@ -3,7 +3,7 @@
 //
 
 #include <stdio.h>
-#include "visVersion.h"
+#include "visvid.h"
 #include "runPlayers.h"
 #include "filedialog.h"
 
