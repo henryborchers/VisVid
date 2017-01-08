@@ -68,4 +68,5 @@ if(VISVID_NOC_FILE_DIALOG)
     target_link_libraries(CreateVisual DialogBox)
 endif(VISVID_NOC_FILE_DIALOG)
 install(TARGETS CreateVisual
-        RUNTIME DESTINATION bin)
+        RUNTIME DESTINATION bin
+        COMPONENT Application)
