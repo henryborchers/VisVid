@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "visView.h"
+#define NUM_COLORS 4
 
 static float min(float d, float d1);
 
@@ -198,7 +199,7 @@ int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *
     // FIXME: REPLACE WITH ORIGINAL FUNCTION
     // This is temp code that was modified from a web tutorial. Replace this with an original callback function.
     float i = (float)value / (float)255;
-    const int NUM_COLORS = 4;
+
     static float color[NUM_COLORS][3] = { {0,0,0}, {1,0.2,0.2}, {1,1,0.2}, {1,1,1} };
     // A static array of 4 colors:  (blue,   green,  yellow,  red) using {r,g,b} for each.
 
