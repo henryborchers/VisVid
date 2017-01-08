@@ -8,7 +8,7 @@
 int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src) {
     int res;
 
-    AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(src->format);
+    AVPixFmtDescriptor *desc = (AVPixFmtDescriptor *) av_pix_fmt_desc_get(src->format);
     for(int y = 0; y < src->height; y++){
         for(int x = 0; x < src->width; x++){
 
