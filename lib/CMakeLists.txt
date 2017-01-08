@@ -18,4 +18,5 @@ add_library(visvid SHARED ${libvisvid})
 install(TARGETS visvid visvidStatic
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib/static)
+        ARCHIVE DESTINATION lib/static
+        COMPONENT LIBVISVID)
