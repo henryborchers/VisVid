@@ -10,6 +10,8 @@ if(VISVID_BUILDDOCS)
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                 COMMENT "Generating documentation" VERBATIM)
 
-
+        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/documentation/html
+                DESTINATION share/doc
+                COMPONENT Documentation)
     endif(DOXYGEN_FOUND)
 endif(VISVID_BUILDDOCS)
