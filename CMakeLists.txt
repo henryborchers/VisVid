@@ -34,3 +34,6 @@ include(cmake/buildDocumentation.cmake)
 
 # Build Swig Bindings
 include(swig/swig.cmake)
+
+# Enable packaging
+include(cpack)
