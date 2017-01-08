@@ -12,6 +12,7 @@
 #include "ramp.h"
 #include "ffmpeg_converter.h"
 
+#define NUM_COLORS 4
 
 static int vidVis_init();
 static void vidVis_ctx_init(VidVisContext *ctx);
@@ -493,7 +494,7 @@ int variable_color(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t
     // FIXME: REPLACE WITH ORIGINAL FUNCTION
     // This is temp code that was modified from a web tutorial. Replace this with an original callback function.
     float i = (float)value / (float)255;
-    const int NUM_COLORS = 4;
+//    const int NUM_COLORS = 4;
 //    static float const STARTING_COLORS[NUM_COLORS][3] = { {0,0,0}, {0.2,0.2,0.3}, {0.7,0.7,0.5}, {1,1,1} };
 //    static float const STARTING_COLORS[NUM_COLORS][3] = { {0,0,0}, {0.0,0.5,0.5}, {0.9,0.6,0.6}, {1,1,1} };
     static float const STARTING_COLORS[NUM_COLORS][3] = { {0,0,0}, {0.5,0.5,0.5}, {0.9,0.9,0.9}, {1,1,1} };
