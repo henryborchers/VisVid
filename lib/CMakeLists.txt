@@ -11,4 +11,11 @@ set(libvisvid
         visUtils.h)
 configure_file("${PROJECT_SOURCE_DIR}/lib/visVersion.h.in"
         "${PROJECT_SOURCE_DIR}/lib/visVersion.h")
-add_library(visvid ${libvisvid})
+
+add_library(visvidStatic STATIC ${libvisvid})
+add_library(visvid SHARED ${libvisvid})
+
+install(TARGETS visvid visvidStatic
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
