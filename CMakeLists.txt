@@ -19,6 +19,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 set(VISVID_BUILDDOCS ON CACHE BOOL "Build Doxygen documentation")
 set(VISVID_NOC_FILE_DIALOG ON CACHE BOOL "Include NOC_FILE_DIALOG library")
 set(VISVID_TESTS ON CACHE BOOL "Build Tests")
+set(VISVID_PACKAGE ON CACHE BOOL "Enable CPack")
 
 enable_testing()
 add_subdirectory(lib)
@@ -35,5 +36,13 @@ include(cmake/buildDocumentation.cmake)
 # Build Swig Bindings
 include(swig/swig.cmake)
 
-# Enable packaging
-include(cpack)
+if (VISVID_PACKAGE)
+    set(CPACK_PACKAGE_NAME "CreateVisual")
+    set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "Create Visual")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/license.txt")
+    set(CPACK_PACKAGE_EXECUTABLES CreateVisual "Test Visualzations")
+
+    # Enable packaging
+    include(cpack)
+
+endif ()
