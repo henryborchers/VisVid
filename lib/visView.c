@@ -7,8 +7,10 @@
 #include <memory.h>
 #include <errno.h>
 #include <stdio.h>
+#include <math.h>
 #include "visView.h"
 
+static float min(float d, float d1);
 
 visView *VisView_Create(int width, int height) {
     visView *new_visView = NULL;
@@ -183,6 +185,40 @@ int visViewRGBA_value2BW(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, u
     *r = value;
     *g = value;
     *b = value;
+    *a = value;
+    return 0;
+}
+
+float min(float d, float d1) {
+
+    return (d < d1) ? d: d1;;
+}
+
+int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
+    // FIXME: REPLACE WITH ORIGINAL FUNCTION
+    // This is temp code that was modified from a web tutorial. Replace this with an original callback function.
+    float i = (float)value / (float)255;
+    const int NUM_COLORS = 4;
+    static float color[NUM_COLORS][3] = { {0,0,0}, {1,0.2,0.2}, {1,1,0.2}, {1,1,1} };
+    // A static array of 4 colors:  (blue,   green,  yellow,  red) using {r,g,b} for each.
+
+    int idx1;        // |-- Our desired color will be between these two indexes in "color".
+    int idx2;        // |
+    float fractBetween = 0;  // Fraction between "idx1" and "idx2" where our value is.
+
+    if(i <= 0)      {  idx1 = idx2 = 0;            }    // accounts for an input <=0
+    else if(i>= 1)  {  idx1 = idx2 = NUM_COLORS-1; }    // accounts for an input >=0
+    else
+    {
+        i = i * (NUM_COLORS-1);        // Will multiply value by 3.
+        idx1  = (int)floor(i);                  // Our desired color will be after this index.
+        idx2  = idx1+1;                        // ... and before this index (inclusive).
+        fractBetween = i - (float)(idx1);    // Distance between the two indexes (0-1).
+    }
+
+    *r = (uint8_t)(value * min(1.0f, (color[idx2][0] - color[idx1][0])*fractBetween + color[idx1][0]));
+    *g = (uint8_t)(value * min(1.0f, (color[idx2][1] - color[idx1][1])*fractBetween + color[idx1][1]));
+    *b = (uint8_t)(value * min(1.0f, (color[idx2][2] - color[idx1][2])*fractBetween + color[idx1][2]));
     *a = value;
     return 0;
 }
