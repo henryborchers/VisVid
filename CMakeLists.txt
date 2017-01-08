@@ -47,10 +47,8 @@ if (VISVID_PACKAGE)
     set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/license.txt")
     set(CPACK_COMPONENT_LIBVISVID_REQUIRED TRUE)
 
-    if(APPLICATION_TESTVISUALS)
-        set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "Create Visual")
-        set(CPACK_PACKAGE_EXECUTABLES CreateVisual "Test Visualzations")
-    endif(APPLICATION_TESTVISUALS)
+    set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "Create Visual")
+    set(CPACK_PACKAGE_EXECUTABLES CreateVisual "Test Visualzations")
 
 
     # Enable packaging
