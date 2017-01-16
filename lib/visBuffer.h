@@ -12,19 +12,32 @@
 #define VISVID_VISBUFFER_H
 
 #include "visResult.h"
+#include "visUtils.h"
+
 
 typedef struct visBufferNode visBufferNode;
 typedef struct visBuffer visBuffer;
 
 /**
  * @fn visBuffer *VisBuffer_Create(size_t width);
+ * @deprecated Use VisBuffer_Create2() instead.
  * @brief Creates a new visBuffer on the heap.
  * @param width Number of pixels used by each result slice that will be stored in the buffer.
  * @return Returns a pointer the new visBuffer.
  * @note You are responsible for freeing this data when you are done with it. Use DestroyVisBuffer() to release any
  * memory reserved by this.
  */
-visBuffer *VisBuffer_Create(size_t width);
+DEPRECATED visBuffer *VisBuffer_Create(size_t width);
+
+/**
+ *
+ * @param width Number of pixels used by each result slice that will be stored in the buffer.
+ * @param bufferSize The size of a buffer. If bufferSize is 0, the buffer size is unlimited.
+ * @return Returns a pointer the new visBuffer.
+ * @note You are responsible for freeing this data when you are done with it. Use DestroyVisBuffer() to release any
+ * memory reserved by this.
+ */
+visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize);
 
 /**
  * Cleans up and destroys the given visBuffer.
@@ -62,6 +75,7 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
  */
 visVisualResult *visBuffer_PopResult(visBuffer *buffer);
 
+visVisualResult *visBuffer_PopShiftResult(visBuffer *buffer);
 
 /**
  * Cleans up the data in a bufferNode.

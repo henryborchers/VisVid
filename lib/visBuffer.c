@@ -22,6 +22,7 @@ struct visBufferNode{
  * @brief Used to store the sequence of calculation results from the visualization.
  */
 struct visBuffer{
+    size_t bufferMaxSize;               /**< Number of nodes in the buffer.*/
     size_t bufferLen;               /**< Number of nodes in the buffer.*/
     size_t bufferWidth;             /**< The resolution of the calculations*/
     visBufferNode *first;           /**< First node in the buffer*/
@@ -77,7 +78,9 @@ static visBufferNode *CreateVisBufferNode(visVisualResult *pRes);
  * @return Returns a pointer to visVisualResult.
  */
 static visVisualResult *visBufferNodeResult(visBufferNode *pNode);
+static int renumber(visBuffer *pBuffer);
 
+static int shift_left(visBuffer *pBuffer);
 
 visBuffer *VisBuffer_Create(size_t width) {
     visBuffer *buffer = NULL;
@@ -161,7 +164,67 @@ visVisualResult *visBuffer_PopResult(visBuffer *buffer) {
     return visBufferNodeResult(node);
 }
 
-visBufferNode *visBufferPop(visBuffer *buffer) {
+
+int renumber(visBuffer *pBuffer) {
+    visBufferNode *current = visBufferFront(pBuffer);
+    if(NULL == current){
+        return 0;
+    }
+    size_t last_position = current->position;
+    current->position = 0;
+    while(current){
+        if(current->position == 0){
+            current = current->next;
+            continue;
+        }
+        current->position = last_position;
+        last_position = current->position;
+        current = current->next;
+    }
+    return 0;
+}
+
+visVisualResult *visBuffer_PopShiftResult(visBuffer *buffer) {
+
+    visBufferNode   *node = NULL;
+    visVisualResult *result = NULL;
+
+    node = visBufferPop(buffer);
+    if(NULL == node){
+        return NULL;
+    }
+    result = visBufferNodeResult(node);
+
+    // shift pointers to the data left
+    if(renumber(buffer) != 0){
+        return NULL;
+    } else{
+
+       return result;
+    }
+}
+
+int shift_left(visBuffer *pBuffer) {
+    visBufferNode *front = NULL;
+    visBufferNode *current = NULL;
+    visBufferNode *next= NULL;
+
+    front = visBufferFront(pBuffer);
+    current = front;
+    while(current){
+        current->position--;
+        if(!current->next){
+            current->result = front->result;
+            break;
+        }
+        next = visBufferNextNode(current);
+        current->result = next->result;
+        current = next;
+    }
+    return 0;
+}
+
+visBufferNode * visBufferPop(visBuffer *buffer) {
     visBufferNode *rNode = NULL;
 
     if(visBuffer_isEmpty(buffer)){
@@ -170,10 +233,17 @@ visBufferNode *visBufferPop(visBuffer *buffer) {
 
     rNode = visBufferFront(buffer);
 
-    buffer->first = visBufferNextNode(rNode);
-    buffer->first = rNode->next;
-    buffer->bufferLen--;
+    buffer->first = visBufferNextNode(buffer->first);
+//    buffer->first = rNode->next;
+    if(buffer->first){
 
+       buffer->first->previous = NULL;
+    }
+    if(buffer->bufferLen > 0){
+        buffer->bufferLen--;
+    }
+
+//    Remove any pointers to the return
     rNode->next = NULL;
     rNode->previous = NULL;
     return rNode;
@@ -240,7 +310,7 @@ int _nodePosition(visBufferNode *node) {
     if(NULL == node){
         return -1;
     }
-    return node->position;
+    return (int)node->position;
 }
 
 int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
@@ -268,6 +338,28 @@ int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
     }
     return 1;
 }
+
+visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
+    visBuffer *buffer = NULL;
+    if(bufferSize == 0) {
+        buffer = (visBuffer *) malloc(sizeof(visBuffer));
+        if (buffer == NULL) {
+            return NULL;
+        }
+        buffer->bufferMaxSize = bufferSize;
+        buffer->bufferLen = 0;
+        buffer->bufferWidth = width;
+        buffer->first = NULL;
+        buffer->last = NULL;
+        return buffer;
+    }
+
+    else {
+        return NULL;
+    }
+}
+
+
 
 
 
