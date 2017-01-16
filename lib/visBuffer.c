@@ -101,12 +101,14 @@ int visBuffer_isEmpty(visBuffer *buffer) {
 
 
 void VisBuffer_Destroy(visBuffer **buffer) {
-    while(!visBuffer_isEmpty((*buffer))){
-        visBufferNode *node = visBufferPop((*buffer));
-        VisBufferNode_Destroy(&node);
+    if(*buffer){
+        while(!visBuffer_isEmpty((*buffer))){
+            visBufferNode *node = visBufferPop((*buffer));
+            VisBufferNode_Destroy(&node);
+        }
+        free((*buffer));
+        *buffer = NULL;
     }
-    free((*buffer));
-    *buffer = NULL;
 }
 
 visBufferNode *visBufferFront(visBuffer *buffer) {
