@@ -94,4 +94,6 @@ int _nodePosition(visBufferNode *node);
  * @return Returns 0 when the result is null. Returns a 1 when a valid result is found. Returns a negative number on failure.
  */
 int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index);
+
+int visBuffer_ShiftLeft(visBuffer *pBuffer);
 #endif //VISVID_VISBUFFER_H

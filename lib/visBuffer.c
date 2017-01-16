@@ -3,6 +3,7 @@
 //
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "visBuffer.h"
 
 
@@ -79,8 +80,7 @@ static visBufferNode *CreateVisBufferNode(visVisualResult *pRes);
  */
 static visVisualResult *visBufferNodeResult(visBufferNode *pNode);
 static int renumber(visBuffer *pBuffer);
-
-static int shift_left(visBuffer *pBuffer);
+static int visBuffer_setResult(visBuffer *buffer, size_t index, visVisualResult *pRes);
 
 visBuffer *VisBuffer_Create(size_t width) {
     visBuffer *buffer = NULL;
@@ -124,6 +124,8 @@ visBufferNode *visBufferPreviousNode(visBufferNode *node) {
 }
 
 int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
+    int ret;
+//    TODO CHECK IF buffer is unlimited or not. If unlimited, just add, otherwise, shift it left and replace the right most
     // check result size first if it's not null
     if(pRes != NULL){
         // check the size only if there is valid data to check
@@ -135,13 +137,29 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
             }
         }
     }
-    // copy the result data into a new node
-    visBufferNode *node = NULL;
-    node = CreateVisBufferNode(pRes);
-    if(NULL == node){
-        return -1;
+    // if the buffer is smaller than the max or the buffersize is unlimited, create a new node.
+    if(buffer->bufferMaxSize == 0 || buffer->bufferMaxSize > buffer->bufferLen){
+        // copy the result data into a new node
+        visBufferNode *node = NULL;
+        node = CreateVisBufferNode(pRes);
+        if(NULL == node){
+            return -1;
+        }
+        return visBufferPushBack(buffer, node);
+    } else{
+        // shift the buffer in the data
+            if((ret = visBuffer_ShiftLeft(buffer)) != 0){
+//                TODO clean up
+                return ret;
+            };
+        
+        // use the last one
+        if((ret = visBuffer_setResult(buffer, buffer->bufferLen - 1, pRes)) != 0){
+            return ret;
+        };
+        return 0;
+
     }
-    return visBufferPushBack(buffer, node);
 }
 
 int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode) {
@@ -206,15 +224,17 @@ visVisualResult *visBuffer_PopShiftResult(visBuffer *buffer) {
     }
 }
 
-int shift_left(visBuffer *pBuffer) {
-    visBufferNode *front = NULL;
-    visBufferNode *current = NULL;
-    visBufferNode *next= NULL;
+int visBuffer_ShiftLeft(visBuffer *pBuffer) {
+    visBufferNode   *front = NULL;
+    visBufferNode   *current = NULL;
+    visBufferNode   *next= NULL;
+    visVisualResult *first_result = NULL;
+    first_result = pBuffer->first->result;
 
     front = visBufferFront(pBuffer);
-    current = front;
+    current = visBufferFront(pBuffer);
     while(current){
-        current->position--;
+//        current->position--;
         if(!current->next){
             current->result = front->result;
             break;
@@ -223,6 +243,7 @@ int shift_left(visBuffer *pBuffer) {
         current->result = next->result;
         current = next;
     }
+    pBuffer->last->result = first_result;
     return 0;
 }
 
@@ -342,23 +363,60 @@ int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
 }
 
 visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
-    visBuffer *buffer = NULL;
-    if(bufferSize == 0) {
-        buffer = (visBuffer *) malloc(sizeof(visBuffer));
-        if (buffer == NULL) {
-            return NULL;
-        }
-        buffer->bufferMaxSize = bufferSize;
-        buffer->bufferLen = 0;
-        buffer->bufferWidth = width;
-        buffer->first = NULL;
-        buffer->last = NULL;
-        return buffer;
-    }
+    visBuffer   *buffer = NULL;
+    int         i;
 
-    else {
+    buffer = (visBuffer *) malloc(sizeof(visBuffer));
+    if (buffer == NULL) {
         return NULL;
     }
+
+    buffer->bufferMaxSize = bufferSize;
+    buffer->bufferWidth = width;
+    buffer->first = NULL;
+    buffer->last = NULL;
+    buffer->bufferLen = 0;
+
+//    Automatically resize
+    for(i = 0; i < bufferSize; i++){
+        visVisualResult *res = NULL;
+        res = VisVisualResult_Create();
+        if(NULL == res){
+//                TODO: Clean up this
+            return NULL;
+        }
+        if(VisVisualResult_SetSize(res, (int)width) != 0){
+//                TODO: Clean up this
+            return NULL;
+        }
+        if(visBuffer_PushBackResult(buffer, res) != 0) {
+//                TODO: Clean up this
+            return NULL;
+        }
+
+    }
+    return buffer;
+}
+
+int visBuffer_setResult(visBuffer *buffer, size_t index, visVisualResult *pRes) {
+    int i;
+    visBufferNode *node = buffer->first;
+
+//    Find the node
+    while(node->position < index){
+        node = node->next;
+    }
+    if(node->position != index){
+        return -1;
+    }
+//    Make sure the data will fit
+    if(node->result->size != pRes->size){
+        return -1;
+    }
+
+//    TODO: set the node's data
+    memcpy(node->result->data, pRes->data, sizeof(PixelValue) * node->result->size);
+    return 0;
 }
 
 
