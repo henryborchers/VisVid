@@ -88,7 +88,7 @@ int playVideoVis(const char *filename) {
 
     // build buffer with the size of the frame
     puts("Creating buffer");
-    if((buffer = VisBuffer_Create((size_t)videoWidth)) == NULL){
+    if((buffer = VisBuffer_Create2((size_t) videoWidth, 0)) == NULL){
         fprintf(stderr, "Failed to create a New buffer");
         return 1;
     };
