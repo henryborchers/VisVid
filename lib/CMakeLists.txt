@@ -10,8 +10,8 @@ set(libvisvid
         visVersion.h.in
         visUtils.h
         utils.c
-        utils.h
         )
+
 configure_file("${PROJECT_SOURCE_DIR}/lib/visVersion.h.in"
         "${PROJECT_SOURCE_DIR}/lib/visVersion.h")
 
