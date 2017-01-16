@@ -97,11 +97,19 @@ int VisVisualResult_copy(visVisualResult *dst, visVisualResult *src) {
     if(NULL == src){
         return 1;
     }
+
+    if(src == dst){
+        return -2;
+    }
     if(src->size != dst->size){
         return -1;
 
     }
-    memcpy(dst->data, src->data, sizeof(PixelValue) * src->size);
+    if(NULL == dst->data && NULL == src->data){
+
+    } else{
+        memcpy(dst->data, src->data, sizeof(PixelValue) * src->size);
+    }
     dst->ready = src->ready;
     return 0;
 }
