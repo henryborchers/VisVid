@@ -48,6 +48,7 @@ int VisVisualResult_SetSize(visVisualResult *pRest, int size) {
         free(pRest->data);
     }
     pRest->data = NULL;
+    // FIXME: TO realloc()
     pRest->data = calloc((unsigned long long int)size, sizeof(unsigned char));
     if(pRest->data == NULL){
         pRest->size = -1;
@@ -87,7 +88,7 @@ int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t leng
     if(pRes->size != length){
         return EFAULT;
     }
-    memcpy(pRes->data, data, sizeof(PixelValue) * length);
+    pRes->data = memcpy(pRes->data, data, sizeof(PixelValue) * length);
     pRes->ready = true;
     return 0;
 }
