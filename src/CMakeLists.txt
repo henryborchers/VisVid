@@ -6,12 +6,12 @@ set(CreateVisual_src main.c
         runPlayers.h
         simpleVideoPlayer.c simpleVideoPlayer.h
         generator.c generator.h
-        videoAndVisualPlayer.c videoAndVisualPlayer.h ffmpeg_converter.c ffmpeg_converter.h)
+        videoAndVisualPlayer.c videoAndVisualPlayer.h
+        ffmpeg_converter.c ffmpeg_converter.h)
 
 find_package(SDL2 REQUIRED)
 find_package(FFMPEG REQUIRED)
 include_directories(${PROJECT_BINARY_DIR}/lib)
-
 
 if(FFMPEG_FOUND AND SDL2_FOUND)
     add_executable(CreateVisual ${CreateVisual_src})
