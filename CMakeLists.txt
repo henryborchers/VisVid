@@ -19,7 +19,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 option(VISVID_BUILDDOCS "Build Doxygen documentation" ON)
 option(VISVID_TESTS "Build Tests" ON)
 option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
-option(VISVID_PACKAGE "Enable CPack" OFF)
+#option(VISVID_PACKAGE "Enable CPack" OFF)
 option(VISVID_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
 option(VISVID_TESTVISUALS "Test Visualzations" ON)
 
@@ -27,13 +27,13 @@ enable_testing()
 add_subdirectory(lib)
 
 #build application
-if(APPLICATION_TESTVISUALS)
+if (VISVID_TESTVISUALS)
     add_subdirectory(src)
-endif()
+endif ()
 # build tests
-if(VISVID_TESTS)
+if (VISVID_TESTS)
     add_subdirectory(tests)
-endif(VISVID_TESTS)
+endif (VISVID_TESTS)
 
 # Build Documentation
 include(cmake/buildDocumentation.cmake)
@@ -41,17 +41,8 @@ include(cmake/buildDocumentation.cmake)
 # Build Swig Bindings
 include(swig/swig.cmake)
 
-if (VISVID_PACKAGE)
-    set(CPACK_PACKAGE_NAME "Visvid")
-    set(CPACK_PACKAGE_VENDOR "Henry Borchers")
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/license.txt")
-    set(CPACK_COMPONENT_LIBVISVID_REQUIRED TRUE)
 
-    set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "Create Visual")
-    set(CPACK_PACKAGE_EXECUTABLES CreateVisual "Test Visualzations")
+# Enable packaging
+include(cmake/CPackConfig.cmake)
+include(cpack)
 
-
-    # Enable packaging
-    include(cpack)
-
-endif ()
