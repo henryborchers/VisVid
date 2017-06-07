@@ -30,41 +30,10 @@ endif()
 # Contifigure the optional Dialog box
 
 if(VISVID_NOC_FILE_DIALOG)
-    include(ExternalProject)
-    ExternalProject_Add(NOC_FILE_DIALOG
-            GIT_REPOSITORY "https://github.com/guillaumechereau/noc.git"
-            GIT_TAG "master"
-            UPDATE_COMMAND ""
-            PATCH_COMMAND ""
-            CONFIGURE_COMMAND ""
-            BUILD_COMMAND ""
-            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdpartylibs/noc"
-            INSTALL_COMMAND ""
-
-            )
-
+    add_subdirectory(thirdpartylibs)
     set(DialogBox_src filedialog.c filedialog.h)
     add_library(DialogBox STATIC ${DialogBox_src})
-    add_definitions(-DNOC_FILE_DIALOG_IMPLEMENTATION)
-    target_include_directories(DialogBox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/thirdpartylibs)
-
-    if(APPLE)
-        find_library(cocoa_lib Cocoa)
-        add_definitions(-DNOC_FILE_DIALOG_OSX)
-        target_compile_options(DialogBox PRIVATE "-ObjC")
-        target_link_libraries(DialogBox ${cocoa_lib})
-    elseif(WIN32)
-        add_definitions(-DNOC_FILE_DIALOG_WIN32)
-    elseif(UNIX)
-        message(STATUS "Identified OS: Unix, Using GTK2")
-        find_package(GTK2 REQUIRED gtk)
-        add_definitions(-DNOC_FILE_DIALOG_GTK)
-        target_include_directories(DialogBox PRIVATE ${GTK2_INCLUDE_DIRS})
-        target_link_libraries(DialogBox ${GTK2_LIBRARIES})
-    else()
-        message(FATAL_ERROR "Cannot use NOC file dialog library due to unsupported system")
-    endif()
-    add_dependencies(DialogBox NOC_FILE_DIALOG)
+    target_link_libraries(DialogBox NOC_FILE_DIALOG)
     target_link_libraries(CreateVisual DialogBox)
 endif(VISVID_NOC_FILE_DIALOG)
 install(TARGETS CreateVisual
