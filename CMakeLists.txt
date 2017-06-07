@@ -16,13 +16,12 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 
 # Set Options
-set(VISVID_BUILDDOCS ON CACHE BOOL "Build Doxygen documentation")
-set(VISVID_TESTS ON CACHE BOOL "Build Tests")
-set(VISVID_MEMDEBUG OFF CACHE BOOL "Enable memory allocation messages")
-set(VISVID_PACKAGE OFF CACHE BOOL "Enable CPack")
-
-set(APPLICATION_NOC_FILE_DIALOG ON CACHE BOOL "Include NOC_FILE_DIALOG library")
-set(APPLICATION_TESTVISUALS ON CACHE BOOL "Test Visualzations")
+option(VISVID_BUILDDOCS "Build Doxygen documentation" ON)
+option(VISVID_TESTS "Build Tests" ON)
+option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
+option(VISVID_PACKAGE "Enable CPack" OFF)
+option(VISVID_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
+option(VISVID_TESTVISUALS "Test Visualzations" ON)
 
 enable_testing()
 add_subdirectory(lib)
