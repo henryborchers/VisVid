@@ -3,7 +3,7 @@
 //
 
 #include "filedialog.h"
-#include "noc/noc_file_dialog.h"
+#include "noc_file_dialog.h"
 
 #define FILTER_VIDEO_FILES "Video Files\0*.mov;*.mp4;*.mpg;*.mkv;*.avi\0"
 
