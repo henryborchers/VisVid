@@ -20,10 +20,15 @@ if(VISVID_MEMDEBUG)
     add_definitions(-DMEMORY_DEBUG)
 endif()
 
-add_library(visvidStatic STATIC ${libvisvid})
-add_library(visvid SHARED ${libvisvid})
-install(TARGETS visvid visvidStatic
+add_library(visvid ${libvisvid})
+target_link_libraries(visvid PUBLIC ${PROJECT_SOURCE_DIR}/lib/)
+target_compile_features(visvid PUBLIC c_std_11)
+target_compile_definitions(visvid PUBLIC WINDOWS_EXPORT_ALL_SYMBOLS=1)
+include(GenerateExportHeader)
+generate_export_header(visvid)
+install(TARGETS visvid EXPORT visvidTargets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib/static
+        ARCHIVE DESTINATION lib
+        INCLUDES DESTINATION include
         COMPONENT LIBVISVID)
