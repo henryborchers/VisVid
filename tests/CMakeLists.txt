@@ -1,4 +1,3 @@
-set(CMAKE_CXX_STANDARD 11)
 include(ExternalProject)
 set(PThreadLib -pthread)
 ExternalProject_Add(googletest
@@ -10,7 +9,6 @@ ExternalProject_Add(googletest
         )
 
 ExternalProject_Get_Property(googletest source_dir binary_dir)
-
 include_directories("${source_dir}/include")
 add_library(gtest      IMPORTED STATIC GLOBAL)
 add_library(gtest_main IMPORTED STATIC GLOBAL)
