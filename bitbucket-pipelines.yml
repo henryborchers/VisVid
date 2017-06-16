@@ -9,6 +9,7 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
+          - uname -a
           - apt-get update && apt-get install -y ffmpeg
           - mkdir build
           - cd build
