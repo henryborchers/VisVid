@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(libvisvid)
+project(libvisvid VERSION 0.1)
 
 # Set version metadata
 set(LIBVISVID_VERSION_MAJOR 0)
@@ -19,7 +19,7 @@ find_package(DOXYGEN)
 
 # Set Options
 if (DOXYGEN)
-    option(VISVID_BUILDDOCS "Build Doxygen documentation" ON)
+    option(VISVID_BUILDDOCS "Build Doxygen documentation" OFF)
 endif ()
 
 option(VISVID_TESTS "Build Tests" ON)
