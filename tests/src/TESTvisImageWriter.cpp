@@ -49,10 +49,10 @@ class visImageWriterFunctions : public ::testing::Test {
 
 protected:
     visImageRGB *imageRGB;
-    const int ALPHA_SHIFT = 0;
-    const int BLUE_SHIFT  = 1;
-    const int GREEN_SHIFT = 2;
-    const int RED_SHIFT   = 3;
+    const static int ALPHA_SHIFT = 0;
+    const static int BLUE_SHIFT  = 1;
+    const static int GREEN_SHIFT = 2;
+    const static int RED_SHIFT   = 3;
 
     virtual void SetUp(){
         int width = 4;
