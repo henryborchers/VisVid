@@ -26,7 +26,7 @@ if (FOUND_LIBRARIES)
 #    target_include_directories(CreateVisual PRIVATE ${PROJECT_SOURCE_DIR}/lib)
     target_include_directories(CreateVisual PRIVATE ${SDL2_INCLUDE_DIR})
     target_include_directories(CreateVisual PRIVATE ${FFMPEG_INCLUDE_DIR})
-    target_link_libraries(CreateVisual visvid)
+    target_link_libraries(CreateVisual Visvid::Visvid)
     target_link_libraries(CreateVisual ${FFMPEG_LIBRARIES})
     target_link_libraries(CreateVisual ${SDL2_LIBRARIES})
 
