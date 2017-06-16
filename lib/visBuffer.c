@@ -359,7 +359,7 @@ int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
         }
         return 0;
     }
-    return 1;
+
 }
 
 visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
