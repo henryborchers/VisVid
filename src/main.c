@@ -2,10 +2,10 @@
 // Created by Borchers, Henry Samuel on 10/8/16.
 //
 
-#include <stdio.h>
 #include "visvid.h"
-#include "runPlayers.h"
 #include "filedialog.h"
+#include "runPlayers.h"
+#include <stdio.h>
 
 static const char *get_file(int argc, char *argv[]);
 
@@ -17,10 +17,11 @@ const char *get_file(int argc, char *argv[]) {
     if (argc == 1) {
         puts("Opening up a file dialog box");
         return getFilename();
-    } else if (argc == 2) {
+    }
+    if (argc == 2) {
         return argv[1];
-    } else
-        return NULL;
+    }
+    return NULL;
 }
 
 #else
@@ -46,7 +47,6 @@ int main(int argc, char *argv[]) {
     // Check args
 #ifdef NOC_FILE_DIALOG_IMPLEMENTATION
     if (argc == 1) {
-        puts("Opening up a file dialog box");
         filename = get_file(argc, argv);
         if (!filename) {
             return 0;
