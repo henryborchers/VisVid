@@ -1,10 +1,10 @@
 //
 // Created by Borchers, Henry Samuel on 10/22/16.
 //
-#include <errno.h>
-#include <stdio.h>
 #include "visFrame.h"
 #include "visVisualization.h"
+#include <errno.h>
+#include <stdio.h>
 int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame){
     int x, y;
     int frameHeight = -1;

@@ -2,10 +2,10 @@
 // Created by Borchers, Henry Samuel on 6/25/16.
 //
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <errno.h>
 #include "visFrame.h"
+#include <errno.h>
+#include <stdlib.h>
+//#include <stdint.h>
 
 //
 //enum PIXELCOLORSPACE {

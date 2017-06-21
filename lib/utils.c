@@ -2,8 +2,8 @@
 // Created by Borchers, Henry Samuel on 1/15/17.
 //
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 void *d_debug_mem_malloc(size_t size, char *file, size_t line) {

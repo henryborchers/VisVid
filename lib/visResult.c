@@ -2,12 +2,10 @@
 // Created by henry on 10/11/2016.
 //
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include "visResult.h"
 #include <errno.h>
 #include <memory.h>
-#include "visResult.h"
+#include <stdlib.h>
 
 
 

@@ -2,10 +2,10 @@
 // Created by Borchers, Henry Samuel on 11/11/16.
 //
 
+#include "visImageWriter.h"
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include "visImageWriter.h"
 
 const int ALPHA_OFFSET = 0;
 const int BLUE_OFFSET = sizeof(uint8_t) * 1;
