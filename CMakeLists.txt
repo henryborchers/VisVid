@@ -48,5 +48,5 @@ include(swig/swig.cmake)
 
 # Enable packaging
 include(cmake/CPackConfig.cmake)
-include(cpack)
+include(CPack)
 
