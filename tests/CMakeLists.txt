@@ -3,7 +3,7 @@ ExternalProject_Add(googletest
         GIT_REPOSITORY https://github.com/google/googletest
         GIT_TAG master
         INSTALL_COMMAND ""
-        CMAKE_ARGS -DBUILD_GTEST=ON -DBUILD_GMOCK=OFF
+        CMAKE_ARGS -DBUILD_GTEST=ON -DBUILD_GMOCK=OFF -Dgtest_disable_pthreads=ON
         )
 
 ExternalProject_Get_Property(googletest source_dir binary_dir)
