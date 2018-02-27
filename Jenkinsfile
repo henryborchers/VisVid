@@ -1,21 +1,14 @@
-
 pipeline {
-  agent any
+  agent {
+    dockerfile {
+      filename 'dockerfile'
+    }
+    
+  }
   stages {
-    stage('Running Tox tests') {
+    stage('do something') {
       steps {
-        sh '''echo "here I AM"
-'''
-      }
-    }
-    stage('Building artifact') {
-      steps {
-        sh '''echo "do nothing"'''
-      }
-    }
-    stage('Collecting test reports') {
-      steps {
-        echo 'Nope'
+        echo 'hello world'
       }
     }
   }
