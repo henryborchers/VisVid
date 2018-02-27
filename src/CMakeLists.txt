@@ -32,7 +32,6 @@ if (FOUND_LIBRARIES)
             PRIVATE
                 Visvid::Visvid
                 m
-            PUBLIC
                 ${FFMPEG_LIBRARIES}
                 ${SDL2_LIBRARIES}
             )
