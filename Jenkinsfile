@@ -26,8 +26,8 @@ ctest'''
     stage('Package') {
       steps {
         sh '''cd build
-cpack'''
-        archiveArtifacts(artifacts: 'build/Visvid-*.*', fingerprint: true, onlyIfSuccessful: true)
+cpack -G ZIP'''
+        archiveArtifacts(artifacts: 'build/*.zip', fingerprint: true, onlyIfSuccessful: true)
       }
     }
   }
