@@ -27,6 +27,7 @@ ctest'''
       steps {
         sh '''cd build
 cpack'''
+        archiveArtifacts(artifacts: 'build/Visvid-*.*', fingerprint: true, onlyIfSuccessful: true)
       }
     }
   }
