@@ -31,7 +31,7 @@ RUN wget https://libsdl.org/release/SDL2-2.0.7.tar.gz && \
     mkdir build && \
     cd build && \
     cmake .. && \
-    cmake --build . && \
+    cmake --build . --config Release && \
     make install
 
 USER jenkins_node
