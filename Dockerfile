@@ -18,7 +18,6 @@ RUN apt-get update -y && \
     libgtk2.0-dev \
     python3-all-dev \
     wget \
-    libsdl2-dev \
     build-essential \
     doxygen \
     git \
