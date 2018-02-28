@@ -17,4 +17,9 @@ cmake --build .'''
       }
     }
   }
+  post {
+    always {
+        echo "cleaning up"
+    }
+  }
 }
