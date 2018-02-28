@@ -6,6 +6,15 @@ USER root
 RUN apt-get update -y && \
     apt-get install \
     ffmpeg \
+    libavcodec-dev \
+    libavdevice-dev \
+    libavfilter-dev \
+    libavformat-dev \
+    libavresample-dev \
+    libavutil-dev \
+    libpostproc-dev \
+    libswresample-dev \
+    libswscale-dev \
     wget \
     libsdl2-dev \
     build-essential -y
