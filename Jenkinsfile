@@ -8,8 +8,7 @@ pipeline {
   stages {
     stage('build') {
       steps {
-        sh '''mkdir build
-git submodule init
+        sh '''git submodule init
 git submodule update
 cd build
 cmake ..
@@ -19,7 +18,9 @@ cmake --build .'''
   }
   post {
     always {
-        echo "cleaning up"
+      echo 'cleaning up'
+      
     }
+    
   }
 }
