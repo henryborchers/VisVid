@@ -1,6 +1,7 @@
 FROM ubuntu
 MAINTAINER Henry Borchers <henryborchers@yahoo.com>
 
+USER root
 
 RUN apt-get update -y && \
     apt-get install \
