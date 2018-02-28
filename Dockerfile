@@ -5,27 +5,9 @@ USER root
 
 RUN apt-get update -y && \
     apt-get install \
-    # apt-transport-https \
-    # ca-certificates \
-    # curl \
-    # libncursesw5-dev \
-    # libncurses5-dev \
-    # gcc \
-    # make \
-    # wget \
     ffmpeg \
     cmake \
-    # libsqlite3-dev \
-    # libssl-dev \
-    # python-dev \
-    # tk-dev \
-    # glibc-source \
-    # libgdbm-dev \
-    # libgtest-dev \
-    # libbz2-dev \
+    sdl2 \
     build-essential -y
 
-# USER jenkins
-
-# COPY plugins.txt /usr/share/jenkins/plugins.txt
-# RUN /usr/local/bin/plugins.sh /usr/share/jenkins/plugins.txt
+USER jenkins_node
