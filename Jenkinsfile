@@ -15,7 +15,8 @@ ls'''
     }
     stage('build') {
       steps {
-        sh '''mkdir build
+        sh '''git status
+mkdir build
 cd build
 cmake ..
 cmake --build .'''
