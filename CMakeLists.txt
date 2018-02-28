@@ -13,7 +13,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # Set default compiling flags
 find_package(FFMPEG REQUIRED)
-find_package(SDL2)
+find_package(SDL2 REQUIRED)
 find_package(Doxygen)
 
 
