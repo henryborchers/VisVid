@@ -16,7 +16,8 @@ ls'''
     stage('build') {
       steps {
         dir(path: 'build') {
-          sh 'cmake ..'
+          sh '''ls ..
+cmake ..'''
         }
         
       }
