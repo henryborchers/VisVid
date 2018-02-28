@@ -20,7 +20,7 @@ if (NOT SDL2_FOUND)
     set(FOUND_LIBRARIES OFF)
     message(WARNING "Unable to find SDL2")
 endif ()
-
+message(STATUS "SDL2_LIBRARIES = ${SDL2_LIBRARIES}")
 if (FOUND_LIBRARIES)
     add_executable(CreateVisual ${CreateVisual_src})
         set_target_properties(CreateVisual PROPERTIES
