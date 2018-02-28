@@ -27,6 +27,10 @@ RUN wget https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.sh && \
 
 RUN wget https://libsdl.org/release/SDL2-2.0.7.tar.gz && \
     tar -xvzf SDL2-2.0.7.tar.gz && \
-    ls -laR
+    cd SDL2-2.0.7.tar.gz && \
+    mkdir build && \
+    cmake ..
+    cmake --build .
+    cmake --build . --target install
 
 USER jenkins_node
