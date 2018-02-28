@@ -9,7 +9,8 @@ pipeline {
     stage('get info') {
       steps {
         echo 'Nope'
-        sh 'cmake --version'
+        sh '''cmake --version
+ls'''
       }
     }
   }
