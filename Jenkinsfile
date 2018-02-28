@@ -23,6 +23,12 @@ cmake --build .'''
 ctest'''
       }
     }
+    stage('Package') {
+      steps {
+        sh '''cd build
+cpack'''
+      }
+    }
   }
   post {
     always {
