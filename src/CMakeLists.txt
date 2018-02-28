@@ -33,7 +33,8 @@ if (FOUND_LIBRARIES)
                 Visvid::Visvid
                 m
                 ${FFMPEG_LIBRARIES}
-                ${SDL2_LIBRARIES}
+                SDL2::SDL2-static
+#                ${SDL2_LIBRARIES}
             )
 
     # Contifigure the optional Dialog box
