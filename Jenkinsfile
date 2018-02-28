@@ -15,7 +15,8 @@ ls'''
     }
     stage('build') {
       steps {
-        sh '''git submodule update --recursive
+        sh '''git submodule init
+git submodule update
 mkdir build
 cd build
 cmake ..
