@@ -6,14 +6,6 @@ pipeline {
     
   }
   stages {
-    stage('get info') {
-      steps {
-        echo 'Nope'
-        sh '''cmake --version
-ls
-cat /usr/local/lib/cmake/SDL2/SDL2Targets.cmake'''
-      }
-    }
     stage('build') {
       steps {
         sh '''git submodule init
