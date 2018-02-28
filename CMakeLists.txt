@@ -14,11 +14,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 # Set default compiling flags
 find_package(FFMPEG REQUIRED)
 find_package(SDL2)
-find_package(DOXYGEN)
+find_package(Doxygen)
 
 
 # Set Options
-if (DOXYGEN)
+if (DOXYGEN_FOUND)
     option(VISVID_BUILDDOCS "Build Doxygen documentation" OFF)
 endif ()
 
