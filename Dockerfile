@@ -19,7 +19,7 @@ RUN apt-get update -y && \
     python3-all-dev \
     wget \
     libsdl2-dev \
-    build-essential
+    build-essential \
     doxygen \
     git \
     swig3.0 -y
