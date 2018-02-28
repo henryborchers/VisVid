@@ -6,20 +6,10 @@ pipeline {
     
   }
   stages {
-    stage('Running Tox tests') {
-      steps {
-        sh '''echo "here I AM"
-'''
-      }
-    }
-    stage('Building artifact') {
-      steps {
-        sh 'echo "do nothing"'
-      }
-    }
-    stage('Collecting test reports') {
+    stage('get info') {
       steps {
         echo 'Nope'
+        sh 'cmake --version'
       }
     }
   }
