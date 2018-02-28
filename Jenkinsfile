@@ -11,16 +11,21 @@ pipeline {
         sh '''mkdir build
 git submodule init
 git submodule update
-cd build
-cmake ..
+'''
+        dir(path: 'build') {
+          sh '''cmake ..
 cmake --build .'''
+        }
+        
       }
     }
   }
   post {
     always {
-        echo "cleaning up"
-        deleteDir()
+      echo 'cleaning up'
+      deleteDir()
+      
     }
+    
   }
 }
