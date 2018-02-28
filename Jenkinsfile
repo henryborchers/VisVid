@@ -17,6 +17,12 @@ cmake ..
 cmake --build .'''
       }
     }
+    stage('Test') {
+      steps {
+        sh '''cd build
+ctest'''
+      }
+    }
   }
   post {
     always {
