@@ -7,7 +7,7 @@ RUN apt-get update -y && \
     apt-get install \
     ffmpeg \
     cmake \
-    sdl2 \
+    libsdl2-dev \
     build-essential -y
 
 USER jenkins_node
