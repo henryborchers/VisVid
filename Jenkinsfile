@@ -8,9 +8,9 @@ pipeline {
   stages {
     stage('build') {
       steps {
-        sh '''git submodule init
+        sh '''mkdir build
+git submodule init
 git submodule update
-mkdir build
 cd build
 cmake ..
 cmake --build .'''
