@@ -10,7 +10,8 @@ pipeline {
       steps {
         sh '''git submodule init
 git submodule update
-mkdir build'''
+'''
+        sh '''mkdir build'''
         dir(path: 'build') {
           sh '''cmake ..
 cmake --build .'''
