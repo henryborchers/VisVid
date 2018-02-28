@@ -53,14 +53,14 @@ TEST_F(visVisualResultFunctions, zeroOnInit){
     VisVisualResult_GetValue(&value, result, 5);
     ASSERT_EQ(value, 0);
 }
-
+#ifdef BADTESTS
 TEST_F(visVisualResultFunctions, visVisualResultFunctions_getBadVaue_Test){
     PixelValue value = 100;
     VisVisualResult_SetSize(result, 10);
     ASSERT_EQ(VisVisualResult_GetValue(&value, result, 100), EFAULT);
 
 }
-
+#endif
 TEST_F(visVisualResultFunctions, setresultdata) {
     PixelValue value = 100;
     PixelValue foo[] = {0,1,2,3,4,5,6,7,8,9};

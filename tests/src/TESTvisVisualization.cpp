@@ -103,6 +103,8 @@ protected:
     }
 };
 
+#ifdef BADTESTS
 TEST_F(VisualizationProcess, BadArgs) {
     ASSERT_EQ(visVisProcess(NULL, NULL, &ctx), EFAULT);
 }
+#endif
