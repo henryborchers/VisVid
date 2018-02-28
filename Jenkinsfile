@@ -11,7 +11,8 @@ pipeline {
         sh '''git submodule init
 git submodule update
 '''
-        sh '''mkdir build'''
+        sh '''ls -la
+mkdir build'''
         dir(path: 'build') {
           sh '''cmake ..
 cmake --build .'''
