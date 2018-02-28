@@ -13,5 +13,13 @@ pipeline {
 ls'''
       }
     }
+    stage('build') {
+      steps {
+        dir(path: 'build') {
+          sh 'cmake ..'
+        }
+        
+      }
+    }
   }
 }
