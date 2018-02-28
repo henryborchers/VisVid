@@ -16,13 +16,13 @@ RUN apt-get update -y && \
     libswresample-dev \
     libswscale-dev \
     libgtk2.0-dev \
+    python3-all-dev \
     wget \
     libsdl2-dev \
-    build-essential -y
+    build-essential
+    doxygen \
+    git \
+    swig3.0 -y
 RUN wget https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.sh && \
     sh cmake-3.10.2-Linux-x86_64.sh --skip-license
-RUN apt-get install git \
-    doxygen \
-    swig3.0 -y
-RUN apt search python3
 USER jenkins_node
