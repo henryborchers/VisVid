@@ -9,7 +9,7 @@ pipeline {
     stage('do something') {
       steps {
         echo 'hello world'
-        sh 'cmake --version'
+        sh 'pwd'
       }
     }
   }
