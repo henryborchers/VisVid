@@ -15,6 +15,7 @@ RUN apt-get update -y && \
     libpostproc-dev \
     libswresample-dev \
     libswscale-dev \
+    libgtk2.0-dev \
     wget \
     libsdl2-dev \
     build-essential -y
