@@ -13,7 +13,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # Set default compiling flags
 find_package(FFMPEG REQUIRED)
-find_package(SDL2 REQUIRED)
+find_package(SDL2)
 find_package(Doxygen)
 
 
@@ -24,9 +24,10 @@ endif ()
 
 option(VISVID_TESTS "Build Tests" ON)
 option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
-option(VISVID-DEMO_TESTVISUALS "Test Visualzations" ON)
-option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
-
+if(SDL2_FOUND)
+    option(VISVID-DEMO_TESTVISUALS "Test Visualzations" ON)
+    option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
+endif()
 enable_testing()
 add_subdirectory(lib)
 
