@@ -15,7 +15,7 @@ ls'''
     }
     stage('build') {
       steps {
-        sh '''git status
+        sh '''git submodule
 mkdir build
 cd build
 cmake ..
