@@ -12,6 +12,7 @@ pipeline {
 git submodule update
 '''
         sh '''mkdir build
+cd build
 cmake ..
 cmake --build .'''
       }
