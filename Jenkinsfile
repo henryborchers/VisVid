@@ -17,7 +17,8 @@ ls'''
       steps {
         sh '''mkdir build
 cd build
-cmake ..'''
+cmake ..
+cmake --build .'''
       }
     }
   }
