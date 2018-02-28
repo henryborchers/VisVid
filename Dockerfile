@@ -14,6 +14,7 @@ RUN apt-get update -y && \
     # make \
     # wget \
     ffmpeg \
+    cmake \
     # libsqlite3-dev \
     # libssl-dev \
     # python-dev \
