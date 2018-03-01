@@ -21,6 +21,7 @@ cmake --build .'''
       steps {
         sh '''cd build
 ctest'''
+        junit(testResults: 'build/tests.xml', allowEmptyResults: true)
       }
     }
     stage('Documentation') {
