@@ -13,7 +13,7 @@ git submodule update
 '''
         sh '''mkdir build
 cd build
-cmake ..
+cmake .. -DVISVID_BUILDDOCS=ON
 cmake --build .'''
       }
     }
