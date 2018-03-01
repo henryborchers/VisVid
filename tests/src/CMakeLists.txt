@@ -8,5 +8,6 @@ SET(TEST_SRC
         TESTvisVisualization.cpp
         TESTvisImageWriter.cpp)
 ADD_EXECUTABLE(runtests ${TEST_SRC})
-add_test(visTests ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/runtests)
+add_test(NAME visTests COMMAND runtests --gtest_output=xml:tests.xml
+        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 TARGET_LINK_LIBRARIES(runtests gtest gtest_main Visvid::Visvid)
