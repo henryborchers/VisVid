@@ -30,6 +30,13 @@ cpack -G ZIP'''
         archiveArtifacts(artifacts: 'build/*.zip', fingerprint: true, onlyIfSuccessful: true)
       }
     }
+    stage('Documentation') {
+      steps {
+        sh '''cd build
+cmake --build . --target documentation
+'''
+      }
+    }
   }
   post {
     always {
