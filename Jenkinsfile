@@ -35,7 +35,7 @@ cpack -G ZIP'''
         sh '''cd build
 cmake --build . --target documentation
 '''
-        zip(zipFile: 'documentation', archive: true, dir: 'build/html')
+        zip(zipFile: 'documentation.zip', archive: true, dir: 'build/html')
       }
     }
   }
