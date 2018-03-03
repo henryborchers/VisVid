@@ -4,8 +4,8 @@ set_property(TARGET visvid PROPERTY ${LIBVISVID_VERSION})
 
 
 #install(TARGETS visvid EXPORT visvidTargets
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib
+#        LIBRARY DESTINATION visvid
+#        ARCHIVE DESTINATION visvid
 #        RUNTIME DESTINATION bin
 #        INCLUDES DESTINATION include
 #        )

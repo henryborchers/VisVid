@@ -7,7 +7,7 @@ set(headers
         visvid.h
         visView.h
         visVisualization.h
-        ${PROJECT_BINARY_DIR}/lib/visVersion.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/visVersion.h
         )
 set(libvisvid
         visFrame.c
@@ -20,8 +20,8 @@ set(libvisvid
         utils.c
         )
 
-configure_file("${PROJECT_SOURCE_DIR}/lib/visVersion.h.in"
-        "${PROJECT_BINARY_DIR}/lib/visVersion.h")
+configure_file("visVersion.h.in"
+        "${CMAKE_CURRENT_SOURCE_DIR}/visVersion.h")
 
 
 add_library(Visvid ${libvisvid})
