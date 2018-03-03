@@ -30,8 +30,8 @@ if(SDL2_FOUND)
 endif()
 enable_testing()
 add_subdirectory(lib)
+add_subdirectory(src)
 
-add_subdirectory(applications)
 # build tests
 if (VISVID_TESTS)
     add_subdirectory(tests)
