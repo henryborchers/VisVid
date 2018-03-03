@@ -31,10 +31,7 @@ endif()
 enable_testing()
 add_subdirectory(lib)
 
-#build application
-if (VISVID-DEMO_TESTVISUALS)
-    add_subdirectory(src)
-endif ()
+add_subdirectory(applications)
 # build tests
 if (VISVID_TESTS)
     add_subdirectory(tests)
