@@ -29,7 +29,7 @@ if(SDL2_FOUND)
     option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
 endif()
 enable_testing()
-add_subdirectory(lib)
+
 add_subdirectory(src)
 
 # build tests
