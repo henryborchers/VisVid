@@ -5,9 +5,9 @@
 #include "visView.h"
 #include <errno.h>
 #include <math.h>
-#include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define NUM_COLORS 4
 

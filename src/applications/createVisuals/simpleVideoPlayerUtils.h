@@ -5,6 +5,9 @@
 #ifndef LIBVISVID_PLAYER_H
 #define LIBVISVID_PLAYER_H
 
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
+#include <libavutil/frame.h>
 
 typedef struct {
     int             windowWidth;

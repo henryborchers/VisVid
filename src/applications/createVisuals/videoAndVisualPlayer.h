@@ -5,10 +5,12 @@
 #ifndef LIBVISVID_VIDEOANDVISUALPLAYER_H
 #define LIBVISVID_VIDEOANDVISUALPLAYER_H
 
-
-#include "SDL2/SDL.h"
-#include "visImageWriter.h"
-#include "libavutil/frame.h"
+//
+//#include "SDL2/SDL.h"
+//#include "visImageWriter.h"
+//#include "libavutil/frame.h"
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 
 typedef struct {
     SDL_Texture *texture;

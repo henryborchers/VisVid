@@ -2,11 +2,13 @@
 // Created by Borchers, Henry Samuel on 12/3/16.
 //
 
-#include <libavutil/avutil.h>
-#include <SDL2/SDL.h>
-#include <libavutil/frame.h>
-#include "simpleVideoPlayerUtils.h"
+//#include <libavutil/avutil.h>
 #include "simpleVideoPlayer.h"
+#include <SDL2/SDL_events.h>
+//#include <SDL2/SDL.h>
+#include <libavutil/frame.h>
+#include <stdio.h>
+#include "simpleVideoPlayerUtils.h"
 #include "videoDecoder.h"
 
 int playVideoSimple(const char *filename) {

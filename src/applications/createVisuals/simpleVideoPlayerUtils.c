@@ -1,9 +1,14 @@
 //
 // Created by Borchers, Henry Samuel on 12/3/16.
 //
-#include <SDL2/SDL.h>
-#include <avformat.h>
 #include "simpleVideoPlayerUtils.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_pixels.h>
+#include <stdint.h>
+#include <stdio.h>
+
+//#include <avformat.h>
 
 int player_init() {
     int res = 0;

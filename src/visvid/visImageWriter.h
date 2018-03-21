@@ -18,19 +18,17 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #endif
 #include <stdint.h>
 
-typedef struct visImageRGB visImageRGB;
-
 /**
  * @struct VisImageRGB
  * @brief RGB image data
  */
-struct visImageRGB{
-//typedef struct {
+//struct visImageRGB{
+typedef struct {
     uint8_t *plane;     /**< Raw data for pixel information.*/
     int     pitch;      /**< Pitch of the image.*/
     int     height;     /**< Height of the image.*/
     int     width;      /**< Width of the image.*/
-};
+} visImageRGB;
 
 /**
  * Allocates the amount of memory needed to store a the data for an RGBA8888 image. You are responsible for freeing

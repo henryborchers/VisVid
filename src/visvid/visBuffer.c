@@ -3,7 +3,7 @@
 //
 #include "visBuffer.h"
 #include <stdlib.h>
-#include <string.h>
+//#include <string.h>
 
 
 /**
@@ -126,7 +126,7 @@ visBufferNode *visBufferPreviousNode(visBufferNode *node) {
 
 int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
     int ret;
-//    TODO CHECK IF buffer is unlimited or not. If unlimited, just add, otherwise, shift it left and replace the right most
+//    TODO: CHECK IF buffer is unlimited or not. If unlimited, just add, otherwise, shift it left and replace the right most
     // check result size first if it's not null
     if (pRes != NULL) {
         // check the size only if there is valid data to check

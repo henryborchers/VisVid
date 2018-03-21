@@ -2,12 +2,23 @@
 // Created by Borchers, Henry Samuel on 11/25/16.
 //
 
+#include "videoDecoder.h"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
+#include <libavformat/version.h>
+#include <libavutil/avutil.h>
+#include <libavutil/log.h>
+#include <libavutil/pixfmt.h>
+#include <libavutil/version.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <swscale.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <swscale.h>
-#include "videoDecoder.h"
+#include "error.h"
+#include "mem.h"
+//#include <swscale.h>
 
 #define FILE_PATH_MAX 10000
 

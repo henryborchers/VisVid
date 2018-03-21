@@ -2,10 +2,12 @@
 // Created by Borchers, Henry Samuel on 12/3/16.
 //
 
-#include <SDL2/SDL.h>
 #include "generator.h"
-#include "ramp.h"
+#include <SDL2/SDL_events.h>
+#include <stdio.h>
 #include "gui.h"
+#include "ramp.h"
+#include "visImageWriter.h"
 
 #define SCREENWIDTH 640
 #define SCREENHEIGHT 480

@@ -12,10 +12,10 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #define calloc(size, num) d_debug_mem_calloc(size, num, __FILE__, __LINE__)
 #endif
 
-
+#include <stdint.h>
 #include "visBuffer.h"
-#include "visTypes.h"
 #include "visImageWriter.h"
+#include "visTypes.h"
 
 /**
  * @struct visView

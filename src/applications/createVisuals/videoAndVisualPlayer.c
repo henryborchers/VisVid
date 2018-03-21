@@ -2,16 +2,39 @@
 // Created by Borchers, Henry Samuel on 12/3/16.
 //
 
-#include <stdbool.h>
+//#include <stdbool.h>
+//#include <visBuffer.h>
+//#include <visFrame.h>
+//#include <visVisualization.h>
+//#include <visView.h>
+//#include "videoDecoder.h"
+//#include "runPlayers.h"
+//#include "ramp.h"
+//#include "ffmpeg_converter.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_log.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
+#include <libavutil/frame.h>
+#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <visBuffer.h>
 #include <visFrame.h>
-#include <visVisualization.h>
 #include <visView.h>
-#include "videoDecoder.h"
-#include "runPlayers.h"
-#include "ramp.h"
+#include <visVisualization.h>
+#include "videoAndVisualPlayer.h"
 #include "ffmpeg_converter.h"
-
+#include "videoDecoder.h"
+#include "visImageWriter.h"
+#include "visResult.h"
+#include "visTypes.h"
 #define NUM_COLORS 4
 
 static int vidVis_init();

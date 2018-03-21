@@ -2,10 +2,10 @@
 // Created by Borchers, Henry Samuel on 10/8/16.
 //
 
-#include "visvid.h"
-#include "filedialog.h"
-#include "runPlayers.h"
 #include <stdio.h>
+#include "videoAndVisualPlayer.h"
+#include "filedialog.h"
+#include "visVersion.h"
 
 static const char *get_file(int argc, char *argv[]);
 

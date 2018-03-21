@@ -2,9 +2,12 @@
 // Created by Borchers, Henry Samuel on 11/11/16.
 //
 
-#include <stdio.h>
 #include "gui.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_pixels.h>
+#include <stdio.h>
+#include <string.h>
 void say_hi() {
     puts("hi");
 }

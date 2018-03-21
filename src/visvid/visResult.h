@@ -19,7 +19,6 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #include "visTypes.h"
 
 
-
 /**
  * @struct visVisualResult
  * @brief  Contains the calculated data from a visualization calculation.
