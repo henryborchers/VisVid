@@ -28,6 +28,7 @@ if(SDL2_FOUND)
     option(VISVID-DEMO_TESTVISUALS "Test Visualzations" ON)
     option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
 endif()
+include(CTest)
 enable_testing()
 
 add_subdirectory(src)
