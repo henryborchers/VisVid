@@ -21,10 +21,13 @@ if (NOT SDL2_FOUND)
     message(WARNING "Unable to find SDL2")
 endif ()
 message(STATUS "SDL2_LIBRARIES = ${SDL2_LIBRARIES}")
+
 if (FOUND_LIBRARIES)
     add_executable(CreateVisual ${CreateVisual_src})
+
         set_target_properties(CreateVisual PROPERTIES
-                C_STANDARD 11)
+                C_STANDARD 11
+                )
     #    target_include_directories(CreateVisual PRIVATE ${PROJECT_SOURCE_DIR}/visvid)
     target_include_directories(CreateVisual PRIVATE ${SDL2_INCLUDE_DIR})
     target_include_directories(CreateVisual PRIVATE ${FFMPEG_INCLUDE_DIR})
