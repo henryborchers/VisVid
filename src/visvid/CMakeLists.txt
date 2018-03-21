@@ -24,12 +24,15 @@ configure_file("visVersion.h.in"
         "${CMAKE_CURRENT_SOURCE_DIR}/visVersion.h")
 
 
-add_library(Visvid ${libvisvid})
+add_library(Visvid ${libvisvid} ${headers})
 add_library(Visvid::Visvid ALIAS Visvid)
 
 set_target_properties(Visvid PROPERTIES PUBLIC_HEADER "${headers}")
 target_compile_features(Visvid PRIVATE c_std_11)
-
+set_target_properties(Visvid PROPERTIES
+        C_STANDARD 11
+        )
+#set_target_properties(Visvid PROPERTIES C_INCLUDE_WHAT_YOU_USE include-what-you-use)
 if(MSVC)
     target_compile_definitions(Visvid PRIVATE WINDOWS_EXPORT_ALL_SYMBOLS=1)
 endif(MSVC)
