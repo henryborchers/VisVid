@@ -18,10 +18,19 @@ cmake --build .'''
       }
     }
     stage('Test') {
-      steps {
-        sh '''cd build
+      parallel {
+        stage('Test') {
+          steps {
+            sh '''cd build
 ctest'''
-        junit(testResults: 'build/tests.xml', allowEmptyResults: true)
+            junit(testResults: 'build/tests.xml', allowEmptyResults: true)
+          }
+        }
+        stage('Test2') {
+          steps {
+            sh 'ctest -S build.cmake'
+          }
+        }
       }
     }
     stage('Documentation') {
