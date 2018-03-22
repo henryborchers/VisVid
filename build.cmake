@@ -8,7 +8,6 @@ set(CTEST_COVERAGE_COMMAND "gcov")
 set(CTEST_MEMORYCHECK_COMMAND "/usr/bin/valgrind")
 
 ctest_start("Continuous")
-ctest_update()
 ctest_configure()
 ctest_build()
 ctest_test()
