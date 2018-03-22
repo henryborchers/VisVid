@@ -8,7 +8,8 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh '''git submodule init
+        sh '''which gcov
+git submodule init
 git submodule update
 '''
         sh '''mkdir build
@@ -41,10 +42,10 @@ cpack -G ZIP'''
   post {
     always {
       step([$class: 'XUnitBuilder',
-                      thresholds: [
-                            [$class: 'SkippedThreshold', failureThreshold: '0'],
-                            [$class: 'FailedThreshold', failureThreshold: '0']],
-                        tools: [[$class: 'CTestType', pattern: 'binary/Testing/**/*.xml']]])
+                            thresholds: [
+                                    [$class: 'SkippedThreshold', failureThreshold: '0'],
+                                    [$class: 'FailedThreshold', failureThreshold: '0']],
+                                tools: [[$class: 'CTestType', pattern: 'binary/Testing/**/*.xml']]])
         echo 'cleaning up'
         deleteDir()
         
