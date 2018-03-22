@@ -1,8 +1,8 @@
 set(CTEST_SOURCE_DIRECTORY .)
-set(CTEST_BINARY_DIRECTORY  ./binary)
+set(CTEST_BINARY_DIRECTORY  ./build)
 
 set(ENV{CXXFLAGS} "--coverage")
-set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
+set(CTEST_CMAKE_GENERATOR "Ninja")
 
 set(CTEST_COVERAGE_COMMAND "gcov")
 set(CTEST_MEMORYCHECK_COMMAND "/usr/bin/valgrind")
