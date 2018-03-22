@@ -18,9 +18,10 @@ cmake .. -DVISVID_BUILDDOCS=ON
 cmake --build .'''
       }
     }
-    stage('Test2') {
+    stage('Test') {
       steps {
         sh 'ctest -S build.cmake --verbose'
+        junit 'build/tests/test.xml'
       }
     }
     stage('Documentation') {
@@ -42,10 +43,10 @@ cpack -G ZIP'''
   post {
     always {
       step([$class: 'XUnitBuilder',
-                                        thresholds: [
-                                                    [$class: 'SkippedThreshold', failureThreshold: '0'],
-                                                    [$class: 'FailedThreshold', failureThreshold: '0']],
-                                                tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
+                                              thresholds: [
+                                                            [$class: 'SkippedThreshold', failureThreshold: '0'],
+                                                            [$class: 'FailedThreshold', failureThreshold: '0']],
+                                                        tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
         echo 'cleaning up'
         deleteDir()
         
