@@ -20,9 +20,7 @@ cmake --build .'''
     }
     stage('Test2') {
       steps {
-        sh '''pwd
-ls
-ctest -S build.cmake'''
+        sh 'ctest -S build.cmake --verbose'
       }
     }
     stage('Documentation') {
@@ -44,10 +42,10 @@ cpack -G ZIP'''
   post {
     always {
       step([$class: 'XUnitBuilder',
-                                  thresholds: [
-                                            [$class: 'SkippedThreshold', failureThreshold: '0'],
-                                            [$class: 'FailedThreshold', failureThreshold: '0']],
-                                        tools: [[$class: 'CTestType', pattern: 'binary/Testing/**/*.xml']]])
+                                        thresholds: [
+                                                    [$class: 'SkippedThreshold', failureThreshold: '0'],
+                                                    [$class: 'FailedThreshold', failureThreshold: '0']],
+                                                tools: [[$class: 'CTestType', pattern: 'binary/Testing/**/*.xml']]])
         echo 'cleaning up'
         deleteDir()
         
