@@ -17,6 +17,7 @@ RUN apt-get update -y && \
     libswscale-dev \
     libgtk2.0-dev \
     python3-all-dev \
+    valgrind \
     wget \
     build-essential \
     doxygen \

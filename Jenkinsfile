@@ -8,7 +8,8 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh '''git submodule init
+        sh '''which gcov
+git submodule init
 git submodule update
 '''
         sh '''mkdir build
@@ -19,9 +20,8 @@ cmake --build .'''
     }
     stage('Test') {
       steps {
-        sh '''cd build
-ctest'''
-        junit(testResults: 'build/tests.xml', allowEmptyResults: true)
+        sh 'ctest -S build.cmake --verbose'
+        junit 'build/tests.xml'
       }
     }
     stage('Documentation') {
@@ -42,10 +42,15 @@ cpack -G ZIP'''
   }
   post {
     always {
-      echo 'cleaning up'
-      deleteDir()
+      step([$class: 'XUnitBuilder',
+                                                    thresholds: [
+                                                                    [$class: 'SkippedThreshold', failureThreshold: '0'],
+                                                                    [$class: 'FailedThreshold', failureThreshold: '0']],
+                                                                tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
+        echo 'cleaning up'
+        deleteDir()
+        
+      }
       
     }
-    
   }
-}
