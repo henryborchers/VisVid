@@ -111,7 +111,7 @@ int playVideoVis(const char *filename) {
 
     // build buffer with the size of the frame
     puts("Creating buffer");
-    if((buffer = VisBuffer_Create2((size_t) videoWidth, videoWidth)) == NULL){
+    if((buffer = VisBuffer_Create2((size_t) videoWidth, (size_t)videoWidth)) == NULL){
         fprintf(stderr, "Failed to create a New buffer");
         return 1;
     };
@@ -185,8 +185,9 @@ int playVideoVis(const char *filename) {
                         case SDLK_q:
                             puts("quit");
                             goto stopmainloop;
+                        default:break;
                     }
-                    break;
+                default:break;
             }
 
         }
@@ -273,10 +274,10 @@ int generate_fakeresult(visVisualResult *pResult) {
     for (int i = 0; i < length; ++i) {
 //        data[i] = value;
         int location = length - i - 1;
-        uint8_t n_value = ((float)i/length * 256) + value;
+        uint8_t n_value = (uint8_t)((float)i/length * 256) + value;
         data[location] = n_value;
     }
-    VisVisualResult_SetData(pResult, data, length);
+    VisVisualResult_SetData(pResult, data, (size_t)length);
     value++;
     return 0;
 }
@@ -332,11 +333,10 @@ void vidVis_ctx_init(VidVisContext *ctx) {
     ctx->video.x                = -1;
     ctx->video.y                = -1;
 
-    return;
 }
 
 int vidVis_build_window(VidVisContext *ctx, int videoWidth, int videoHeight) {
-    int res;
+//    int res;
 
     int window_width = videoWidth;
     int window_height = videoWidth + videoHeight;
