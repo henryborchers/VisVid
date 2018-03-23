@@ -4,7 +4,7 @@
 
 #include "visImageWriter.h"
 #include <errno.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
 
 const int ALPHA_OFFSET = 0;
