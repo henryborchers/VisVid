@@ -2,7 +2,7 @@ include(GoogleTest)
 INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 SET(TEST_SRC
-        TESTvisFrame.cpp
+#        TESTvisFrame.cpp
 #        TESTvisBuffer.cpp
         TESTvisResult.cpp
         TESTvisView.cpp
