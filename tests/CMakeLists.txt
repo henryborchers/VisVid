@@ -1,3 +1,4 @@
+#add_subdirectory(catch2)
 include(ExternalProject)
 ExternalProject_Add(googletest
         GIT_REPOSITORY https://github.com/google/googletest
@@ -8,6 +9,7 @@ ExternalProject_Add(googletest
 
 ExternalProject_Get_Property(googletest source_dir binary_dir)
 include_directories("${source_dir}/googletest/include")
+
 add_library(gtest IMPORTED STATIC GLOBAL)
 add_library(gtest_main IMPORTED STATIC GLOBAL)
 set_target_properties(gtest PROPERTIES
@@ -21,3 +23,20 @@ add_dependencies(gtest googletest)
 add_dependencies(gtest_main googletest)
 
 add_subdirectory(src)
+
+##############################
+# Catch2 tests
+##############################
+
+include(catch2/contrib/Catch.cmake)
+add_library(Catch INTERFACE)
+add_library(Catch2::Catch ALIAS Catch)
+target_include_directories(Catch INTERFACE catch2/single_include)
+
+add_executable(test-visvid test-visBuffer.cpp test-main.cpp test-visFrame.cpp)
+
+set_target_properties(test-visvid PROPERTIES
+        CXX_STANDARD 11
+        )
+target_link_libraries(test-visvid PRIVATE Catch2::Catch Visvid::Visvid)
+catch_discover_tests(test-visvid)
