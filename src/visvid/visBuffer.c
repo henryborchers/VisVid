@@ -288,15 +288,17 @@ void VisBufferNode_Destroy(visBufferNode **node) {
 visBufferNode *CreateVisBufferNode(visVisualResult *pRes) {
 
     visBufferNode *node = NULL;
+    int length = 0;
+
+    VisVisualResult_GetSize(&length, pRes);
+
     node = malloc(sizeof(visBuffer));
     node->previous = NULL;
     node->next = NULL;
-    int length = 0;
 
     // Copy the results data from the original to store in the buffer
     node->result = VisVisualResult_Create();
-    VisVisualResult_GetSize(&length, pRes);
-    VisVisualResult_SetSize(node->result, length);
+    VisVisualResult_SetSize(node->result, (size_t)length);
 
     // Only copy the pRes results if they are real and not null
     if (pRes) {
