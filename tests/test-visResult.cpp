@@ -33,74 +33,93 @@ TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 
 }
 
-TEST_CASE("visVisualResultFunctions"){
+SCENARIO("visVisualResult Functions are used"){
 
-    visVisualResult *result = nullptr;
+    GIVEN("A pointer to a result struct is created on the heap"){
+        visVisualResult *result = nullptr;
+        result = VisVisualResult_Create();
+        WHEN("nothing has been done to it"){
+            THEN("the pointer to the newly created result is no longer null"){
+                REQUIRE(nullptr != result);
+            } AND_THEN("the pointer to the newly created result is listed as not ready"){
+                REQUIRE(!VisVisualResult_IsReady(result));
+            }
 
-    result = VisVisualResult_Create();
-    CHECK(nullptr != result);
+        }
 
-    SECTION("VisVisualResult is not ready on creation"){
-        REQUIRE(!VisVisualResult_IsReady(result));
-    }
+        WHEN("VisVisualResult is resized to 640"){
 
-    SECTION("VisVisualResult can be resized"){
+            int size = -1;
 
-        int size = -1;
+            VisVisualResult_SetSize(result, 640);
+            VisVisualResult_GetSize(&size, result);
+            THEN("The size of the result is resized to 640"){
+                REQUIRE(size == 640);
+            } AND_THEN("The 5th element in the result is zero"){
 
-        VisVisualResult_SetSize(result, 640);
-        VisVisualResult_GetSize(&size, result);
+                PixelValue value = 100;
+                VisVisualResult_GetValue(&value, result, 5);
+                REQUIRE(value == 0);
+            }
 
-        REQUIRE(size == 640);
-    }
+        }
 
-    SECTION("VisVisualResult has a value of zero On Initizaition"){
-
-        PixelValue value = 100;
-
-        VisVisualResult_SetSize(result, 10);
-        VisVisualResult_GetValue(&value, result, 5);
-
-        REQUIRE(value == 0);
-    }
-
-    SECTION("Set Result data of VisVisualResult"){
-        PixelValue value = 100;
-        PixelValue foo[] = {0,1,2,3,4,5,6,7,8,9};
-        auto *bar = (PixelValue *)malloc(sizeof(PixelValue) * 10);
-        bar[5] = 9;
-
-        VisVisualResult_SetSize(result, 10);
-
-        // Test stack
-        SECTION("Stack") {
+        WHEN("the VisVisualResult is resized to 10 and data on the stack is set to the VisVisualResult struct"){
+            VisVisualResult_SetSize(result, 10);
+            PixelValue foo[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
             CHECK(!VisVisualResult_IsReady(result));
+            CHECK(VisVisualResult_SetData(result, foo, 10) == 0);
 
-            VisVisualResult_SetData(result, foo, 10);
-            VisVisualResult_GetValue(&value, result, 5);
-            CHECK(value == 5);
+            THEN("The value is stored the result"){
+                PixelValue value = 100;
 
-            VisVisualResult_GetValue(&value, result, 0);
-            CHECK(VisVisualResult_IsReady(result));
-            REQUIRE(value == 0);
+                CHECK(VisVisualResult_GetValue(&value, result, 0) == 0);
+                CHECK((int)value == 0);
 
-        }
+                CHECK(VisVisualResult_GetValue(&value, result, 1) == 0);
+                CHECK((int)value == 1);
 
-        // test heap
-        SECTION("Heap"){
+                CHECK(VisVisualResult_GetValue(&value, result, 5) == 0);
+                CHECK((int)value == 5);
 
-            VisVisualResult_SetData(result, bar, 10);
-            VisVisualResult_GetValue(&value, result, 5);
-            CHECK(value == 9);
+                CHECK(VisVisualResult_GetValue(&value, result, 9) == 0);
+                CHECK((int)value == 9);
 
-            bar[5] = 2;
-            free(bar);
-            REQUIRE(value == 9);
+            }
 
         }
+
+        WHEN("the VisVisualResult is resized to 10 and data on the heap is set to the VisVisualResult struct"){
+            auto *heap_data = (PixelValue *) malloc(sizeof(PixelValue) * 10);
+            heap_data[0] = 0;
+            heap_data[1] = 1;
+            heap_data[5] = 5;
+            heap_data[9] = 9;
+            VisVisualResult_SetSize(result, 10);
+            VisVisualResult_SetData(result, heap_data, 10);
+
+            THEN("The value is stored the result"){
+                PixelValue value = 100;
+
+                CHECK(VisVisualResult_GetValue(&value, result, 0) == 0);
+                CHECK((int)value == 0);
+
+                CHECK(VisVisualResult_GetValue(&value, result, 1) == 0);
+                CHECK((int)value == 1);
+
+                CHECK(VisVisualResult_GetValue(&value, result, 5) == 0);
+                CHECK((int)value == 5);
+
+                CHECK(VisVisualResult_GetValue(&value, result, 9) == 0);
+                CHECK((int)value == 9);
+
+            }
+            free(heap_data);
+        }
+
+        VisVisualResult_Destroy(&result);
+        CHECK(nullptr == result);
     }
 
-    VisVisualResult_Destroy(&result);
-    CHECK(nullptr == result);
 }
