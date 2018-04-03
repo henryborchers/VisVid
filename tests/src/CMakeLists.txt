@@ -6,7 +6,7 @@ SET(TEST_SRC
 #        TESTvisBuffer.cpp
 #        TESTvisResult.cpp
 #        TESTvisView.cpp
-        TESTvisVisualization.cpp
+#        TESTvisVisualization.cpp
         TESTvisImageWriter.cpp)
 ADD_EXECUTABLE(runtests ${TEST_SRC})
 add_test(NAME visTests COMMAND runtests --gtest_output=xml:tests.xml
