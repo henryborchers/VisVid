@@ -53,7 +53,7 @@ bool VisVisualResult_IsReady(visVisualResult *pRes);
  * @param size The new length to set the result to. This is most like the width or the height of the frame.
  * @return Returns 0 on success.
  */
-int VisVisualResult_SetSize(visVisualResult *pRest, int size);
+int VisVisualResult_SetSize(visVisualResult *pRest, size_t size);
 
 /**
  * Gets the size of length of a visVisualResult.
