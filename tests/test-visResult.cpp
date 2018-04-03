@@ -67,7 +67,7 @@ TEST_CASE("visVisualResultFunctions"){
     SECTION("Set Result data of VisVisualResult"){
         PixelValue value = 100;
         PixelValue foo[] = {0,1,2,3,4,5,6,7,8,9};
-        PixelValue *bar = (PixelValue *)malloc(sizeof(PixelValue) * 10);
+        auto *bar = (PixelValue *)malloc(sizeof(PixelValue) * 10);
         bar[5] = 9;
 
         VisVisualResult_SetSize(result, 10);
