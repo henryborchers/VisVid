@@ -5,7 +5,7 @@ SET(TEST_SRC
 #        TESTvisFrame.cpp
 #        TESTvisBuffer.cpp
 #        TESTvisResult.cpp
-        TESTvisView.cpp
+#        TESTvisView.cpp
         TESTvisVisualization.cpp
         TESTvisImageWriter.cpp)
 ADD_EXECUTABLE(runtests ${TEST_SRC})

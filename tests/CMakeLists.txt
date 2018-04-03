@@ -33,7 +33,7 @@ add_library(Catch INTERFACE)
 add_library(Catch2::Catch ALIAS Catch)
 target_include_directories(Catch INTERFACE catch2/single_include)
 
-add_executable(test-visvid test-visBuffer.cpp test-main.cpp test-visFrame.cpp test-visResult.cpp)
+add_executable(test-visvid test-visBuffer.cpp test-main.cpp test-visFrame.cpp test-visResult.cpp test-visView.cpp)
 
 set_target_properties(test-visvid PROPERTIES
         CXX_STANDARD 11
