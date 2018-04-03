@@ -27,7 +27,7 @@ TEST_CASE("VisBuffer_Destroy --> null", "[visbuffer]") {
     REQUIRE(buffer == nullptr);
 }
 
-TEST_CASE("visBufferFunctions") {
+TEST_CASE("visBufferFunctions", "[visbuffer]") {
     visBuffer *buffer = nullptr;
     buffer = VisBuffer_Create2(10, 0);
     CHECK(buffer != nullptr);
@@ -185,7 +185,7 @@ TEST_CASE("visBufferFunctions") {
     CHECK(buffer == nullptr);
 }
 
-TEST_CASE("visBufferLimited") {
+TEST_CASE("visBufferLimited", "[visbuffer]") {
     visBuffer *buffer = nullptr;
     buffer = VisBuffer_Create2(10, 5);
     CHECK(buffer != nullptr);
