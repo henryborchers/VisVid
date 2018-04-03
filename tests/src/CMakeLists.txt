@@ -4,7 +4,7 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 SET(TEST_SRC
 #        TESTvisFrame.cpp
 #        TESTvisBuffer.cpp
-        TESTvisResult.cpp
+#        TESTvisResult.cpp
         TESTvisView.cpp
         TESTvisVisualization.cpp
         TESTvisImageWriter.cpp)
