@@ -209,41 +209,41 @@ TEST_CASE("visBufferLimited", "[visbuffer]") {
         SECTION("First") {
             VisVisualResult_SetData(&res, first, 10);
             CHECK(visBuffer_PushBackResult(buffer, &res) == 0);
-            CHECK(visBuffer_getLength(buffer) == 5);
+            REQUIRE(visBuffer_getLength(buffer) == 5);
 
         }
 
         SECTION("Second") {
             VisVisualResult_SetData(&res, second, 10);
             CHECK(visBuffer_PushBackResult(buffer, &res) == 0);
-            CHECK(visBuffer_getLength(buffer) == 5);
+            REQUIRE(visBuffer_getLength(buffer) == 5);
         }
 
         SECTION("third") {
             VisVisualResult_SetData(&res, third, 10);
             CHECK(visBuffer_PushBackResult(buffer, &res) == 0);
-            CHECK(visBuffer_getLength(buffer) == 5);
+            REQUIRE(visBuffer_getLength(buffer) == 5);
 
         }
 
         SECTION("fourth") {
             VisVisualResult_SetData(&res, fourth, 10);
             CHECK(visBuffer_PushBackResult(buffer, &res) == 0);
-            CHECK(visBuffer_getLength(buffer) == 5);
+            REQUIRE(visBuffer_getLength(buffer) == 5);
 
         }
 
         SECTION("fifth") {
             VisVisualResult_SetData(&res, fifth, 10);
             CHECK(visBuffer_PushBackResult(buffer, &res) == 0);
-            CHECK(visBuffer_getLength(buffer) == 5);
+            REQUIRE(visBuffer_getLength(buffer) == 5);
 
         }
 
         SECTION("six") {
             VisVisualResult_SetData(&res, six, 10);
             CHECK(visBuffer_PushBackResult(buffer, &res) == 0);
-            CHECK(visBuffer_getLength(buffer) == 5);
+            REQUIRE(visBuffer_getLength(buffer) == 5);
 
         }
     }
