@@ -87,6 +87,7 @@ void VisYUVFrame_Destroy(VisYUVFrame **frame) {
     (*frame)->width = -1;
     free((*frame)->data);
     (*frame)->data = NULL;
+    free((*frame));
     (*frame) = NULL;
 
 }
