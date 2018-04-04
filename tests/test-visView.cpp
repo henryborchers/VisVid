@@ -111,6 +111,7 @@ TEST_CASE("visView Functions on a full buffer"){
                 CHECK(imageRGB.plane[offset + GREEN_SHIFT] == 0);
             }
         }
+        visImageRGB_FreeData(&imageRGB);
     }
 
     VisView_Destroy(&pvid);
