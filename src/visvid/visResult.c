@@ -25,14 +25,19 @@ int VisVisualResult_Init(visVisualResult *newResult) {
 }
 
 void VisVisualResult_Destroy(visVisualResult **pRes) {
-    free((*pRes)->data);
+    VisVisualResult_Cleanup(*pRes);
 
-    (*pRes)->data = NULL;
-    (*pRes)->size = -1;
-    (*pRes)->ready = false;
     free((*pRes));
     *pRes = NULL;
 
+}
+
+void VisVisualResult_Cleanup(visVisualResult *pRes) {
+    free(pRes->data);
+
+    (pRes)->data = NULL;
+    (pRes)->size = -1;
+    (pRes)->ready = false;
 }
 
 bool VisVisualResult_IsReady(visVisualResult *pRes) {

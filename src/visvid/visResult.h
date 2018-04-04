@@ -42,6 +42,8 @@ visVisualResult *VisVisualResult_Create();
  */
 void VisVisualResult_Destroy(visVisualResult **pRes);
 
+void VisVisualResult_Cleanup(visVisualResult *pRes);
+
 /**
  * Checks the result has valid data from a calculation
  */
