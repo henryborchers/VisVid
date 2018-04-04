@@ -55,11 +55,8 @@ TEST_CASE("VisVisualResult_Init --> data not null", "[visVisualResult]"){
     VisVisualResult_Init(&result);
     CHECK(VisVisualResult_SetSize(&result, 10) == 0);
     REQUIRE(result.data != nullptr);
-    free(result.data);
-//    REQUIRE(nullptr != result);
-
-//    VisVisualResult_Destroy(&result);
-//    CHECK(nullptr == result);
+    VisVisualResult_Cleanup(&result);
+    REQUIRE(nullptr == result.data);
 
 }
 
