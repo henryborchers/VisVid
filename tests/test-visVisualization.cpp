@@ -58,6 +58,7 @@ SCENARIO("Visualization of a SolidColor"){
 
 SCENARIO("Visualization Ramping Luma values") {
     GIVEN("A frame that's 100 by 480 pixels"){
+
         VisYUVFrame         *frame = nullptr;
         visBrush            brush;
         visVisualResult     result;
