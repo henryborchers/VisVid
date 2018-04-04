@@ -7,32 +7,59 @@
 extern "C" {
 #include "visvid.h"
 }
-TEST_CASE("visImageWriterSetup"){
+SCENARIO("visImageWriterSetup"){
     int height = 100;
     int width = 200;
 
-    SECTION("Stack"){
-        visImageRGB imageRGB;
-        visImageRGB_Alloc(&imageRGB, width, height);
+    GIVEN("a visImageRGB is located on the stack"){
 
-        CHECK(imageRGB.plane != nullptr);
-        REQUIRE(imageRGB.height == height);
-        REQUIRE(imageRGB.width == width);
-        visImageRGB_FreeData(&imageRGB);
+        visImageRGB imageRGB;
+
+        WHEN("the RGB image is allocated to 100 pixels high by 200 pixels wide"){
+
+            visImageRGB_Alloc(&imageRGB, width, height);
+            THEN("the image plane is allocated"){
+                CHECK(imageRGB.plane != nullptr);
+            }
+
+            THEN("The image has the correct dimensions"){
+                CHECK(imageRGB.height == height);
+                CHECK(imageRGB.width == width);
+
+            }
+
+            visImageRGB_FreeData(&imageRGB);
+
+
+        }
     }
 
-    SECTION("Heap"){
+    GIVEN("a visImageRGB is located  on the heap"){
+
         visImageRGB *imageRGB;
+
         imageRGB = (visImageRGB*)malloc(sizeof(visImageRGB));
         CHECK(imageRGB != NULL);
 
-        visImageRGB_Alloc(imageRGB, width, height);
-        CHECK(imageRGB->plane != nullptr);
-        REQUIRE(imageRGB->height == height);
-        REQUIRE(imageRGB->width == width);
+        WHEN("the RGB image is allocated to 100 pixels high by 200 pixels wide"){
 
-        visImageRGB_FreeData(imageRGB);
-        CHECK(imageRGB->plane == NULL);
+            visImageRGB_Alloc(imageRGB, width, height);
+
+            THEN("the image plane is allocated"){
+                CHECK(imageRGB->plane != nullptr);
+            }
+
+            THEN("The image has the correct dimensions") {
+
+                REQUIRE(imageRGB->height == height);
+                REQUIRE(imageRGB->width == width);
+            }
+
+            visImageRGB_FreeData(imageRGB);
+            CHECK(imageRGB->plane == NULL);
+        }
+
+
         free(imageRGB);
     }
 
