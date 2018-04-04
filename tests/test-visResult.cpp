@@ -10,7 +10,6 @@ extern "C" {
 
 TEST_CASE("VisVisualResult_Create --> not null", "[visVisualResult]"){
 
-
     visVisualResult *result = nullptr;
 
     result = VisVisualResult_Create();
@@ -28,14 +27,9 @@ TEST_CASE("VisVisualResult_SetSize --> not null", "[visVisualResult]"){
     VisVisualResult_Init(&result);
     VisVisualResult_SetSize(&result, 10);
     VisVisualResult_Cleanup(&result);
-//    free(result.data);
-
-//    VisVisualResult_Destroy(&result);
-//    CHECK(nullptr == result);
 
 }
 TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
-
 
     visVisualResult *result = nullptr;
 
@@ -49,7 +43,6 @@ TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 
 TEST_CASE("VisVisualResult_Init --> data not null", "[visVisualResult]"){
 
-
     visVisualResult result;
 
     VisVisualResult_Init(&result);
@@ -61,8 +54,8 @@ TEST_CASE("VisVisualResult_Init --> data not null", "[visVisualResult]"){
 }
 
 SCENARIO("visVisualResult Functions are used"){
-
     GIVEN("A pointer to a result struct is created on the heap"){
+
         visVisualResult *result = nullptr;
         result = VisVisualResult_Create();
         WHEN("nothing has been done to it"){
@@ -93,6 +86,7 @@ SCENARIO("visVisualResult Functions are used"){
         }
 
         WHEN("the VisVisualResult is resized to 10 and data on the stack is set to the VisVisualResult struct"){
+
             VisVisualResult_SetSize(result, 10);
             PixelValue foo[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -119,6 +113,7 @@ SCENARIO("visVisualResult Functions are used"){
         }
 
         WHEN("the VisVisualResult is resized to 10 and data on the heap is set to the VisVisualResult struct"){
+
             auto *heap_data = (PixelValue *) malloc(sizeof(PixelValue) * 10);
             heap_data[0] = 0;
             heap_data[1] = 1;
