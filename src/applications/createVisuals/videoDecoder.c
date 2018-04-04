@@ -156,6 +156,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
 void decoderContext_Destroy(DecoderContext **pDecoderContext) {
     av_free((*pDecoderContext)->frame);
     avcodec_close((*pDecoderContext)->codecContext);
+    avcodec_free_context(&(*pDecoderContext)->codecContext);
     avformat_close_input(&(*pDecoderContext)->formatContext);
     free((*pDecoderContext)->filename);
     (*pDecoderContext)->video_stream_idx = -1;

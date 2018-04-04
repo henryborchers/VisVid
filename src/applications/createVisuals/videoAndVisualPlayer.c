@@ -62,7 +62,7 @@ int playVideoVis(const char *filename) {
     visBuffer           *buffer = NULL;
     VidVisContext       ctx;
     SDL_Event           event;
-    int                 res;
+    int                 rc;
     visImageRGB         visualization;
     visVisualResult     result;
 
@@ -71,9 +71,9 @@ int playVideoVis(const char *filename) {
 
     decoder_init();
 
-    if((res = vidVis_init()) !=0){
+    if((rc = vidVis_init()) !=0){
         fprintf(stderr, "ERROR: Unable to initialized SDL\n");
-        return res;
+        return rc;
     };
 
 
@@ -95,17 +95,16 @@ int playVideoVis(const char *filename) {
 
 
     puts("Initializing visualization image");
-    if((res = visImageRGB_Alloc(&visualization, videoWidth, videoWidth)) != 0){
+    if((rc = visImageRGB_Alloc(&visualization, videoWidth, videoWidth)) != 0){
         fprintf(stderr, "visImageRGB_Alloc failed\n");
-        return res;
+        return rc;
     };
 
 
     puts("Building Window");
-
-    if((res = vidVis_build_window(&ctx, videoWidth, videoHeight)) != 0){
-        fprintf(stderr, "Building Window failed with error code %d\n ", res);
-        return res;
+    if((rc = vidVis_build_window(&ctx, videoWidth, videoHeight)) != 0){
+        fprintf(stderr, "Building Window failed with error code %d\n ", rc);
+        return rc;
     };
 
 
@@ -135,15 +134,15 @@ int playVideoVis(const char *filename) {
     processContext.processCb = visVisResult_CaculateBrightestOverWidth;
 
     puts("Starting decoding loop");
-    if((res = VisVisualResult_Init(&result)) != 0 ) {
-        fprintf(stderr, "VisVisualResult_Init Failed with code %d\n", res);
-        return res;
+    if((rc = VisVisualResult_Init(&result)) != 0 ) {
+        fprintf(stderr, "VisVisualResult_Init Failed with code %d\n", rc);
+        return rc;
     }
 
     //             Configure the size of the result data set
-    if((res = VisVisualResult_SetSize(&result, videoWidth)) != 0){
+    if((rc = VisVisualResult_SetSize(&result, (size_t )videoWidth)) != 0){
         fprintf(stderr, "VisVisualResult_SetSize Failed\n");
-        return res;
+        return rc;
     }
 
 
@@ -194,7 +193,7 @@ int playVideoVis(const char *filename) {
 
 
         // Get a frame
-        res = decoderContext_NextFrame(decoderCtx, &frame);
+        rc = decoderContext_NextFrame(decoderCtx, &frame);
 
         // If no frame is retrieved, rewind the video
         if(NULL == frame){
@@ -203,42 +202,42 @@ int playVideoVis(const char *filename) {
         }
 
         // If there is an error with decoding, stop!
-        if(res < 0 || frame == NULL){
-            returncode = res;
+        if(rc < 0 || frame == NULL){
+            returncode = rc;
             break;
         }
 
         // Convert the ffmpeg frame into a frame that can be analyzed
-        if((res = ffmpeg2visframe(frameBuffer, frame)) != 0){
-            fprintf(stderr, "ffmpeg2visframe failed with error code %d.\n", res);
-            returncode = res;
+        if((rc = ffmpeg2visframe(frameBuffer, frame)) != 0){
+            fprintf(stderr, "ffmpeg2visframe failed with error code %d.\n", rc);
+            returncode = rc;
             break;
         } else {
 
             // process the frame and save the data to a result data set
-            if((res = visVisProcess(&result, frameBuffer, &processContext)) != 0){
-                returncode = res;
+            if((rc = visVisProcess(&result, frameBuffer, &processContext)) != 0){
+                returncode = rc;
                 fprintf(stderr, "visVisProcess Failed\n");
                 break;
             };
 
             // Add result data set to buffer
-            if((res =  visBuffer_PushBackResult(buffer, &result)) != 0){
-                returncode = res;
+            if((rc =  visBuffer_PushBackResult(buffer, &result)) != 0){
+                returncode = rc;
                 fprintf(stderr, "visBuffer_PushBackResult Failed\n");
                 break;
             };
 
             // update a view of the buffer
-            if((res = visView_Update3(view, buffer)) != 0){
-                returncode = res;
-                fprintf(stderr, "visView_Update Failed with code %d.\n", res);
+            if((rc = visView_Update3(view, buffer)) != 0){
+                returncode = rc;
+                fprintf(stderr, "visView_Update Failed with code %d.\n", rc);
                 break;
             }
 //            // Render a picture of the view to the visualization image
-            if((res = visViewRGB_GenerateRGBA(&visualization, view, visViewRGBA_value2color1)) != 0){
-                returncode = res;
-                fprintf(stderr, "visViewRGB_GenerateRGBA Failed with code %d.\n", res);
+            if((rc = visViewRGB_GenerateRGBA(&visualization, view, visViewRGBA_value2color1)) != 0){
+                returncode = rc;
+                fprintf(stderr, "visViewRGB_GenerateRGBA Failed with code %d.\n", rc);
                 break;
             }
         }
@@ -247,6 +246,13 @@ int playVideoVis(const char *filename) {
         vidVis_refresh(&ctx, frame, &visualization);
     }
     stopmainloop:
+
+    VisVisualResult_Cleanup(&result);
+
+    visImageRGB_FreeData(&visualization);
+
+    puts("Destroying decoder Context");
+    decoderContext_Destroy(&decoderCtx);
 
     puts("Destroying Frame buffer");
     VisYUVFrame_Destroy(&frameBuffer);
