@@ -99,8 +99,6 @@ SCENARIO("visBuffer Functions are used"){
             visVisualResult second_res;
             visVisualResult third_res;
 
-
-
 //    Create 3 results
             VisVisualResult_Init(&first_res);
             VisVisualResult_SetSize(&first_res, 10);
@@ -164,53 +162,7 @@ SCENARIO("visBuffer Functions are used"){
                     }
 
                 }
-//
-//                    visVisualResult *current = nullptr;
-//
-//                    current = visBuffer_PopResult(buffer);
-//                    VisVisualResult_Cleanup(current);
-////                    VisVisualResult_Destroy(&current);
-//
-//                    current = visBuffer_PopResult(buffer);
-//                    VisVisualResult_Cleanup(current);
-////                    VisVisualResult_Destroy(&current);
-//
-//                    current = visBuffer_PopResult(buffer);
-//                    for (int i = 0; i < first_res.size; i++) {
-//                        PixelValue actual = 0;
-//                        PixelValue expected = first_res.data[i];
-//                        CHECK(VisVisualResult_GetValue(&actual, current, i) == 0);
-//                        INFO("Expected: " << (int) expected << ", got " << (int) actual << ".");
-//                        REQUIRE(actual == expected);
-//                    }
-//                    VisVisualResult_Cleanup(current);
-////                    VisVisualResult_Destroy(&current);
-//                }
-//
-//                THEN("the final result of the buffer null") {
-//
-//                    visVisualResult *current = nullptr;
-//
-//                    current = visBuffer_PopResult(buffer);
-//                    VisVisualResult_Destroy(&current);
-//
-//                    current = visBuffer_PopResult(buffer);
-//                    VisVisualResult_Destroy(&current);
-//
-//                    current = visBuffer_PopResult(buffer);
-//                    VisVisualResult_Destroy(&current);
-//
-//                    current = visBuffer_PopShiftResult(buffer);
-//                    REQUIRE(nullptr == current);
-//
-//                }
             }
-//
-//            while(!visBuffer_isEmpty(buffer)){
-//                visVisualResult *res = visBuffer_PopResult(buffer);
-//                VisVisualResult_Destroy(&res);
-//                CHECK(res == nullptr);
-//            }
 
             VisVisualResult_Cleanup(&first_res);
             VisVisualResult_Cleanup(&second_res);
