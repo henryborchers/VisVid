@@ -33,6 +33,7 @@ SCENARIO("visPixelYUV can be get and set"){
         PixelYUV *pixel = nullptr;
         pixel = PixelYUV_Create();
         CHECK(pixel != nullptr);
+
         WHEN("PixelYUV is set"){
 
             PixelYUV_setValue(pixel, 4, 100, 40);
