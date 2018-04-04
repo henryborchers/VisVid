@@ -20,6 +20,20 @@ TEST_CASE("VisVisualResult_Create --> not null", "[visVisualResult]"){
     CHECK(nullptr == result);
 
 }
+
+TEST_CASE("VisVisualResult_SetSize --> not null", "[visVisualResult]"){
+
+
+    visVisualResult result;
+    VisVisualResult_Init(&result);
+    VisVisualResult_SetSize(&result, 10);
+    VisVisualResult_Cleanup(&result);
+//    free(result.data);
+
+//    VisVisualResult_Destroy(&result);
+//    CHECK(nullptr == result);
+
+}
 TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 
 
@@ -30,6 +44,22 @@ TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 
     VisVisualResult_Destroy(&result);
     REQUIRE(nullptr == result);
+
+}
+
+TEST_CASE("VisVisualResult_Init --> data not null", "[visVisualResult]"){
+
+
+    visVisualResult result;
+
+    VisVisualResult_Init(&result);
+    CHECK(VisVisualResult_SetSize(&result, 10) == 0);
+    REQUIRE(result.data != nullptr);
+    free(result.data);
+//    REQUIRE(nullptr != result);
+
+//    VisVisualResult_Destroy(&result);
+//    CHECK(nullptr == result);
 
 }
 
@@ -55,11 +85,12 @@ SCENARIO("visVisualResult Functions are used"){
             VisVisualResult_GetSize(&size, result);
             THEN("The size of the result is resized to 640"){
                 REQUIRE(size == 640);
-            } AND_THEN("The 5th element in the result is zero"){
+            } AND_THEN("The 5th element in the result is 0"){
 
                 PixelValue value = 100;
                 VisVisualResult_GetValue(&value, result, 5);
-                REQUIRE(value == 0);
+                INFO("Expected 255, recieved " << (int)value);
+                REQUIRE((int)value == 0);
             }
 
         }
