@@ -49,6 +49,16 @@ TEST_CASE("visPixelYUV Functions"){
     PixelYUV_Destroy(&pixel);
     CHECK(pixel == nullptr);
 }
+
+TEST_CASE("VisYUVFrame_Create --> not null", "[VisYUVFrame]"){
+    VisYUVFrame *frame = nullptr;
+    frame = VisYUVFrame_Create();
+    REQUIRE(frame != nullptr);
+
+    VisYUVFrame_Destroy(&frame);
+    CHECK(frame == nullptr);
+
+}
 TEST_CASE("visFrameYUV Functions"){
     VisYUVFrame *frame = nullptr;
 
