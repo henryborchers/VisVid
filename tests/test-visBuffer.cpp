@@ -110,7 +110,6 @@ SCENARIO("visBuffer Functions are used"){
             VisVisualResult_SetData(&second_res, second_data_set, 10);
             visBuffer_PushBackResult(buffer, &second_res);
 
-//
             VisVisualResult_Init(&third_res);
             VisVisualResult_SetSize(&third_res, 10);
             VisVisualResult_SetData(&third_res, third_data_set, 10);
@@ -190,20 +189,18 @@ TEST_CASE("visBufferFunctions", "[visbuffer]") {
 
         }
 
-//        TODO : Delete buffer after VisBufferNode_Destroy is fixed. Currently it doesn't return a null
-//        VisBufferNode_Destroy(&node);
-//        CHECK()
         SECTION("check node at index 1 is the correct node") {
             node = _BufferNode_get(buffer, 0);
             REQUIRE(_nodePosition(node) == 0);
-//            VisBufferNode_Destroy(&node);
         }
     }
     VisBuffer_Destroy(&buffer);
     CHECK(buffer == nullptr);
 }
+
 SCENARIO("Fixed Buffer size"){
     GIVEN("a buffer for 5 results of 10 units wide is created"){
+
         visBuffer *buffer = nullptr;
         buffer = VisBuffer_Create2(10, 5);
         CHECK(buffer != nullptr);
@@ -246,17 +243,9 @@ SCENARIO("Fixed Buffer size"){
                 REQUIRE(visBuffer_getLength(buffer) == 5);
             }
 
-//        free(res->data);
             VisVisualResult_Destroy(&res);
-//        Hack: This should be able to clean up without having do it manually
         }
-//    while(!visBuffer_isEmpty(buffer)){
-//        visVisualResult *res = nullptr;
-//        res = visBuffer_PopResult(buffer);
-//        VisVisualResult_Destroy(&res);
-//        CHECK(res == nullptr);
-//
-//    }
+
         VisBuffer_Destroy(&buffer);
         CHECK(buffer == nullptr);
 
