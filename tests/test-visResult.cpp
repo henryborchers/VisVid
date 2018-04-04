@@ -89,7 +89,7 @@ SCENARIO("visVisualResult Functions are used"){
 
                 PixelValue value = 100;
                 VisVisualResult_GetValue(&value, result, 5);
-                INFO("Expected 255, recieved " << (int)value);
+                INFO("Expected 255, received " << (int)value);
                 REQUIRE((int)value == 0);
             }
 
