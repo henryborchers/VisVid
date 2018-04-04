@@ -7,53 +7,102 @@
 extern "C" {
 #include "visvid.h"
 }
+SCENARIO("Visualization of a SolidColor"){
+    GIVEN("a frame containing a single color"){
 
-TEST_CASE("VisualizationSolidColor") {
+        VisYUVFrame     *frame = nullptr;
 
-    VisYUVFrame *frame = nullptr;
-    visVisualResult *result = nullptr;
-    int width = 640;
-    int height = 480;
-    visBrush brush;
+        visBrush        brush;
 
-    brush.Y = 40;
-    brush.U = 60;
-    brush.V = 70;
+        int             width = 640;
+        int             height = 480;
 
-    result = VisVisualResult_Create();
-    CHECK(result != nullptr);
+        brush.Y = 40;
+        brush.U = 60;
+        brush.V = 70;
 
-    CHECK(VisVisualResult_SetSize(result, width) == 0);
+        frame = VisYUVFrame_Create();
 
-    frame = VisYUVFrame_Create();
-    CHECK(frame != nullptr);
+        CHECK(frame != nullptr);
+        CHECK(VisYUVFrame_SetSize(frame, width, height) == 0);
 
-    CHECK(VisYUVFrame_SetSize(frame, width, height) == 0);
+        visYUVFrame_Fill(frame, &brush);
 
-    visYUVFrame_Fill(frame, &brush);
+        WHEN("Calculating the brightness of the frame") {
 
-    SECTION("Brightest") {
+            visVisualResult     *result = nullptr;
 
-        int buffersize = -1;
+            result = VisVisualResult_Create();
 
-        VisVisualResult_GetSize(&buffersize, result);
-        CHECK(visVisResult_CaculateBrightestOverWidth(result, frame) == 0);
+            CHECK(result != nullptr);
+            CHECK(VisVisualResult_SetSize(result, width) == 0);
 
-        for (int i = 0; i < buffersize; i++) {
-            PixelValue value = 0;
-            VisVisualResult_GetValue(&value, result, 0);
-            CHECK(value == 40);
+
+            int buffersize = -1;
+            VisVisualResult_GetSize(&buffersize, result);
+            CHECK(visVisResult_CaculateBrightestOverWidth(result, frame) == 0);
+
+            THEN("Each value in the result is the same"){
+                for (int i = 0; i < buffersize; i++) {
+                    PixelValue value = 0;
+                    VisVisualResult_GetValue(&value, result, 0);
+                    CHECK(value == 40);
+                }
+            }
+            VisVisualResult_Destroy(&result);
         }
+        VisYUVFrame_Destroy(&frame);
+        CHECK(frame == nullptr);
     }
-
-    VisYUVFrame_Destroy(&frame);
-    CHECK(frame == nullptr);
-
 }
+//
+//TEST_CASE("VisualizationSolidColor") {
+//
+//    VisYUVFrame *frame = nullptr;
+//    visVisualResult *result = nullptr;
+//    int width = 640;
+//    int height = 480;
+//    visBrush brush;
+//
+//    brush.Y = 40;
+//    brush.U = 60;
+//    brush.V = 70;
+//
+//    result = VisVisualResult_Create();
+//    CHECK(result != nullptr);
+//
+//    CHECK(VisVisualResult_SetSize(result, width) == 0);
+//
+//    frame = VisYUVFrame_Create();
+//    CHECK(frame != nullptr);
+//
+//    CHECK(VisYUVFrame_SetSize(frame, width, height) == 0);
+//
+//    visYUVFrame_Fill(frame, &brush);
+//
+//    SECTION("Brightest") {
+//
+//        int buffersize = -1;
+//
+//        VisVisualResult_GetSize(&buffersize, result);
+//        CHECK(visVisResult_CaculateBrightestOverWidth(result, frame) == 0);
+//
+//        for (int i = 0; i < buffersize; i++) {
+//            PixelValue value = 0;
+//            VisVisualResult_GetValue(&value, result, 0);
+//            CHECK(value == 40);
+//        }
+//    }
+//    VisVisualResult_Destroy(&result);
+//    VisYUVFrame_Destroy(&frame);
+//    CHECK(frame == nullptr);
+//
+//}
 
 TEST_CASE("VisualizationRampLuma") {
     VisYUVFrame *frame      = nullptr;
-    visVisualResult *result = nullptr;
+    visVisualResult result;
+//    visVisualResult *result = nullptr;
     int width               = 100;
     int height              = 480;
 
@@ -62,10 +111,11 @@ TEST_CASE("VisualizationRampLuma") {
     brush.U = 60;
     brush.V = 70;
 
-    result = VisVisualResult_Create();
-    CHECK(result != nullptr);
+    VisVisualResult_Init(&result);
+//    result = VisVisualResult_Create();
+//    CHECK(result != nullptr);
 
-    CHECK(VisVisualResult_SetSize(result, width) == 0);
+    CHECK(VisVisualResult_SetSize(&result, width) == 0);
 
     frame = VisYUVFrame_Create();
     CHECK(frame != nullptr);
@@ -84,15 +134,16 @@ TEST_CASE("VisualizationRampLuma") {
 
         int buffersize = -1;
 
-        VisVisualResult_GetSize(&buffersize, result);
-        CHECK(visVisResult_CaculateBrightestOverWidth(result, frame) == 0);
+        VisVisualResult_GetSize(&buffersize, &result);
+        CHECK(visVisResult_CaculateBrightestOverWidth(&result, frame) == 0);
 
         for(PixelValue i = 0; i < buffersize; i++){
             PixelValue value = 0;
 
-            VisVisualResult_GetValue(&value, result, i);
+            VisVisualResult_GetValue(&value, &result, i);
             CHECK(value == i);
         }
+        VisVisualResult_Cleanup(&result);
     }
 
     VisYUVFrame_Destroy(&frame);
