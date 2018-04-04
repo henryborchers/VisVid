@@ -202,7 +202,66 @@ TEST_CASE("visBufferFunctions", "[visbuffer]") {
     VisBuffer_Destroy(&buffer);
     CHECK(buffer == nullptr);
 }
+SCENARIO("Fixed Buffer size"){
+    GIVEN("a buffer for 5 results of 10 units wide is created"){
+        visBuffer *buffer = nullptr;
+        buffer = VisBuffer_Create2(10, 5);
+        CHECK(buffer != nullptr);
+        CHECK(visBuffer_getLength(buffer) == 5);
 
+
+        WHEN("6 arrays of pixel values contains values corresponding to their name are added to the buffer") {
+
+            PixelValue first[10] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+            PixelValue second[10] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
+            PixelValue third[10] = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
+            PixelValue fourth[10] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
+            PixelValue fifth[10] = {5, 5, 5, 5, 5, 5, 5, 5, 5, 5};
+            PixelValue six[10] = {6, 6, 6, 6, 6, 6, 6, 6, 6, 6};
+
+            visVisualResult *res = nullptr;
+            res = VisVisualResult_Create();
+//        VisVisualResult_Init(res);
+            VisVisualResult_SetSize(res, 10);
+
+            CHECK(VisVisualResult_SetData(res, first, 10) == 0);
+            CHECK(visBuffer_PushBackResult(buffer, res) == 0);
+
+            CHECK(VisVisualResult_SetData(res, second, 10) == 0);
+            CHECK(visBuffer_PushBackResult(buffer, res) == 0);
+
+            VisVisualResult_SetData(res, third, 10);
+            CHECK(visBuffer_PushBackResult(buffer, res) == 0);
+
+            VisVisualResult_SetData(res, fourth, 10);
+            CHECK(visBuffer_PushBackResult(buffer, res) == 0);
+
+            VisVisualResult_SetData(res, fifth, 10);
+            CHECK(visBuffer_PushBackResult(buffer, res) == 0);
+
+            VisVisualResult_SetData(res, six, 10);
+            CHECK(visBuffer_PushBackResult(buffer, res) == 0);
+
+            THEN("The buffer length should remain 5"){
+                REQUIRE(visBuffer_getLength(buffer) == 5);
+            }
+
+//        free(res->data);
+            VisVisualResult_Destroy(&res);
+//        Hack: This should be able to clean up without having do it manually
+        }
+//    while(!visBuffer_isEmpty(buffer)){
+//        visVisualResult *res = nullptr;
+//        res = visBuffer_PopResult(buffer);
+//        VisVisualResult_Destroy(&res);
+//        CHECK(res == nullptr);
+//
+//    }
+        VisBuffer_Destroy(&buffer);
+        CHECK(buffer == nullptr);
+
+    }
+}
 TEST_CASE("visBufferLimited", "[visbuffer]") {
     visBuffer *buffer = nullptr;
     buffer = VisBuffer_Create2(10, 5);
