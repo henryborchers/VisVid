@@ -27,27 +27,35 @@ TEST_CASE("PixelYUV_Destroy --> null", "[PixelYUV]"){
     REQUIRE(pixel == nullptr);
 
 }
+SCENARIO("visPixelYUV can be get and set"){
+    GIVEN("visPixelYUV is on the heap"){
 
-TEST_CASE("visPixelYUV Functions"){
+        PixelYUV *pixel = nullptr;
+        pixel = PixelYUV_Create();
+        CHECK(pixel != nullptr);
+        WHEN("PixelYUV is set"){
 
-    PixelYUV *pixel = nullptr;
-    pixel = PixelYUV_Create();
-    CHECK(pixel != nullptr);
-    SECTION("set and get pixel"){
-        PixelValue y = 0;
-        PixelValue u = 0;
-        PixelValue v = 0;
+            PixelYUV_setValue(pixel, 4, 100, 40);
 
-        PixelYUV_setValue(pixel, 4, 100, 40);
-        PixelYUV_getValue(pixel, &y, &u, &v);
+            THEN("The value is correctly assigned"){
 
-        REQUIRE(y == 4);
-        REQUIRE(u == 100);
-        REQUIRE(v == 40);
+                PixelValue y = 0;
+                PixelValue u = 0;
+                PixelValue v = 0;
+
+                PixelYUV_getValue(pixel, &y, &u, &v);
+
+                REQUIRE(y == 4);
+                REQUIRE(u == 100);
+                REQUIRE(v == 40);
+
+            }
+        }
+
+        PixelYUV_Destroy(&pixel);
+        CHECK(pixel == nullptr);
     }
 
-    PixelYUV_Destroy(&pixel);
-    CHECK(pixel == nullptr);
 }
 
 TEST_CASE("VisYUVFrame_Create --> not null", "[VisYUVFrame]"){
