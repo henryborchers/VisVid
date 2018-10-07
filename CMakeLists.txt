@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.12)
 project(libvisvid VERSION 0.1)
 
 # Set version metadata
@@ -28,6 +28,25 @@ if(SDL2_FOUND)
     option(VISVID-DEMO_TESTVISUALS "Test Visualzations" ON)
     option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
 endif()
+include(FetchContent)
+FetchContent_Declare(
+        libcatch2
+        URL https://github.com/catchorg/Catch2/archive/v2.4.1.tar.gz
+#        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+#        GIT_TAG 6860c8d
+)
+
+FetchContent_GetProperties(libcatch2)
+if(NOT libcatch2_POPULATED)
+    message(STATUS "Fetching Catch2")
+    FetchContent_Populate(libcatch2)
+        add_subdirectory(${libcatch2_SOURCE_DIR} EXCLUDE_FROM_ALL)
+#    add_library(Catch2 INTERFACE)
+#    list(APPEND CMAKE_MODULE_PATH ${libcatch2_SOURCE_DIR}/contrib/)
+endif()
+target_include_directories(Catch2 INTERFACE ${libcatch2_SOURCE_DIR}/single_include)
+
+
 include(CTest)
 enable_testing()
 
