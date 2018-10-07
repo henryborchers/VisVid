@@ -1,7 +1,3 @@
 [submodule "src/thirdpartylibs/noc"]
 	path = src/thirdpartylibs/noc
 	url = https://github.com/guillaumechereau/noc.git
-[submodule "tests/catch2"]
-	path = tests/catch2
-	url = https://github.com/catchorg/Catch2.git
-	branch = v2.2.1
