@@ -21,7 +21,26 @@ cmake --build .'''
     stage('Test') {
       steps {
         sh 'ctest -S build.cmake --verbose'
-        junit 'build/tests.xml'
+
+      }
+      post{
+        always{
+            xunit testTimeMargin: '3000',
+                thresholdMode: 1,
+                thresholds: [
+                  failed(),
+                  skipped()
+                  ],
+                tools: [
+                  CTest(
+                    deleteOutputFiles: true,
+                    failIfNotNew: true,
+                    pattern: 'testresults/*.xml',
+                    skipNoTestFiles: false,
+                    stopProcessingIfError: true
+                    )
+                  ]
+        }
       }
     }
     stage('Documentation') {
