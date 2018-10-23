@@ -1,4 +1,4 @@
 #build application
-if (VISVID-DEMO_TESTVISUALS)
-    add_subdirectory(createVisuals)
-endif ()
+add_subdirectory(createVisuals)
+#if (VISVID-DEMO_TESTVISUALS)
+#endif ()

@@ -1,61 +1,83 @@
+include(FetchContent)
+
+FetchContent_Declare(
+    sdl2
+    URL https://libsdl.org/release/SDL2-2.0.8.tar.gz
+)
+FetchContent_GetProperties(sdl2)
+if(NOT sdl2_POPULATED)
+    FetchContent_Populate(sdl2)
+    add_subdirectory(${sdl2_SOURCE_DIR} ${sdl2_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+
+FetchContent_Declare(
+    noc
+    GIT_REPOSITORY https://github.com/guillaumechereau/noc.git
+)
+FetchContent_GetProperties(noc)
+if(NOT noc_POPULATED)
+    FetchContent_Populate(noc)
+    add_library(NOC_FILE_DIALOG INTERFACE)
+    target_include_directories(NOC_FILE_DIALOG INTERFACE "${noc_SOURCE_DIR}")
+    target_compile_definitions(NOC_FILE_DIALOG INTERFACE NOC_FILE_DIALOG_IMPLEMENTATION)
+    if(APPLE)
+        find_library(cocoa_lib Cocoa REQUIRED)
+        target_compile_definitions(NOC_FILE_DIALOG INTERFACE NOC_FILE_DIALOG_OSX)
+        target_compile_options(NOC_FILE_DIALOG INTERFACE "-ObjC")
+        target_link_libraries(NOC_FILE_DIALOG INTERFACE ${cocoa_lib})
+    elseif(WIN32)
+        target_compile_definitions(NOC_FILE_DIALOG INTERFACE NOC_FILE_DIALOG_WIN32)
+    elseif(UNIX)
+        message(STATUS "Identified OS: Unix, Using GTK2")
+        find_package(GTK2 REQUIRED gtk)
+        target_compile_definitions(NOC_FILE_DIALOG INTERFACE NOC_FILE_DIALOG_GTK)
+        target_include_directories(NOC_FILE_DIALOG INTERFACE ${GTK2_INCLUDE_DIRS})
+        target_link_libraries(NOC_FILE_DIALOG INTERFACE ${GTK2_LIBRARIES})
+    else()
+        message(FATAL_ERROR "Cannot use NOC file dialog library due to unsupported system")
+    endif()
+endif()
+
+
+
 set(CreateVisual_src main.c
-        gui.c gui.h
-        ramp.c ramp.h
-        videoDecoder.c videoDecoder.h
-        simpleVideoPlayerUtils.c simpleVideoPlayerUtils.h
-        runPlayers.h
-        simpleVideoPlayer.c simpleVideoPlayer.h
-        generator.c generator.h
-        videoAndVisualPlayer.c videoAndVisualPlayer.h
-        ffmpeg_converter.c ffmpeg_converter.h)
+    gui.c gui.h
+    ramp.c ramp.h
+    videoDecoder.c videoDecoder.h
+    simpleVideoPlayerUtils.c simpleVideoPlayerUtils.h
+    runPlayers.h
+    simpleVideoPlayer.c simpleVideoPlayer.h
+    generator.c generator.h
+    videoAndVisualPlayer.c videoAndVisualPlayer.h
+    ffmpeg_converter.c ffmpeg_converter.h)
 
-set(FOUND_LIBRARIES ON)
-
+#set(FOUND_LIBRARIES ON)
 if (NOT FFMPEG_FOUND)
     set(FOUND_LIBRARIES OFF)
     message(WARNING "Unable to find FFMPEG")
 endif ()
 
-if (NOT SDL2_FOUND)
-    set(FOUND_LIBRARIES OFF)
-    message(WARNING "Unable to find SDL2")
-endif ()
-message(STATUS "SDL2_LIBRARIES = ${SDL2_LIBRARIES}")
+add_executable(CreateVisual EXCLUDE_FROM_ALL ${CreateVisual_src})
 
-if (FOUND_LIBRARIES)
-    add_executable(CreateVisual ${CreateVisual_src})
+set_target_properties(CreateVisual PROPERTIES
+    C_STANDARD 11
+    )
 
-        set_target_properties(CreateVisual PROPERTIES
-                C_STANDARD 11
-                )
-    #    target_include_directories(CreateVisual PRIVATE ${PROJECT_SOURCE_DIR}/visvid)
-    target_include_directories(CreateVisual PRIVATE ${SDL2_INCLUDE_DIR})
-    target_include_directories(CreateVisual PRIVATE ${FFMPEG_INCLUDE_DIR})
-    target_link_libraries(CreateVisual
-            PRIVATE
-                Visvid::Visvid
-                m
-                ${FFMPEG_LIBRARIES}
-                SDL2::SDL2-static
-#                ${SDL2_LIBRARIES}
-            )
+target_include_directories(CreateVisual PRIVATE ${SDL2_INCLUDE_DIR})
+target_include_directories(CreateVisual PRIVATE ${FFMPEG_INCLUDE_DIR})
+target_link_libraries(CreateVisual
+        PRIVATE
+            Visvid::Visvid
+            m
+            ${FFMPEG_LIBRARIES}
+            SDL2
+#            SDL2::SDL2-static
+#            ${SDL2_LIBRARIES}
+        )
 
-    # Contifigure the optional Dialog box
-
-    if (VISVID-DEMO_NOC_FILE_DIALOG)
-        add_subdirectory(thirdpartylibs)
-        set(DialogBox_src filedialog.c filedialog.h)
-        add_library(DialogBox STATIC ${DialogBox_src})
-        target_link_libraries(DialogBox NOC_FILE_DIALOG)
-        target_link_libraries(CreateVisual PRIVATE DialogBox)
-    endif (VISVID-DEMO_NOC_FILE_DIALOG)
-
-    install(TARGETS CreateVisual
-            RUNTIME DESTINATION bin
-            COMPONENT Application)
-
-else ()
-    message(WARNING "Missing required libraries. Unable to build CreateVisual")
-endif ()
-
+set(DialogBox_src filedialog.c filedialog.h)
+add_library(DialogBox STATIC ${DialogBox_src})
+target_link_libraries(DialogBox NOC_FILE_DIALOG)
+target_link_libraries(CreateVisual PRIVATE DialogBox)
 

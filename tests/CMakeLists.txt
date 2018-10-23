@@ -27,18 +27,42 @@
 ##############################
 # Catch2 tests
 ##############################
-if (VISVID_TESTS)
+#if (VISVID_TESTS)
+include(FetchContent)
+FetchContent_Declare(
+        libcatch2
+        #        URL https://github.com/catchorg/Catch2/archive/v2.4.1.tar.gz
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG 6860c8d
+)
 
-    include(${libcatch2_SOURCE_DIR}/contrib/Catch.cmake)
-    add_library(Catch INTERFACE)
-    add_library(Catch2::Catch ALIAS Catch)
-    target_include_directories(Catch INTERFACE catch2/single_include)
+FetchContent_GetProperties(libcatch2)
 
-    add_executable(test-visvid test-visBuffer.cpp test-main.cpp test-visFrame.cpp test-visResult.cpp test-visView.cpp test-visVisualization.cpp test-visImageWriter.cpp)
+if(NOT libcatch2_POPULATED)
+    message(STATUS "Fetching Catch2")
+    FetchContent_Populate(libcatch2)
+#    add_subdirectory(${libcatch2_SOURCE_DIR}
+#            EXCLUDE_FROM_ALL
+#            )
+    add_library(Catch2 INTERFACE)
+    list(APPEND CMAKE_MODULE_PATH ${libcatch2_SOURCE_DIR}/contrib/)
+#else()
+    #    message(STATUS "Catch2 exists")
+endif()
+target_include_directories(Catch2 INTERFACE ${libcatch2_SOURCE_DIR}/single_include)
+include(${libcatch2_SOURCE_DIR}/contrib/ParseAndAddCatchTests.cmake)
+#if(libcatch2_POPULATED)
+add_library(Catch INTERFACE)
+add_library(Catch2::Catch ALIAS Catch)
+#endif(libcatch2_POPULATED)
 
-    set_target_properties(test-visvid PROPERTIES
-            CXX_STANDARD 11
-            )
-    target_link_libraries(test-visvid PRIVATE Catch2::Catch Visvid::Visvid)
-    catch_discover_tests(test-visvid)
-endif (VISVID_TESTS)
+target_include_directories(Catch INTERFACE ${libcatch2_SOURCE_DIR}/single_include)
+
+add_executable(test-visvid test-visBuffer.cpp test-main.cpp test-visFrame.cpp test-visResult.cpp test-visView.cpp test-visVisualization.cpp test-visImageWriter.cpp)
+
+set_target_properties(test-visvid PROPERTIES
+        CXX_STANDARD 11
+        )
+target_link_libraries(test-visvid PRIVATE Catch2::Catch Visvid::Visvid)
+ParseAndAddCatchTests(test-visvid)
+#endif (VISVID_TESTS)

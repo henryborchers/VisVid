@@ -22,29 +22,13 @@ if (DOXYGEN_FOUND)
     option(VISVID_BUILDDOCS "Build Doxygen documentation" OFF)
 endif ()
 
-option(VISVID_TESTS "Build Tests" ON)
+#option(VISVID_TESTS "Build Tests" ON)
 option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
-if(SDL2_FOUND)
-    option(VISVID-DEMO_TESTVISUALS "Test Visualzations" ON)
-    option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
-endif()
-include(FetchContent)
-FetchContent_Declare(
-        libcatch2
-        URL https://github.com/catchorg/Catch2/archive/v2.4.1.tar.gz
-#        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-#        GIT_TAG 6860c8d
-)
+#option(VISVID-DEMO_TESTVISUALS "Test Visualzations" OFF)
+#if(SDL2_FOUND)
+#    option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
+#endif()
 
-FetchContent_GetProperties(libcatch2)
-if(NOT libcatch2_POPULATED)
-    message(STATUS "Fetching Catch2")
-    FetchContent_Populate(libcatch2)
-        add_subdirectory(${libcatch2_SOURCE_DIR} EXCLUDE_FROM_ALL)
-#    add_library(Catch2 INTERFACE)
-#    list(APPEND CMAKE_MODULE_PATH ${libcatch2_SOURCE_DIR}/contrib/)
-endif()
-target_include_directories(Catch2 INTERFACE ${libcatch2_SOURCE_DIR}/single_include)
 
 
 include(CTest)
@@ -53,9 +37,9 @@ enable_testing()
 add_subdirectory(src)
 
 # build tests
-if (VISVID_TESTS)
+#if (VISVID_TESTS)
     add_subdirectory(tests)
-endif (VISVID_TESTS)
+#endif (VISVID_TESTS)
 
 # Build Documentation
 include(cmake/buildDocumentation.cmake)
