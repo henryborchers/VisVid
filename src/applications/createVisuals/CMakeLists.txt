@@ -40,25 +40,23 @@ if(NOT noc_POPULATED)
 endif()
 
 
-
-set(CreateVisual_src main.c
-    gui.c gui.h
-    ramp.c ramp.h
-    videoDecoder.c videoDecoder.h
-    simpleVideoPlayerUtils.c simpleVideoPlayerUtils.h
-    runPlayers.h
-    simpleVideoPlayer.c simpleVideoPlayer.h
-    generator.c generator.h
-    videoAndVisualPlayer.c videoAndVisualPlayer.h
-    ffmpeg_converter.c ffmpeg_converter.h)
-
 #set(FOUND_LIBRARIES ON)
 if (NOT FFMPEG_FOUND)
     set(FOUND_LIBRARIES OFF)
     message(WARNING "Unable to find FFMPEG")
 endif ()
 
-add_executable(CreateVisual EXCLUDE_FROM_ALL ${CreateVisual_src})
+add_executable(CreateVisual EXCLUDE_FROM_ALL
+    main.c
+    gui.c
+    ramp.c
+    videoDecoder.c
+    simpleVideoPlayerUtils.c
+    simpleVideoPlayer.c
+    generator.c
+    videoAndVisualPlayer.c
+    ffmpeg_converter.c
+    )
 
 set_target_properties(CreateVisual PROPERTIES
     C_STANDARD 11
