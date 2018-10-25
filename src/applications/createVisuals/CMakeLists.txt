@@ -77,7 +77,7 @@ target_link_libraries(CreateVisual
         )
 
 set(DialogBox_src filedialog.c filedialog.h)
-add_library(DialogBox STATIC ${DialogBox_src})
+add_library(DialogBox STATIC EXCLUDE_FROM_ALL ${DialogBox_src})
 target_link_libraries(DialogBox NOC_FILE_DIALOG)
 target_link_libraries(CreateVisual PRIVATE DialogBox)
 
