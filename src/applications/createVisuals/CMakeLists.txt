@@ -46,7 +46,7 @@ if (NOT FFMPEG_FOUND)
     message(WARNING "Unable to find FFMPEG")
 endif ()
 
-add_executable(CreateVisual EXCLUDE_FROM_ALL
+add_executable(CreateVisual
     main.c
     gui.c
     ramp.c

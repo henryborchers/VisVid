@@ -1,4 +1,5 @@
 #build application
-add_subdirectory(createVisuals)
-#if (VISVID-DEMO_TESTVISUALS)
-#endif ()
+option(VISVID_SAMPLE_CREATEVISUALS "Test Visualzations" OFF)
+if (VISVID_SAMPLE_CREATEVISUALS)
+    add_subdirectory(createVisuals)
+endif (VISVID_SAMPLE_CREATEVISUALS)

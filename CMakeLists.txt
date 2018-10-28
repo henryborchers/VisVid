@@ -12,7 +12,7 @@ string(TIMESTAMP LIBVISVID_VERSION_BUILD "%Y%m%d%H%M%S")
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Set default compiling flags
-find_package(FFMPEG REQUIRED)
+find_package(FFMPEG)
 find_package(SDL2)
 find_package(Doxygen)
 
@@ -24,7 +24,7 @@ endif ()
 
 #option(VISVID_TESTS "Build Tests" ON)
 option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
-#option(VISVID-DEMO_TESTVISUALS "Test Visualzations" OFF)
+
 #if(SDL2_FOUND)
 #    option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
 #endif()
