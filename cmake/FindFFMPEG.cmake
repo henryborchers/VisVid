@@ -32,7 +32,7 @@
 #  License text for the above reference.)
 
 # Originally from VTK project
-
+include_guard(GLOBAL)
 MESSAGE(INFO "USING CUSTOM Find FFMPEG ")
 #if(NOT DEFINED)
 
