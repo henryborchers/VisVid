@@ -9,10 +9,16 @@ set(LIBVISVID_VERSION "${LIBVISVID_VERSION_MAJOR}.${LIBVISVID_VERSION_MINOR}.${L
 string(TIMESTAMP LIBVISVID_VERSION_BUILD "%Y%m%d%H%M%S")
 
 # Set the path for cmake modules
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
+#list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+#
 # Set default compiling flags
-find_package(FFMPEG)
+find_package(FFMPEG
+        COMPONENTS
+            avformat
+            avcodec
+            avutil
+            swscale
+        )
 find_package(SDL2)
 find_package(Doxygen)
 

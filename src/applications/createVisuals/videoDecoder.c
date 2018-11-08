@@ -13,11 +13,11 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <swscale.h>
+#include <libswscale/swscale.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include "error.h"
-#include "mem.h"
+//#include "mem.h"
 //#include <swscale.h>
 
 #define FILE_PATH_MAX 10000

@@ -4,7 +4,7 @@
 
 #include "ffmpeg_converter.h"
 #include <libavutil/frame.h>
-#include <pixdesc.h>
+#include <libavutil/pixdesc.h>
 #include <stdint.h>
 #include "visFrame.h"
 #include "visTypes.h"
