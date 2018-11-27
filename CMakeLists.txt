@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(libvisvid VERSION 0.1)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Set version metadata
 set(LIBVISVID_VERSION_MAJOR 0)
@@ -43,16 +44,10 @@ enable_testing()
 add_subdirectory(src)
 
 # build tests
-#if (VISVID_TESTS)
-    add_subdirectory(tests)
-#endif (VISVID_TESTS)
+add_subdirectory(tests)
 
 # Build Documentation
 include(cmake/buildDocumentation.cmake)
-
-# Build Swig Bindings
-include(swig/swig.cmake)
-
 
 # Enable packaging
 include(cmake/CPackConfig.cmake)
