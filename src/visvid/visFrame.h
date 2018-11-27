@@ -17,12 +17,13 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #endif
 
 #include <stdint.h>
-#include "visTypes.h"
+#include "visvid.h"
+//#include "visTypes.h"
 struct PixelYUV;
 struct visBrush;
 
 typedef struct PixelYUV PixelYUV;
-typedef struct VisYUVFrame VisYUVFrame;
+
 typedef struct visBrush visBrush;
 struct visBrush{
     PixelValue Y;     /**< @brief Luma. */

@@ -20,7 +20,7 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #endif
 
 #include "visResult.h"
-#include "visTypes.h"
+//#include "visTypes.h"
 #include "visUtils.h"
 
 

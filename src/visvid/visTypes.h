@@ -6,6 +6,5 @@
 #define VISVID_VISTYPES_H
 
 #include <stdint.h>
-typedef uint8_t PixelValue;
 
 #endif //VISVID_VISTYPES_H

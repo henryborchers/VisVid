@@ -14,21 +14,12 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #define calloc(size, num) d_debug_mem_calloc(size, num, __FILE__, __LINE__)
 #endif
 
-#include <stdbool.h>
+#include "visvid.h"
+//#include <stdbool.h>
 #include <stddef.h>
-#include "visTypes.h"
+//#include "visTypes.h"
 
 
-/**
- * @struct visVisualResult
- * @brief  Contains the calculated data from a visualization calculation.
- */
-struct visVisualResult{
-    bool ready;         /**< Declares if a result has been fully calculated.*/
-    int size;           /**< The number of pixels wide the result is. */
-    PixelValue *data ;   /**< Raw Data */
-};
-typedef struct visVisualResult visVisualResult;
 
 /**
  * Creates a new visVisualResult on the heap and returns a pointer to it.

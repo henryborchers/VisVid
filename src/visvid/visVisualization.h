@@ -18,26 +18,7 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #define calloc(size, num) d_debug_mem_calloc(size, num, __FILE__, __LINE__)
 #endif
 
+#include "visvid.h"
 #include "visResult.h"
 #include "visFrame.h"
-//#include "visBuffer.h"
-struct visProcessContext;
-
-typedef struct visProcessContext visProcessContext;
-
-struct visProcessContext{
-    int(*processCb)(visVisualResult *result, VisYUVFrame *frame);
-};
-
-
-/**
- * The produces a similar result to a video waveform monitor.
- * @param result
- * @param frame
- * @return
- */
-int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame);
-// TODO: Create a creater for visProcessContext.
-
-int visVisProcess(visVisualResult *pRes, VisYUVFrame *pFrame, visProcessContext *processContext);
 #endif //VISVID_VISVISUALIZATION_H
