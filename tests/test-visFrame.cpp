@@ -6,6 +6,7 @@
 
 extern "C" {
 #include "visvid.h"
+#include "visFrame.h"
 }
 
 TEST_CASE("visPixelYUV_Create --> not null", "[PixelYUV]"){

@@ -6,6 +6,7 @@
 
 extern "C" {
 #include "visvid.h"
+#include "visView.h"
 }
 
 TEST_CASE("VisView_Create --> not null", "[visView]"){

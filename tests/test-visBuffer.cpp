@@ -6,6 +6,7 @@
 
 extern "C" {
 #include "visvid.h"
+#include "visBuffer.h"
 }
 
 
