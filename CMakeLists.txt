@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(libvisvid
-        VERSION "0.1.0"
+        VERSION 0.1.0
         DESCRIPTION "Turns video data into a visual map"
         )
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
 # Set version metadata
 #set(LIBVISVID_VERSION_MAJOR 0)
 #set(LIBVISVID_VERSION_MINOR 1)
