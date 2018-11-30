@@ -24,11 +24,6 @@ find_package(SDL2)
 find_package(Doxygen)
 
 
-# Set Options
-if (DOXYGEN_FOUND)
-    option(VISVID_BUILDDOCS "Build Doxygen documentation" OFF)
-endif ()
-
 #option(VISVID_TESTS "Build Tests" ON)
 option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
 
