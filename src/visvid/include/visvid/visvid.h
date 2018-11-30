@@ -6,15 +6,6 @@
 #define LIBVISVID_VISVID_H
 #include <stdint.h>
 #include <stdbool.h>
-//#include "visTypes.h"
-//#include "visFrame.h"
-//#include "visBuffer.h"
-//#include "visImageWriter.h"
-//#include "visResult.h"
-//#include "visView.h"
-//#include "visFrame.h"
-//#include "visVisualization.h"
-//#include "visVersion.h"
 
 typedef uint8_t PixelValue;
 
