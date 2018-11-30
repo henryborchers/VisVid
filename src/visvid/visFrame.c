@@ -2,8 +2,8 @@
 // Created by Borchers, Henry Samuel on 6/25/16.
 //
 
-#include "visFrame.h"
 #include "visvid/utils.h"
+#include "visFrame.h"
 #include <errno.h>
 #include <stdlib.h>
 //#include <stdint.h>

@@ -119,6 +119,5 @@ int VisYUVFrame_getPixelYUV(PixelYUV *result, VisYUVFrame *frame, int x, int y);
 
 int visYUVFrame_Fill(VisYUVFrame *frame, struct visBrush *brush);
 
-int YUVPixel_Draw(VisYUVFrame *frame, struct visBrush *brush, int x, int y);
 
 #endif //VISVID_VISFRAME_H_H

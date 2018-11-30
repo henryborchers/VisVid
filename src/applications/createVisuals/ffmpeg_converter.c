@@ -7,6 +7,7 @@
 #include <libavutil/pixdesc.h>
 #include <stdint.h>
 #include "visvid/utils.h"
+#include "visvid/visvid.h"
 //#include "visFrame.h"
 //#include "visTypes.h"
 
