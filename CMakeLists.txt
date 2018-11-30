@@ -23,10 +23,6 @@ find_package(FFMPEG
 find_package(SDL2)
 find_package(Doxygen)
 
-
-#option(VISVID_TESTS "Build Tests" ON)
-option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
-
 #if(SDL2_FOUND)
 #    option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
 #endif()
