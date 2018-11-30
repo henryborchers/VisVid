@@ -3,6 +3,7 @@
 //
 
 #include "visFrame.h"
+#include "visvid/utils.h"
 #include <errno.h>
 #include <stdlib.h>
 //#include <stdint.h>

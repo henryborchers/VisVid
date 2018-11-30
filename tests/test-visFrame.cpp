@@ -3,9 +3,9 @@
 //
 
 #include "catch.hpp"
+#include "include/visvid/utils.h"
 
 extern "C" {
-#include "visvid.h"
 #include "visFrame.h"
 }
 

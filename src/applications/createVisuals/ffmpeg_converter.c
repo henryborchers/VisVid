@@ -6,8 +6,9 @@
 #include <libavutil/frame.h>
 #include <libavutil/pixdesc.h>
 #include <stdint.h>
-#include "visFrame.h"
-#include "visTypes.h"
+#include "visvid/utils.h"
+//#include "visFrame.h"
+//#include "visTypes.h"
 
 int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src) {
     int res;

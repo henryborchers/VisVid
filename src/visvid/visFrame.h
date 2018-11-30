@@ -17,19 +17,12 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #endif
 
 #include <stdint.h>
-#include "visvid.h"
+#include "visvid/visvid.h"
+#include "visvid/utils.h"
 //#include "visTypes.h"
 struct PixelYUV;
-struct visBrush;
 
 typedef struct PixelYUV PixelYUV;
-
-typedef struct visBrush visBrush;
-struct visBrush{
-    PixelValue Y;     /**< @brief Luma. */
-    PixelValue U;     /**< @brief Chroma. */
-    PixelValue V;     /**< @brief Chroma. */
-};
 
 /**
  * @struct PixelYUV
@@ -124,8 +117,8 @@ int VisYUVFrame_SetPos(VisYUVFrame *frame, int64_t *result);
 
 int VisYUVFrame_getPixelYUV(PixelYUV *result, VisYUVFrame *frame, int x, int y);
 
-int visYUVFrame_Fill(VisYUVFrame *frame, visBrush *brush);
+int visYUVFrame_Fill(VisYUVFrame *frame, struct visBrush *brush);
 
-int YUVPixel_Draw(VisYUVFrame *frame, visBrush *brush, int x, int y);
+int YUVPixel_Draw(VisYUVFrame *frame, struct visBrush *brush, int x, int y);
 
 #endif //VISVID_VISFRAME_H_H

@@ -5,8 +5,8 @@
 #include "catch.hpp"
 
 extern "C" {
-    #include "visvid.h"
-    #include "visVisualization.h"
+#include "visvid/utils.h"
+#include "visVisualization.h"
 }
 SCENARIO("Visualization of a SolidColor"){
     GIVEN("a frame containing a single color"){

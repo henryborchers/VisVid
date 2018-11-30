@@ -15,7 +15,15 @@ if(NOT libcatch2_POPULATED)
     target_include_directories(Catch2 INTERFACE ${libcatch2_SOURCE_DIR}/single_include/catch2)
 endif()
 
-add_executable(test-visvid EXCLUDE_FROM_ALL test-visBuffer.cpp test-main.cpp test-visFrame.cpp test-visResult.cpp test-visView.cpp test-visVisualization.cpp test-visImageWriter.cpp)
+add_executable(test-visvid EXCLUDE_FROM_ALL
+        test-visBuffer.cpp
+        test-main.cpp
+        test-visFrame.cpp
+        test-visResult.cpp
+        test-visView.cpp
+        test-visVisualization.cpp
+        test-visImageWriter.cpp
+        )
 
 set_target_properties(test-visvid PROPERTIES
         CXX_STANDARD 11
