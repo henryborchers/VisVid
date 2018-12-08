@@ -26,11 +26,11 @@ typedef struct PixelYUV {
 
 
 typedef struct VisYUVFrame VisYUVFrame;
+
 /**
  * @struct visVisualResult
  * @brief  Contains the calculated data from a visualization calculation.
  */
-
 struct visVisualResult{
     bool ready;         /**< Declares if a result has been fully calculated.*/
     int size;           /**< The number of pixels wide the result is. */

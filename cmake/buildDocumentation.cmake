@@ -2,9 +2,10 @@ find_package(Doxygen)
 
 
 if(DOXYGEN_FOUND)
-        doxygen_add_docs(documentation visvid
+        set(DOXYGEN_EXAMPLE_PATH "${PROJECT_SOURCE_DIR}/src/applications")
+        set(DOXYGEN_EXCLUDE "${PROJECT_SOURCE_DIR}/src/applications/createVisuals/thirdpartylibs")
+        doxygen_add_docs(documentation visvid ${PROJECT_SOURCE_DIR}/docs/mainpage.dox
                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/visvid/include
-                COMMENT "Generated html pages"
-                DOXYGEN_HAVE_DOT YES
+                COMMENT "Generating ${PROJECT_NAME} api documentation"
                 )
 endif()
