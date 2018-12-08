@@ -27,34 +27,11 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
  */
 visVisualResult *VisVisualResult_Create();
 
-/**
- * Frees up the memory used by a given visVisualResult.
- * @param pRes Pointer to the visVisualResult to free up.
- */
-void VisVisualResult_Destroy(visVisualResult **pRes);
-
-void VisVisualResult_Cleanup(visVisualResult *pRes);
 
 /**
  * Checks the result has valid data from a calculation
  */
 bool VisVisualResult_IsReady(visVisualResult *pRes);
-
-/**
- * Sizes or re-sizes the length of the visVisualResult. Any existing data will be lost.
- * @param pRest Pointer to visVisualResult to set the length.
- * @param size The new length to set the result to. This is most like the width or the height of the frame.
- * @return Returns 0 on success.
- */
-int VisVisualResult_SetSize(visVisualResult *pRest, size_t size);
-
-/**
- * Gets the size of length of a visVisualResult.
- * @param size A pointer to where the length can be stored.
- * @param pRest Pointer to visVisualResult to get the length.
- * @return Returns 0 on success.
- */
-int VisVisualResult_GetSize(int *size, visVisualResult *pRest);
 
 /**
  * Get the value of a visVisualResult at a certain offset.
@@ -65,16 +42,7 @@ int VisVisualResult_GetSize(int *size, visVisualResult *pRest);
  */
 int VisVisualResult_GetValue(PixelValue *value, visVisualResult *pRes, int offset);
 
-/**
- * Performs a memory copy of the data and sets visVisualResult->ready to true.
- * @param pRes visVisualResult with data to copy to.
- * @param data The data to copy from.
- * @param length The number of elements in the data.
- * @return Returns 0 on success.
- */
-int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length);
 
-int VisVisualResult_Init(visVisualResult *newResult);
 
 int VisVisualResult_copy(visVisualResult *dst, visVisualResult *src);
 #endif //VISVID_VISRESULT_H

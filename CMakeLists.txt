@@ -9,6 +9,8 @@ set(LIBVISVID_VERSION_PATCH 0)
 set(LIBVISVID_VERSION "${LIBVISVID_VERSION_MAJOR}.${LIBVISVID_VERSION_MINOR}.${LIBVISVID_VERSION_PATCH}")
 string(TIMESTAMP LIBVISVID_VERSION_BUILD "%Y%m%d%H%M%S")
 
+
+
 # Set the path for cmake modules
 #list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 #
@@ -43,4 +45,23 @@ include(cmake/buildDocumentation.cmake)
 # Enable packaging
 include(cmake/CPackConfig.cmake)
 include(CPack)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+        ${PROJECT_SOURCE_DIR}/cmake/VisVidConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfig.cmake
+        INSTALL_DESTINATION share/cmake/${PROJECT_NAME}
 
+)
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+)
+
+install(
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfigVersion.cmake
+        DESTINATION
+        share/cmake/${PROJECT_NAME}
+)

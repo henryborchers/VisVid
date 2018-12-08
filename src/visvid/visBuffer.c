@@ -17,17 +17,7 @@ struct visBufferNode {
     size_t position;
 };
 
-/**
- * @struct visBuffer
- * @brief Used to store the sequence of calculation results from the visualization.
- */
-struct visBuffer {
-    size_t bufferMaxSize;               /**< Number of nodes in the buffer.*/
-    size_t bufferLen;               /**< Number of nodes in the buffer.*/
-    size_t bufferWidth;             /**< The resolution of the calculations*/
-    visBufferNode *first;           /**< First node in the buffer*/
-    visBufferNode *last;            /**< Last node in the buffer*/
-};
+
 
 /**
  * Gets the first node of the visBuffer.

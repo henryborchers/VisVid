@@ -21,10 +21,9 @@ list(APPEND VISPUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/visvid/visVersion.h")
 set_target_properties(Visvid PROPERTIES
         C_STANDARD 11
         PUBLIC_HEADER "${VISPUBLIC_HEADER}"
+        ENABLE_EXPORTS NO
         )
-if(MSVC)
-    target_compile_definitions(Visvid PRIVATE WINDOWS_EXPORT_ALL_SYMBOLS=1)
-endif(MSVC)
+
 
 if (VISVID_MEMDEBUG)
     MESSAGE(WARNING "MEMORY debug messages turned on")
@@ -53,5 +52,5 @@ install(TARGETS Visvid EXPORT VisvidTargets
 install(EXPORT VisvidTargets
         FILE VisvidTargets.cmake
         NAMESPACE Visvid::
-        DESTINATION lib/cmake/visvid
+        DESTINATION share/cmake/${PROJECT_NAME}
         )

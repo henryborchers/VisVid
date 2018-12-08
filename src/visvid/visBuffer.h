@@ -11,15 +11,8 @@
 #ifndef VISVID_VISBUFFER_H
 #define VISVID_VISBUFFER_H
 
-#ifdef MEMORY_DEBUG
-#include <stdlib.h>
-extern void *d_debug_mem_malloc(size_t size, char *file, size_t line);
-extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line);
-#define malloc(size) d_debug_mem_malloc(size, __FILE__, __LINE__)
-#define calloc(size, num) d_debug_mem_calloc(size, num, __FILE__, __LINE__)
-#endif
-
 #include "visResult.h"
+#include "visvid/visvid.h"
 //#include "visTypes.h"
 #include "visUtils.h"
 
@@ -38,22 +31,6 @@ typedef struct visBuffer visBuffer;
  */
 DEPRECATED visBuffer *VisBuffer_Create(size_t width);
 
-/**
- *
- * @param width Number of pixels used by each result slice that will be stored in the buffer.
- * @param bufferSize The size of a buffer. If bufferSize is 0, the buffer size is unlimited.
- * @return Returns a pointer the new visBuffer.
- * @note You are responsible for freeing this data when you are done with it. Use DestroyVisBuffer() to release any
- * memory reserved by this.
- */
-visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize);
-
-/**
- * Cleans up and destroys the given visBuffer.
- * @param buffer The visBuffer to be cleaned up.
- */
-void VisBuffer_Destroy(visBuffer **buffer);
-
 
 /**
  * Check to see if the buffer is empty.
@@ -68,14 +45,6 @@ int visBuffer_isEmpty(visBuffer *buffer);
  * @return The number of nodes inside the buffer.
  */
 size_t visBuffer_getLength(visBuffer *buffer);
-
-/**
- * Pushes a visVisualResult to the end of the buffer.
- * @param buffer The Buffer to push a visVisualResult to the end of.
- * @param pRes The visVisualResult to push to the end of a visBuffer.
- * @return Returns 0 on success;
- */
-int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
 
 /**
  * Pops a visVisualResult off the front of the a visBuffer.
