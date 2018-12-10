@@ -70,6 +70,15 @@ pipeline {
 
           }
         }
+        stage("CTest: MemCheck"){
+          steps{
+            ctest(
+              arguments: "-T memcheck", 
+              installation: 'InSearchPath', 
+              workingDir: 'build/debug'
+              )
+          }
+        }
       }
       post{
         always{
