@@ -93,7 +93,15 @@ pipeline {
       }
       post{
         success{
-          publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'build/docs/html', reportFiles: 'index.html', reportName: 'Documentation', reportTitles: ''])
+          publishHTML(
+            [allowMissing: false, 
+            alwaysLinkToLastBuild: false, 
+            keepAll: false, 
+            reportDir: 'build/release/docs/html', 
+            reportFiles: 'index.html', 
+            reportName: 'Documentation', 
+            reportTitles: '']
+            )
           // zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
         }
       }
