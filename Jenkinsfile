@@ -5,22 +5,52 @@ pipeline {
     }
     
   }
+  options {
+    timeout(30)
+    checkoutToSubdirectory 'scm'
+    buildDiscarder(
+        logRotator(
+            artifactDaysToKeepStr: '10',
+            artifactNumToKeepStr: '10',
+            daysToKeepStr: '20',
+            numToKeepStr: '20'
+        )
+    )
+  }
   stages {
     stage('Build') {
       steps {
-        sh '''which gcov
-git submodule init
-git submodule update
-'''
-        sh '''mkdir build
-cd build
-cmake .. -DVISVID_BUILDDOCS=ON
-cmake --build .'''
-      }
+        cmakeBuild(
+          buildDir: 'build/release', 
+          buildType: 'Release', 
+          cleanBuild: true, 
+          cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
+          installation: 'InSearchPath', 
+          sourceDir: 'scm', 
+          steps: [[withCmake: true]]
+        )
+
+//         sh '''which gcov
+// git submodule init
+// git submodule update
+// '''
+//         sh '''mkdir build
+// cd build
+// cmake .. -DVISVID_BUILDDOCS=ON
+// cmake --build .'''
+//       }
     }
     stage('Test') {
       steps {
-        sh 'ctest -S build.cmake --verbose'
+        cmakeBuild(
+          buildDir: 'build/debug', 
+          buildType: 'Debug', 
+          cleanBuild: true, 
+          installation: 'InSearchPath', 
+          sourceDir: 'scm', 
+          steps: [[args: '--target test-visvid', withCmake: true]]
+        )
+        // sh 'ctest -S build.cmake --verbose'
 
       }
       post{
