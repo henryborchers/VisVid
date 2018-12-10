@@ -7,7 +7,7 @@ pipeline {
   }
   options {
     timeout(30)
-    checkoutToSubdirectory 'scm'
+    // checkoutToSubdirectory 'scm'
     buildDiscarder(
         logRotator(
             artifactDaysToKeepStr: '10',
@@ -26,7 +26,7 @@ pipeline {
           cleanBuild: true, 
           cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
           installation: 'InSearchPath', 
-          sourceDir: 'scm', 
+          // sourceDir: 'scm',  
           steps: [[withCmake: true]]
         )
 
@@ -47,7 +47,7 @@ pipeline {
           buildType: 'Debug', 
           cleanBuild: true, 
           installation: 'InSearchPath', 
-          sourceDir: 'scm', 
+          // sourceDir: 'scm', 
           steps: [[args: '--target test-visvid', withCmake: true]]
         )
         // sh 'ctest -S build.cmake --verbose'
