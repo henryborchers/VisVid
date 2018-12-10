@@ -118,8 +118,11 @@ pipeline {
   // } 
     }
     post {
-        failed {
+        failure {
           sh "tree > tree.log"
+          archiveArtifacts(
+            artifacts: "tree.log"
+            )
 
       //     step([$class: 'XUnitBuilder',
       //       thresholds: [
