@@ -91,6 +91,12 @@ pipeline {
 // '''
 //         zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
       }
+      post{
+        success{
+          publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'build/docs/html', reportFiles: 'index.html', reportName: 'Documentation', reportTitles: ''])
+          // zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
+        }
+      }
     }
 //     stage('Package') {
 //       steps {
