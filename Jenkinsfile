@@ -56,6 +56,10 @@ pipeline {
               // sourceDir: 'scm', 
               steps: [[args: '--target test-visvid', withCmake: true]]
             )
+          }
+        }
+        stage("Run CTest"){
+          steps{
             ctest( 
               arguments: "--output-on-failure --no-compress-output -T Test", 
               installation: 'InSearchPath', 
@@ -69,6 +73,7 @@ pipeline {
       }
       post{
         always{
+            ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
             xunit testTimeMargin: '3000',
                 thresholdMode: 1,
                 thresholds: [
