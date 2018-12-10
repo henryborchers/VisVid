@@ -29,6 +29,7 @@ pipeline {
           // sourceDir: 'scm',  
           steps: [[withCmake: true]]
         )
+        stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
 
 //         sh '''which gcov
 // git submodule init
@@ -77,6 +78,7 @@ pipeline {
       // steps {
       //   stage('Build') {
       steps {
+        unstash "RELEASE_BUILD_FILES"
         cmakeBuild(
           buildDir: 'build/release', 
           buildType: 'Release', 
@@ -94,17 +96,18 @@ pipeline {
       post{
         success{
           publishHTML(
-            [allowMissing: false, 
-            alwaysLinkToLastBuild: false, 
-            keepAll: false, 
-            reportDir: 'build/release/html', 
-            reportFiles: 'index.html', 
-            reportName: 'Documentation', 
-            reportTitles: '']
-            )
-            zip(zipFile: 'build/visvid_documentation.zip', archive: true, dir: 'build/release/html')
-            archiveArtifacts(artifacts: 'build/visvid_documentation.zip', fingerprint: true, onlyIfSuccessful: true)
-          
+            [
+              allowMissing: false, 
+              alwaysLinkToLastBuild: false, 
+              keepAll: false, 
+              reportDir: 'build/release/html', 
+              reportFiles: 'index.html', 
+              reportName: 'Documentation', 
+              reportTitles: ''
+            ]
+          )
+          zip(zipFile: 'build/visvid_documentation.zip', archive: true, dir: 'build/release/html')
+          stash includes: "build/release/html/**", name: 'DOCS_ARCHIVE'
         }
       }
     }
