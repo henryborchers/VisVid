@@ -113,8 +113,9 @@ pipeline {
 //         archiveArtifacts(artifacts: 'build/*.zip', fingerprint: true, onlyIfSuccessful: true)
 //       }
 //     }
-  // }
-      post {
+  // } 
+    }
+    post {
         always {
           sh "tree"
       //     step([$class: 'XUnitBuilder',
@@ -125,7 +126,6 @@ pipeline {
       //       echo 'cleaning up'
       //       deleteDir()
         }   
-      }
-      
+      // }
     }
-  }
+}
