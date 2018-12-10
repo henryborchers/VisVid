@@ -102,7 +102,9 @@ pipeline {
             reportName: 'Documentation', 
             reportTitles: '']
             )
-          // zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
+            zip(zipFile: 'build/visvid_documentation.zip', archive: true, dir: 'build/release/html')
+            archiveArtifacts(artifacts: 'build/visvid_documentation.zip', fingerprint: true, onlyIfSuccessful: true)
+          
         }
       }
     }
@@ -116,8 +118,9 @@ pipeline {
   // } 
     }
     post {
-        always {
-          sh "tree"
+        failed {
+          sh "tree > tree.log"
+
       //     step([$class: 'XUnitBuilder',
       //       thresholds: [
       //             [$class: 'SkippedThreshold', failureThreshold: '0'],
