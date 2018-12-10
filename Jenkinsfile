@@ -74,8 +74,8 @@ pipeline {
       }
     }
     stage('Documentation') {
-      steps {
-        stage('Build') {
+      // steps {
+      //   stage('Build') {
       steps {
         cmakeBuild(
           buildDir: 'build/release', 
@@ -92,25 +92,25 @@ pipeline {
 //         zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
       }
     }
-    stage('Package') {
-      steps {
-        sh '''cd build
-cpack -G ZIP'''
-        archiveArtifacts(artifacts: 'build/*.zip', fingerprint: true, onlyIfSuccessful: true)
-      }
-    }
-  }
-  post {
-    always {
-      step([$class: 'XUnitBuilder',
-        thresholds: [
-              [$class: 'SkippedThreshold', failureThreshold: '0'],
-              [$class: 'FailedThreshold', failureThreshold: '0']],
-          tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
-        echo 'cleaning up'
-        deleteDir()
+//     stage('Package') {
+//       steps {
+//         sh '''cd build
+// cpack -G ZIP'''
+//         archiveArtifacts(artifacts: 'build/*.zip', fingerprint: true, onlyIfSuccessful: true)
+//       }
+//     }
+  // }
+  // post {
+  //   always {
+  //     step([$class: 'XUnitBuilder',
+  //       thresholds: [
+  //             [$class: 'SkippedThreshold', failureThreshold: '0'],
+  //             [$class: 'FailedThreshold', failureThreshold: '0']],
+  //         tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
+  //       echo 'cleaning up'
+  //       deleteDir()
         
-      }
+  //     }
       
-    }
+  //   }
   }
