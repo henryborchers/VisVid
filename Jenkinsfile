@@ -38,7 +38,7 @@ pipeline {
 // cd build
 // cmake .. -DVISVID_BUILDDOCS=ON
 // cmake --build .'''
-//       }
+      }
     }
     stage('Test') {
       steps {
@@ -92,10 +92,10 @@ cpack -G ZIP'''
   post {
     always {
       step([$class: 'XUnitBuilder',
-                                                    thresholds: [
-                                                                    [$class: 'SkippedThreshold', failureThreshold: '0'],
-                                                                    [$class: 'FailedThreshold', failureThreshold: '0']],
-                                                                tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
+        thresholds: [
+              [$class: 'SkippedThreshold', failureThreshold: '0'],
+              [$class: 'FailedThreshold', failureThreshold: '0']],
+          tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
         echo 'cleaning up'
         deleteDir()
         
