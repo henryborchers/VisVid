@@ -66,7 +66,7 @@ pipeline {
                     deleteOutputFiles: true,
                     failIfNotNew: true,
                     pattern: 'testresults/*.xml',
-                    skipNoTestFiles: false,
+                    skipNoTestFiles: true,
                     stopProcessingIfError: true
                     )
                   ]
