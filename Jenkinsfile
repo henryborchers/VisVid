@@ -70,6 +70,33 @@ pipeline {
 
           }
         }
+        stage("CTest: Coverage"){
+          steps{
+            ctest arguments: "-T coverage", 
+              installation: 'InSearchPath', 
+              workingDir: 'build/debug'
+          }
+          post{
+            always{
+              dir("reports/coverage"){
+                deleteDir()
+                sh "ls"
+              }
+              sh "gcovr -r ${WORKSPACE} --xml -o reports/coverage/coverage.xml build/debug"
+              sh "gcovr -r ${WORKSPACE} --html --html-details -o reports/coverage/coverage.html build/debug"
+              archiveArtifacts 'reports/coverage/coverage.xml'
+              publishCoverage adapters: [coberturaAdapter('reports/coverage/coverage.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+              publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+
+            }
+            cleanup{
+              dir("reports/coverage"){
+                deleteDir()
+              }
+            //   // cleanWs(patterns: [[pattern: "${WORKSPACE}/reports/coverage/coverage.xml", type: 'INCLUDE']])
+            }
+          }
+        }
         stage("CTest: MemCheck"){
           steps{
             ctest(
