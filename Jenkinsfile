@@ -100,10 +100,11 @@ pipeline {
               allowMissing: false, 
               alwaysLinkToLastBuild: false, 
               keepAll: false, 
-              reportDir: 'build/release/html', 
+              reportDir: 'build/release/html/', 
               reportFiles: 'index.html', 
               reportName: 'Documentation', 
-              reportTitles: ''
+              reportTitles: '',
+              includes: '**/*',
             ]
           )
           zip(zipFile: 'build/visvid_documentation.zip', archive: true, dir: 'build/release/html')
