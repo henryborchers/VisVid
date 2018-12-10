@@ -75,10 +75,21 @@ pipeline {
     }
     stage('Documentation') {
       steps {
-        sh '''cd build
-cmake --build . --target documentation
-'''
-        zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
+        stage('Build') {
+      steps {
+        cmakeBuild(
+          buildDir: 'build/release', 
+          buildType: 'Release', 
+          cleanBuild: true, 
+          cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
+          installation: 'InSearchPath', 
+          // sourceDir: 'scm',  
+          steps: [[args: '--target documentation', withCmake: true]]
+        )
+//         sh '''cd build
+// cmake --build . --target documentation
+// '''
+//         zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
       }
     }
     stage('Package') {
