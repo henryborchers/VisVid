@@ -42,24 +42,30 @@ pipeline {
       }
     }
     stage('Test') {
-      steps {
-        cmakeBuild(
-          buildDir: 'build/debug', 
-          buildType: 'Debug', 
-          cleanBuild: true, 
-          installation: 'InSearchPath', 
-          cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_CXX_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\"",
-          // sourceDir: 'scm', 
-          steps: [[args: '--target test-visvid', withCmake: true]]
-        )
-        ctest( 
-          arguments: "--output-on-failure --no-compress-output -T Test", 
-          installation: 'InSearchPath', 
-          workingDir: 'build/debug'
-          )
+      stages{
+        stage("Build Debug version"){
 
-        // sh 'ctest -S build.cmake --verbose'
+        
+          steps {
+            cmakeBuild(
+              buildDir: 'build/debug', 
+              buildType: 'Debug', 
+              cleanBuild: true, 
+              installation: 'InSearchPath', 
+              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_CXX_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\"",
+              // sourceDir: 'scm', 
+              steps: [[args: '--target test-visvid', withCmake: true]]
+            )
+            ctest( 
+              arguments: "--output-on-failure --no-compress-output -T Test", 
+              installation: 'InSearchPath', 
+              workingDir: 'build/debug'
+              )
 
+            // sh 'ctest -S build.cmake --verbose'
+
+          }
+        }
       }
       post{
         always{
@@ -90,7 +96,7 @@ pipeline {
           buildDir: 'build/release', 
           buildType: 'Release', 
           cleanBuild: true, 
-          cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
+          cmakeArgs: '', 
           installation: 'InSearchPath', 
           // sourceDir: 'scm',  
           steps: [[args: '--target documentation', withCmake: true]]
