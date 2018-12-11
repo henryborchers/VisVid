@@ -4,7 +4,8 @@
 #ifndef LIBVISVID_FFMPEG_CONVERTER_H
 #define LIBVISVID_FFMPEG_CONVERTER_H
 //#include <libavutil/frame.h>
-#include <visFrame.h>
+//#include <visFrame.h>
+#include "visvid/visvid.h"
 struct AVFrame;
 
 

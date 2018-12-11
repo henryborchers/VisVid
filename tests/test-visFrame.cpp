@@ -5,7 +5,8 @@
 #include "catch.hpp"
 
 extern "C" {
-#include "visvid.h"
+#include "visFrame.h"
+#include "visvid/utils.h"
 }
 
 TEST_CASE("visPixelYUV_Create --> not null", "[PixelYUV]"){

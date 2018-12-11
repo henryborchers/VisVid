@@ -25,16 +25,17 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <visBuffer.h>
-#include <visFrame.h>
-#include <visView.h>
-#include <visVisualization.h>
+#include <visvid/visvid.h>
+//#include <visBuffer.h>
+//#include <visFrame.h>
+//#include <visView.h>
+//#include <visVisualization.h>
 #include "videoAndVisualPlayer.h"
 #include "ffmpeg_converter.h"
 #include "videoDecoder.h"
-#include "visImageWriter.h"
-#include "visResult.h"
-#include "visTypes.h"
+//#include "visImageWriter.h"
+//#include "visResult.h"
+//#include "visTypes.h"
 #define NUM_COLORS 4
 
 static int vidVis_init();

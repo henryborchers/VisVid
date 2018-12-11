@@ -5,7 +5,8 @@
 #include "catch.hpp"
 
 extern "C" {
-#include "visvid.h"
+    #include "visvid/visvid.h"
+    #include "visImageWriter.h"
 }
 SCENARIO("visImageWriterSetup"){
     int height = 100;

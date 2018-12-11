@@ -2,6 +2,7 @@
 // Created by Borchers, Henry Samuel on 10/22/16.
 //
 #include "visVisualization.h"
+#include "visvid/visvid.h"
 #include <errno.h>
 #include <stdio.h>
 #include "visFrame.h"

@@ -1,12 +1,19 @@
 cmake_minimum_required(VERSION 3.12)
-project(libvisvid VERSION 0.1)
 
+project(libvisvid
+        VERSION 0.1.0
+        DESCRIPTION "Turns video data into a visual map"
+        )
+
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 # Set version metadata
-set(LIBVISVID_VERSION_MAJOR 0)
-set(LIBVISVID_VERSION_MINOR 1)
-set(LIBVISVID_VERSION_PATCH 0)
-set(LIBVISVID_VERSION "${LIBVISVID_VERSION_MAJOR}.${LIBVISVID_VERSION_MINOR}.${LIBVISVID_VERSION_PATCH}")
+#set(LIBVISVID_VERSION_MAJOR 0)
+#set(LIBVISVID_VERSION_MINOR 1)
+#set(LIBVISVID_VERSION_PATCH 0)
+#set(LIBVISVID_VERSION "${LIBVISVID_VERSION_MAJOR}.${LIBVISVID_VERSION_MINOR}.${LIBVISVID_VERSION_PATCH}")
 string(TIMESTAMP LIBVISVID_VERSION_BUILD "%Y%m%d%H%M%S")
+
+
 
 # Set the path for cmake modules
 #list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -22,15 +29,6 @@ find_package(FFMPEG
 find_package(SDL2)
 find_package(Doxygen)
 
-
-# Set Options
-if (DOXYGEN_FOUND)
-    option(VISVID_BUILDDOCS "Build Doxygen documentation" OFF)
-endif ()
-
-#option(VISVID_TESTS "Build Tests" ON)
-option(VISVID_MEMDEBUG "Enable memory allocation messages" OFF)
-
 #if(SDL2_FOUND)
 #    option(VISVID-DEMO_NOC_FILE_DIALOG "Include NOC_FILE_DIALOG library" ON)
 #endif()
@@ -43,18 +41,31 @@ enable_testing()
 add_subdirectory(src)
 
 # build tests
-#if (VISVID_TESTS)
-    add_subdirectory(tests)
-#endif (VISVID_TESTS)
+add_subdirectory(tests)
 
 # Build Documentation
 include(cmake/buildDocumentation.cmake)
 
-# Build Swig Bindings
-include(swig/swig.cmake)
-
-
 # Enable packaging
 include(cmake/CPackConfig.cmake)
 include(CPack)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+        ${PROJECT_SOURCE_DIR}/cmake/VisVidConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfig.cmake
+        INSTALL_DESTINATION share/cmake/${PROJECT_NAME}
 
+)
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+)
+
+install(
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/VisVidConfigVersion.cmake
+        DESTINATION
+        share/cmake/${PROJECT_NAME}
+)

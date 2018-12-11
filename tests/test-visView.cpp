@@ -5,7 +5,8 @@
 #include "catch.hpp"
 
 extern "C" {
-#include "visvid.h"
+#include "visvid/visvid.h"
+#include "visView.h"
 }
 
 TEST_CASE("VisView_Create --> not null", "[visView]"){
