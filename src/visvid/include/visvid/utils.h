@@ -1,7 +1,10 @@
 //
 // Created by Borchers, Henry Samuel on 2018-11-29.
 //
-
+/**
+ * @defgroup utilities Utility functions
+ * @brief Avoid using function here
+ */
 #ifndef LIBVISVID_UTILS_H
 #define LIBVISVID_UTILS_H
 #include "visvid/visvid.h"

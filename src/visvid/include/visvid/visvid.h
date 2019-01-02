@@ -1,7 +1,11 @@
 //
 // Created by Borchers, Henry Samuel on 1/7/17.
 //
-
+/**
+ * @defgroup public_header Public header
+ *
+ * @brief Public functions to use
+ */
 #ifndef LIBVISVID_VISVID_H
 #define LIBVISVID_VISVID_H
 #include <stdint.h>
@@ -122,6 +126,7 @@ int visImageRGB_Alloc(visImageRGB *t, int width, int height);
  * @brief Create a new VisYUVFrame.
  * @return Pointer to new frame.
  * @note You are responsible for freeing up any memory when done. Use DestroyVisYUVFrame() to release any memory
+ * @ingroup public_header
  * reserved on the heap.
  */
 VisYUVFrame *VisYUVFrame_Create();
@@ -132,6 +137,7 @@ VisYUVFrame *VisYUVFrame_Create();
  * @param buffer The Buffer to push a visVisualResult to the end of.
  * @param pRes The visVisualResult to push to the end of a visBuffer.
  * @return Returns 0 on success;
+ * @ingroup public_header
  */
 int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
 
@@ -142,6 +148,7 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
  * @param width Change the width of the frame to given value.
  * @param height Change the height of the frame to given value.
  * @return
+ * @ingroup public_header
  */
 int VisYUVFrame_SetSize(VisYUVFrame *frame, int width, int height);
 
@@ -169,7 +176,8 @@ visView *VisView_Create(int width, int height);
  * @param pRes visVisualResult with data to copy to.
  * @param data The data to copy from.
  * @param length The number of elements in the data.
- * @return Returns 0 on success.
+ * @return Returns 0 on success
+ * @ingroup public_header.
  */
 int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length);
 int VisVisualResult_Init(visVisualResult *newResult);
@@ -210,6 +218,7 @@ void visImageRGB_FreeData(visImageRGB *t);
 /**
  * Frees up the memory used by the given frame.
  * @param frame The frame to cleaned up.
+ * @ingroup public_header
  */
 void VisYUVFrame_Destroy(VisYUVFrame **frame);
 
@@ -223,6 +232,7 @@ void VisBuffer_Destroy(visBuffer **buffer);
 /**
  * Cleans up and free memory used in a visView type stored on the heap.
  * @param pvd Pointer to the visView to clean up and freed.
+ * @ingroup public_header
  */
 void VisView_Destroy(visView **pvd);
 
