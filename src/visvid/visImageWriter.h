@@ -10,7 +10,7 @@
 #define VISVID_VISIMAGES_H
 
 #include "visvid/visvid.h"
-#include <stdint.h>
+//#include <stdint.h>
 
 /**
  *
@@ -26,6 +26,6 @@
  */
 int visImageRGB_WritePixel(visImageRGB *t, int pixelX, int pixelY, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-int visImageRGB_readPixel(visImageRGB *t, int pixelX, int pixelY, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
+
 
 #endif //VISVID_VISIMAGES_H

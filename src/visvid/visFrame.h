@@ -16,7 +16,7 @@ extern void *d_debug_mem_calloc(size_t size, size_t num, char *file, size_t line
 #define calloc(size, num) d_debug_mem_calloc(size, num, __FILE__, __LINE__)
 #endif
 
-#include <stdint.h>
+//#include <stdint.h>
 #include "visvid/visvid.h"
 #include "visvid/utils.h"
 //#include "visTypes.h"
@@ -67,7 +67,6 @@ int PixelYUV_getValue(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue 
  */
 int VisYUVFrame_SetPos(VisYUVFrame *frame, int64_t *result);
 
-int VisYUVFrame_getPixelYUV(PixelYUV *result, VisYUVFrame *frame, int x, int y);
 
 int visYUVFrame_Fill(VisYUVFrame *frame, struct visBrush *brush);
 

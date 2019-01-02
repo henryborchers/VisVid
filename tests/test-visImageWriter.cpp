@@ -6,6 +6,7 @@
 
 extern "C" {
     #include "visvid/visvid.h"
+    #include "visvid/utils.h"
     #include "visImageWriter.h"
 }
 SCENARIO("visImageWriterSetup"){
