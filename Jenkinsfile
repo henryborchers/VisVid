@@ -26,7 +26,7 @@ pipeline {
               buildDir: 'build/release', 
               buildType: 'Release', 
               cleanBuild: true, 
-              cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
+              cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON -DCMAKE_C_FLAGS="-Wall"', 
               installation: 'InSearchPath',
               sourceDir: 'scm',
               steps: [[withCmake: true]]
@@ -45,7 +45,7 @@ pipeline {
               buildType: 'Debug', 
               cleanBuild: true, 
               installation: 'InSearchPath', 
-              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\"",
+              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_C_FLAGS=\"-Wall\"",
               sourceDir: 'scm',
               steps: [[args: '--target test-visvid', withCmake: true]]
             )
@@ -63,6 +63,7 @@ pipeline {
         
         stage("Run CTest"){
           steps{
+            unstash "DEBUG_BUILD_FILES"
             ctest( 
               arguments: "--output-on-failure --no-compress-output -T Test", 
               installation: 'InSearchPath', 
