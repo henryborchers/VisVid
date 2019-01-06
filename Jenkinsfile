@@ -45,7 +45,7 @@ pipeline {
               buildType: 'Debug', 
               cleanBuild: true, 
               installation: 'InSearchPath', 
-              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_CXX_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\"",
+              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_CXX_FLAGS_DEBUG=\"--coverage\"",
               // sourceDir: 'scm', 
               steps: [[args: '--target test-visvid', withCmake: true]]
             )
@@ -85,8 +85,8 @@ pipeline {
                 deleteDir()
                 sh "ls"
               }
-              sh "gcovr -r ${WORKSPACE} --xml -o reports/coverage/coverage.xml build/debug"
-              sh "gcovr -r ${WORKSPACE} --html --html-details -o reports/coverage/coverage.html build/debug"
+              sh "gcovr -r . --xml -o reports/coverage/coverage.xml build/debug"
+              sh "gcovr -r . --html --html-details -o reports/coverage/coverage.html build/debug"
               archiveArtifacts 'reports/coverage/coverage.xml'
               publishCoverage adapters: [coberturaAdapter('reports/coverage/coverage.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
               publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
