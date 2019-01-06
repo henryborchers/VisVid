@@ -75,7 +75,7 @@ pipeline {
         }
         stage("CTest: Coverage"){
           steps{
-            ctest arguments: "-T coverage -DCTEST_COVERAGE_EXTRA_FLAGS=\"-b ${WORKSPACE}\"", 
+            ctest arguments: "-T coverage", 
               installation: 'InSearchPath', 
               workingDir: 'build/debug'
           }
@@ -192,6 +192,16 @@ pipeline {
       //         tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
       //       echo 'cleaning up'
       //       deleteDir()
+        }
+        cleanup{
+          cleanWs(
+            deleteDirs: true,
+            patterns: [
+            [pattern: 'build', type: 'INCLUDE'], 
+            [pattern: 'generatedJUnitFiles', type: 'INCLUDE'], 
+            [pattern: 'reports', type: 'INCLUDE'], 
+            [pattern: 'testresults', type: 'INCLUDE']
+            ])
         }   
       // }
     }
