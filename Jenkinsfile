@@ -61,12 +61,13 @@ pipeline {
             }
           }
         }
-        post{
+        
+      }
+      post{
           success{
             recordIssues(tools: [gcc4(pattern: 'logs/gcc_*.log')])
           }
         }
-      }
     }
     stage('Test') {
       stages{
