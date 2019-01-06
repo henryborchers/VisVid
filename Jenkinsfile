@@ -125,7 +125,6 @@ pipeline {
       post{
         always{
             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
-            sh "tree"
             xunit testTimeMargin: '3000',
                 thresholdMode: 1,
                 thresholds: [
