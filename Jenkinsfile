@@ -212,6 +212,7 @@ pipeline {
             [pattern: 'build', type: 'INCLUDE'], 
             [pattern: 'generatedJUnitFiles', type: 'INCLUDE'], 
             [pattern: 'reports', type: 'INCLUDE'], 
+            [pattern: 'logs', type: 'INCLUDE'],
             [pattern: 'testresults', type: 'INCLUDE']
             ])
         }   
