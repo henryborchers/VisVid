@@ -125,6 +125,7 @@ pipeline {
       post{
         always{
             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
+            sh "ls reports/ctest"
             archiveArtifacts "reports/ctest/*.*"
             xunit testTimeMargin: '3000',
                 thresholdMode: 1,
