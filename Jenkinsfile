@@ -26,9 +26,9 @@ pipeline {
               buildDir: 'build/release', 
               buildType: 'Release', 
               cleanBuild: true, 
-              cmakeArgs: '-S ${WORKSPACE}/scm -DVISVID_BUILDDOCS:BOOL=ON', 
-              installation: 'InSearchPath', 
-              // sourceDir: 'scm',  
+              cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
+              installation: 'InSearchPath',
+              sourceDir: 'scm',
               steps: [[withCmake: true]]
             )
           }
@@ -41,12 +41,12 @@ pipeline {
         stage("Create Debug Build"){       
           steps {
             cmakeBuild(
-              buildDir: 'build/debug', 
+              buildDir: 'build/debug',
               buildType: 'Debug', 
               cleanBuild: true, 
               installation: 'InSearchPath', 
-              cmakeArgs: "-S ${WORKSPACE}/scm -DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\"",
-              // sourceDir: 'scm', 
+              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\"",
+              sourceDir: 'scm',
               steps: [[args: '--target test-visvid', withCmake: true]]
             )
           }
