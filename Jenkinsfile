@@ -75,7 +75,7 @@ pipeline {
         }
         stage("CTest: Coverage"){
           steps{
-            ctest arguments: "-T coverage --verbose", 
+            ctest arguments: "-T coverage", 
               installation: 'InSearchPath', 
               workingDir: 'build/debug'
           }
