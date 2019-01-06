@@ -19,17 +19,25 @@ pipeline {
   }
   stages {
     stage('Build') {
-      steps {
-        cmakeBuild(
-          buildDir: 'build/release', 
-          buildType: 'Release', 
-          cleanBuild: true, 
-          cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
-          installation: 'InSearchPath', 
-          // sourceDir: 'scm',  
-          steps: [[withCmake: true]]
-        )
-        stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
+      parallel{
+        stage("Generate Release Build"){
+          steps {
+            cmakeBuild(
+              buildDir: 'build/release', 
+              buildType: 'Release', 
+              cleanBuild: true, 
+              cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
+              installation: 'InSearchPath', 
+              // sourceDir: 'scm',  
+              steps: [[withCmake: true]]
+            )
+            stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'      
+          }
+        }
+      }
+    }
+
+      
 
 //         sh '''which gcov
 // git submodule init
@@ -39,8 +47,8 @@ pipeline {
 // cd build
 // cmake .. -DVISVID_BUILDDOCS=ON
 // cmake --build .'''
-      }
-    }
+      // }
+    // }
     stage('Test') {
       stages{
         stage("Build Debug version"){
