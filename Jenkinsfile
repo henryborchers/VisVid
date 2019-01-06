@@ -22,15 +22,17 @@ pipeline {
       parallel{
         stage("Create Release Build"){
           steps {
-            cmakeBuild(
-              buildDir: 'build/release', 
-              buildType: 'Release', 
-              cleanBuild: true, 
-              cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON -DCMAKE_C_FLAGS="-Wall"', 
-              installation: 'InSearchPath',
-              sourceDir: 'scm',
-              steps: [[withCmake: true]]
-            )
+            tee('logs/gcc_release.log') {
+              cmakeBuild(
+                buildDir: 'build/release', 
+                buildType: 'Release', 
+                cleanBuild: true, 
+                cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON -DCMAKE_C_FLAGS="-Wall"', 
+                installation: 'InSearchPath',
+                sourceDir: 'scm',
+                steps: [[withCmake: true]]
+              )
+            }
           }
           post{
             success{
@@ -40,15 +42,18 @@ pipeline {
         }
         stage("Create Debug Build"){       
           steps {
-            cmakeBuild(
-              buildDir: 'build/debug',
-              buildType: 'Debug', 
-              cleanBuild: true, 
-              installation: 'InSearchPath', 
-              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_C_FLAGS=\"-Wall\"",
-              sourceDir: 'scm',
-              steps: [[args: '--target test-visvid', withCmake: true]]
-            )
+            tee('logs/gcc_debug.log') {
+
+              cmakeBuild(
+                buildDir: 'build/debug',
+                buildType: 'Debug', 
+                cleanBuild: true, 
+                installation: 'InSearchPath', 
+                cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_C_FLAGS=\"-Wall\"",
+                sourceDir: 'scm',
+                steps: [[args: '--target test-visvid', withCmake: true]]
+              )
+            }
           }
           post{
             success{
