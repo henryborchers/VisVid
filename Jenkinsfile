@@ -75,7 +75,7 @@ pipeline {
         }
         stage("CTest: Coverage"){
           steps{
-            ctest arguments: "-D CTEST_CUSTOM_COVERAGE_EXCLUDE:PATH=\"${WORKSPACE}/build/**\" -T coverage", 
+            ctest arguments: "-T coverage --verbose", 
               installation: 'InSearchPath', 
               workingDir: 'build/debug'
           }
