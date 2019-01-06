@@ -1,7 +1,7 @@
 pipeline {
   agent {
     dockerfile {
-      filename 'Dockerfile'
+      filename 'scm/Dockerfile'
     }
     
   }
@@ -202,7 +202,7 @@ pipeline {
             [pattern: 'reports', type: 'INCLUDE'], 
             [pattern: 'testresults', type: 'INCLUDE']
             ])
-            // deleteDir()
+            deleteDir()
         }   
       // }
     }
