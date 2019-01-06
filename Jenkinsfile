@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage('Build') {
       parallel{
-        stage("Generate Release Build"){
+        stage("Create Release Build"){
           steps {
             cmakeBuild(
               buildDir: 'build/release', 
@@ -32,6 +32,19 @@ pipeline {
               steps: [[withCmake: true]]
             )
             stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'      
+          }
+        }
+        stage("Create Debug Build"){       
+          steps {
+            cmakeBuild(
+              buildDir: 'build/debug', 
+              buildType: 'Debug', 
+              cleanBuild: true, 
+              installation: 'InSearchPath', 
+              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_CXX_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\"",
+              // sourceDir: 'scm', 
+              steps: [[args: '--target test-visvid', withCmake: true]]
+            )
           }
         }
       }
@@ -51,21 +64,7 @@ pipeline {
     // }
     stage('Test') {
       stages{
-        stage("Build Debug version"){
-
         
-          steps {
-            cmakeBuild(
-              buildDir: 'build/debug', 
-              buildType: 'Debug', 
-              cleanBuild: true, 
-              installation: 'InSearchPath', 
-              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_CXX_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\"",
-              // sourceDir: 'scm', 
-              steps: [[args: '--target test-visvid', withCmake: true]]
-            )
-          }
-        }
         stage("Run CTest"){
           steps{
             ctest( 
