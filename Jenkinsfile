@@ -202,6 +202,7 @@ pipeline {
             [pattern: 'reports', type: 'INCLUDE'], 
             [pattern: 'testresults', type: 'INCLUDE']
             ])
+            deleteDir()
         }   
       // }
     }
