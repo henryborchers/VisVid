@@ -57,8 +57,13 @@ pipeline {
           }
           post{
             success{
-              stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'      
+              stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'   
             }
+          }
+        }
+        post{
+          success{
+            recordIssues(tools: [gcc4(pattern: 'logs/gcc_*.log')])
           }
         }
       }
