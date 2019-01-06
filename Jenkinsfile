@@ -140,9 +140,9 @@ pipeline {
           buildDir: 'build/release', 
           buildType: 'Release', 
           cleanBuild: true, 
-          cmakeArgs: '-S ${WORKSPACE}/scm', 
+          cmakeArgs: '', 
           installation: 'InSearchPath', 
-          // sourceDir: 'scm',  
+          sourceDir: 'scm',  
           steps: [[args: '--target documentation', withCmake: true]]
         )
 //         sh '''cd build
