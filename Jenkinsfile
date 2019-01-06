@@ -75,7 +75,7 @@ pipeline {
         }
         stage("CTest: Coverage"){
           steps{
-            ctest arguments: "-T coverage", 
+            ctest arguments: "-T coverage -DCTEST_COVERAGE_EXTRA_FLAGS=\"-b ${WORKSPACE}\"", 
               installation: 'InSearchPath', 
               workingDir: 'build/debug'
           }
@@ -85,8 +85,8 @@ pipeline {
                 deleteDir()
                 sh "ls"
               }
-              sh "ls && gcovr -r ${WORKSPACE}/src/ --xml -o reports/coverage/coverage.xml build/debug"
-              sh "gcovr -r ${WORKSPACE}/src/ --html --html-details -o reports/coverage/coverage.html build/debug"
+              sh "gcovr -r ${WORKSPACE} --xml -o reports/coverage/coverage.xml build/debug"
+              sh "gcovr -r ${WORKSPACE} --html --html-details -o reports/coverage/coverage.html build/debug"
               archiveArtifacts 'reports/coverage/coverage.xml'
               publishCoverage adapters: [coberturaAdapter('reports/coverage/coverage.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
               publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
