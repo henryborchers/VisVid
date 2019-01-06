@@ -31,7 +31,11 @@ pipeline {
               // sourceDir: 'scm',  
               steps: [[withCmake: true]]
             )
-            stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'      
+          }
+          post{
+            success{
+              stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'      
+            }
           }
         }
         stage("Create Debug Build"){       
@@ -45,6 +49,11 @@ pipeline {
               // sourceDir: 'scm', 
               steps: [[args: '--target test-visvid', withCmake: true]]
             )
+          }
+          post{
+            success{
+              stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'      
+            }
           }
         }
       }
