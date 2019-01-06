@@ -45,7 +45,7 @@ pipeline {
               buildType: 'Debug', 
               cleanBuild: true, 
               installation: 'InSearchPath', 
-              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"--coverage\"",
+              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\"",
               // sourceDir: 'scm', 
               steps: [[args: '--target test-visvid', withCmake: true]]
             )
