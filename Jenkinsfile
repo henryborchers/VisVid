@@ -7,7 +7,7 @@ pipeline {
   }
   options {
     timeout(30)
-    // checkoutToSubdirectory 'scm'
+    checkoutToSubdirectory 'scm'
     buildDiscarder(
         logRotator(
             artifactDaysToKeepStr: '10',
@@ -26,7 +26,7 @@ pipeline {
               buildDir: 'build/release', 
               buildType: 'Release', 
               cleanBuild: true, 
-              cmakeArgs: '-DVISVID_BUILDDOCS:BOOL=ON', 
+              cmakeArgs: '-S ${WORKSPACE}/scm -DVISVID_BUILDDOCS:BOOL=ON', 
               installation: 'InSearchPath', 
               // sourceDir: 'scm',  
               steps: [[withCmake: true]]
@@ -45,7 +45,7 @@ pipeline {
               buildType: 'Debug', 
               cleanBuild: true, 
               installation: 'InSearchPath', 
-              cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\"",
+              cmakeArgs: "-S ${WORKSPACE}/scm -DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\"",
               // sourceDir: 'scm', 
               steps: [[args: '--target test-visvid', withCmake: true]]
             )
@@ -140,7 +140,7 @@ pipeline {
           buildDir: 'build/release', 
           buildType: 'Release', 
           cleanBuild: true, 
-          cmakeArgs: '', 
+          cmakeArgs: '-S ${WORKSPACE}/scm', 
           installation: 'InSearchPath', 
           // sourceDir: 'scm',  
           steps: [[args: '--target documentation', withCmake: true]]
