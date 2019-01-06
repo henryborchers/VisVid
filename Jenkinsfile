@@ -125,6 +125,7 @@ pipeline {
       post{
         always{
             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
+            sh "tree"
             xunit testTimeMargin: '3000',
                 thresholdMode: 1,
                 thresholds: [
@@ -211,7 +212,7 @@ pipeline {
             patterns: [
             [pattern: 'build', type: 'INCLUDE'], 
             [pattern: 'generatedJUnitFiles', type: 'INCLUDE'], 
-//            [pattern: 'reports', type: 'INCLUDE'],
+            [pattern: 'reports', type: 'INCLUDE'],
             [pattern: 'logs', type: 'INCLUDE'],
             [pattern: 'testresults', type: 'INCLUDE']
             ])
