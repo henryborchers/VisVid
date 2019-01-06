@@ -125,6 +125,7 @@ pipeline {
       post{
         always{
             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
+            archiveArtifacts "reports/ctest/*.*"
             xunit testTimeMargin: '3000',
                 thresholdMode: 1,
                 thresholds: [
@@ -140,6 +141,14 @@ pipeline {
                     stopProcessingIfError: true
                     )
                   ]
+        }
+        cleanup{
+            cleanWs(
+                deleteDirs: true,
+                patterns: [
+                    [pattern: 'reports/ctest', type: 'INCLUDE']
+                    ]
+                )
         }
       }
     }
