@@ -135,7 +135,7 @@ pipeline {
                   CTest(
                     deleteOutputFiles: true,
                     failIfNotNew: true,
-                    pattern: 'testresults/*.xml',
+                    pattern: "reports/ctest/*.xml",
                     skipNoTestFiles: true,
                     stopProcessingIfError: true
                     )
