@@ -41,7 +41,7 @@ SCENARIO("visImageWriterSetup"){
         visImageRGB *imageRGB;
 
         imageRGB = (visImageRGB*)malloc(sizeof(visImageRGB));
-        CHECK(imageRGB != NULL);
+        CHECK(nullptr != imageRGB  );
 
         WHEN("the RGB image is allocated to 100 pixels high by 200 pixels wide"){
 
@@ -58,7 +58,7 @@ SCENARIO("visImageWriterSetup"){
             }
 
             visImageRGB_FreeData(imageRGB);
-            CHECK(imageRGB->plane == NULL);
+            CHECK(nullptr == imageRGB->plane);
         }
 
 

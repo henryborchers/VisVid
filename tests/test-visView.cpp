@@ -37,7 +37,7 @@ TEST_CASE("VisView_Destroy --> null", "[visView]"){
     REQUIRE(nullptr == pvid);
 
 }
-
+//
 TEST_CASE("visView Functions on an Empty Buffer"){
 
     visView *pvid = nullptr;
@@ -47,7 +47,7 @@ TEST_CASE("visView Functions on an Empty Buffer"){
 
     SECTION("visView is empty on creation"){
         visBuffer *Buffer = VisBuffer_Create2(10, 0);
-        CHECK(Buffer != NULL);
+        CHECK(nullptr != Buffer );
         int rc = visView_Update(pvid, Buffer);
         CHECK(rc == 0);
 
@@ -59,7 +59,7 @@ TEST_CASE("visView Functions on an Empty Buffer"){
             }
         }
         VisBuffer_Destroy(&Buffer);
-        CHECK(Buffer == nullptr);
+//        CHECK(Buffer == nullptr);
     }
 
     VisView_Destroy(&pvid);
