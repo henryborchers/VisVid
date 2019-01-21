@@ -25,36 +25,44 @@ int VisVisualResult_Init(visVisualResult *newResult) {
 }
 
 void VisVisualResult_Destroy(visVisualResult **pRes) {
-    free((*pRes)->data);
+    VisVisualResult_Cleanup(*pRes);
 
-    (*pRes)->data = NULL;
-    (*pRes)->size = -1;
-    (*pRes)->ready = false;
     free((*pRes));
     *pRes = NULL;
 
+}
+
+void VisVisualResult_Cleanup(visVisualResult *pRes) {
+    free(pRes->data);
+
+    (pRes)->data = NULL;
+    (pRes)->size = -1;
+    (pRes)->ready = false;
 }
 
 bool VisVisualResult_IsReady(visVisualResult *pRes) {
     return pRes->ready;
 }
 
-int VisVisualResult_SetSize(visVisualResult *pRest, int size) {
+int VisVisualResult_SetSize(visVisualResult *pRest, size_t size) {
     if(pRest == NULL){
         return EFAULT;
     }
-    if(pRest->size > 0) {
-        free(pRest->data);
-    }
-    pRest->data = NULL;
-    // FIXME: TO realloc()
-    pRest->data = calloc((unsigned long long int)size, sizeof(unsigned char));
+
+//    if(pRest->size > 0) {
+//        free(pRest->data);
+//    }
+
+//    pRest->data = NULL;
+    size_t data_size = size * sizeof(unsigned char);
+    pRest->data = realloc(pRest->data, data_size);
     if(pRest->data == NULL){
         pRest->size = -1;
         pRest->ready = false;
         return ENOMEM;
     }
-    pRest->size = size;
+    memset(pRest->data, 0, data_size);
+    pRest->size = (int)size;
     return 0;
 }
 

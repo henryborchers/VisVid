@@ -2,10 +2,12 @@
 // Created by Borchers, Henry Samuel on 11/11/16.
 //
 
+#include "visvid/visvid.h"
 #include "visImageWriter.h"
 #include <errno.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
+#include "visvid/utils.h"
 
 const int ALPHA_OFFSET = 0;
 const int BLUE_OFFSET = sizeof(uint8_t) * 1;

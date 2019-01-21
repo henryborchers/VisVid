@@ -2,6 +2,7 @@
 // Created by Borchers, Henry Samuel on 6/25/16.
 //
 
+#include "visvid/utils.h"
 #include "visFrame.h"
 #include <errno.h>
 #include <stdlib.h>
@@ -87,6 +88,7 @@ void VisYUVFrame_Destroy(VisYUVFrame **frame) {
     (*frame)->width = -1;
     free((*frame)->data);
     (*frame)->data = NULL;
+    free((*frame));
     (*frame) = NULL;
 
 }

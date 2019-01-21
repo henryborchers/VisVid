@@ -1,27 +1,11 @@
 find_package(Doxygen)
 
 
-if(VISVID_BUILDDOCS AND DOXYGEN_FOUND)
-        doxygen_add_docs(documentation ${PROJECT_SOURCE_DIR}/lib
-                COMMENT "Generated html pages"
-                DOXYGEN_HAVE_DOT YES
+if(DOXYGEN_FOUND)
+        set(DOXYGEN_EXAMPLE_PATH "${PROJECT_SOURCE_DIR}/src/applications")
+        set(DOXYGEN_EXCLUDE "${PROJECT_SOURCE_DIR}/src/applications/createVisuals/thirdpartylibs")
+        doxygen_add_docs(documentation visvid ${PROJECT_SOURCE_DIR}/docs/mainpage.dox
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/visvid/include
+                COMMENT "Generating ${PROJECT_NAME} api documentation"
                 )
-#        set(root ${PROJECT_SOURCE_DIR}/visvid)
-#        set(DOC_OUTPUT ${CMAKE_BINARY_DIR}/documentation)
-#        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-
-
-#        add_custom_target(documentation ALL
-#                DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/documentation/html
-#                )
-#        add_custom_command(
-#                OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/documentation/html
-#                COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-#                COMMENT "Generating documentation"
-#
-#        )
-
-#        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/documentation/html
-#                DESTINATION share/doc
-#                COMPONENT Documentation)
 endif()

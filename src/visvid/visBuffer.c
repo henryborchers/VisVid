@@ -3,7 +3,7 @@
 //
 #include "visBuffer.h"
 #include <stdlib.h>
-//#include <string.h>
+#include <string.h>
 
 
 /**
@@ -17,17 +17,7 @@ struct visBufferNode {
     size_t position;
 };
 
-/**
- * @struct visBuffer
- * @brief Used to store the sequence of calculation results from the visualization.
- */
-struct visBuffer {
-    size_t bufferMaxSize;               /**< Number of nodes in the buffer.*/
-    size_t bufferLen;               /**< Number of nodes in the buffer.*/
-    size_t bufferWidth;             /**< The resolution of the calculations*/
-    visBufferNode *first;           /**< First node in the buffer*/
-    visBufferNode *last;            /**< Last node in the buffer*/
-};
+
 
 /**
  * Gets the first node of the visBuffer.
@@ -83,6 +73,8 @@ static int renumber(visBuffer *pBuffer);
 
 static int visBuffer_setResult(visBuffer *buffer, size_t index, visVisualResult *pRes);
 
+static bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize);
+
 visBuffer *VisBuffer_Create(size_t width) {
     visBuffer *buffer = NULL;
     buffer = (visBuffer *) malloc(sizeof(visBuffer));
@@ -97,7 +89,7 @@ visBuffer *VisBuffer_Create(size_t width) {
 }
 
 int visBuffer_isEmpty(visBuffer *buffer) {
-    return buffer->first == NULL;
+    return buffer->first == NULL && buffer->last == NULL;
 }
 
 
@@ -257,7 +249,13 @@ visBufferNode *visBufferPop(visBuffer *buffer) {
 
     rNode = visBufferFront(buffer);
 
-    buffer->first = visBufferNextNode(buffer->first);
+    if(buffer->first == buffer->last){
+        buffer->first = NULL;
+        buffer->last = NULL;
+    } else {
+
+        buffer->first = visBufferNextNode(buffer->first);
+    }
 //    buffer->first = rNode->next;
     if (buffer->first) {
 
@@ -288,15 +286,19 @@ void VisBufferNode_Destroy(visBufferNode **node) {
 visBufferNode *CreateVisBufferNode(visVisualResult *pRes) {
 
     visBufferNode *node = NULL;
+    int length = 0;
+
+    VisVisualResult_GetSize(&length, pRes);
+
     node = malloc(sizeof(visBuffer));
     node->previous = NULL;
     node->next = NULL;
-    int length = 0;
 
     // Copy the results data from the original to store in the buffer
     node->result = VisVisualResult_Create();
-    VisVisualResult_GetSize(&length, pRes);
-    VisVisualResult_SetSize(node->result, length);
+    if(length > 0){
+        VisVisualResult_SetSize(node->result, (size_t)length);
+    }
 
     // Only copy the pRes results if they are real and not null
     if (pRes) {
@@ -368,7 +370,7 @@ int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
 
 visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
     visBuffer *buffer = NULL;
-    int i;
+    bool failed = false;
 
     buffer = (visBuffer *) malloc(sizeof(visBuffer));
     if (buffer == NULL) {
@@ -380,26 +382,42 @@ visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
     buffer->first = NULL;
     buffer->last = NULL;
     buffer->bufferLen = 0;
+    failed = VisBuffer_Resize(buffer, width, bufferSize);
+    buffer->bufferLen = bufferSize;
 
-//    Automatically resize
-    for (i = 0; i < bufferSize; i++) {
+    if(failed == true){
+//        TODO: Clean up this
+        return NULL;
+    }
+
+    return buffer;
+}
+
+bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize) {
+    bool failed = false;//    Automatically resize
+    for (int i = 0; i < bufferSize; i++) {
         visVisualResult *res = NULL;
         res = VisVisualResult_Create();
+
         if (NULL == res) {
-//                TODO: Clean up this
-            return NULL;
-        }
-        if (VisVisualResult_SetSize(res, (int) width) != 0) {
-//                TODO: Clean up this
-            return NULL;
-        }
-        if (visBuffer_PushBackResult(buffer, res) != 0) {
-//                TODO: Clean up this
-            return NULL;
+            failed = true;
+            break;
         }
 
+        if (VisVisualResult_SetSize(res, (int) width) != 0) {
+            failed = true;
+            break;
+        }
+
+        if (visBuffer_PushBackResult(buffer, res) != 0) {
+            failed = true;
+            break;
+        }
+        VisVisualResult_Destroy(&res);
+//        VisVisualResult_Cleanup(res);
+
     }
-    return buffer;
+    return failed;
 }
 
 int visBuffer_setResult(visBuffer *buffer, size_t index, visVisualResult *pRes) {

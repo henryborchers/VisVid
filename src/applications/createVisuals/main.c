@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "videoAndVisualPlayer.h"
 #include "filedialog.h"
-#include "visVersion.h"
+#include "visvid/visVersion.h"
 
 static const char *get_file(int argc, char *argv[]);
 

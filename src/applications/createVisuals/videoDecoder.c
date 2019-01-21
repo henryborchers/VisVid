@@ -13,11 +13,11 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <swscale.h>
+#include <libswscale/swscale.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include "error.h"
-#include "mem.h"
+//#include <error.h>
+//#include "mem.h"
 //#include <swscale.h>
 
 #define FILE_PATH_MAX 10000
@@ -108,7 +108,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
         return NULL;
     }
 #if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57,0,0)
-    AVCodecContext *pCodecCtxOrg = NULL;
+    ub 
     pCodecCtxOrg = tmp->formatContext->streams[tmp->video_stream_idx]->codec;
     if((ret = avcodec_copy_context(tmp->codecContext, pCodecCtxOrg)) != 0){
         char error_msg[1000];
@@ -156,6 +156,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
 void decoderContext_Destroy(DecoderContext **pDecoderContext) {
     av_free((*pDecoderContext)->frame);
     avcodec_close((*pDecoderContext)->codecContext);
+    avcodec_free_context(&(*pDecoderContext)->codecContext);
     avformat_close_input(&(*pDecoderContext)->formatContext);
     free((*pDecoderContext)->filename);
     (*pDecoderContext)->video_stream_idx = -1;
@@ -174,7 +175,7 @@ int decoderContext_NextFrame(DecoderContext *pDecoderContext, AVFrame **out) {
         if(pDecoderContext->pkt.stream_index == pDecoderContext->video_stream_idx){
             ret = decode(pDecoderContext->codecContext, pDecoderContext->frame, &got_frame, &pDecoderContext->pkt);
             if(ret < 0){
-                av_log(NULL, AV_LOG_ERROR, "Error with a frame %s\n",av_err2str(ret));
+                av_log(NULL, AV_LOG_ERROR, "Error with a frame %s\n", av_err2str(ret));
                 return ret;
             }
 
