@@ -1,7 +1,7 @@
 include(FetchContent)
 FetchContent_Declare(
         libcatch2
-        URL https://github.com/catchorg/Catch2/archive/v2.4.2.tar.gz
+        URL https://github.com/catchorg/Catch2/archive/v2.5.0.tar.gz
         #        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
         #        GIT_TAG 6860c8d
 )
