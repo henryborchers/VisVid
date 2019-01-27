@@ -197,7 +197,7 @@ pipeline {
   // } 
     }
     post {
-        failure {
+//        failure {
 
       //     step([$class: 'XUnitBuilder',
       //       thresholds: [
@@ -206,7 +206,7 @@ pipeline {
       //         tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
       //       echo 'cleaning up'
       //       deleteDir()
-        }
+//        }
         cleanup{
           cleanWs(
             deleteDirs: true,
