@@ -1,6 +1,7 @@
 //
-// Created by henry on 4/2/18.
+// Created by henry on 1/27/19.
 //
+
 
 #include "catch.hpp"
 
@@ -10,25 +11,16 @@ extern "C" {
 
 TEST_CASE("VisVisualResult_Create --> not null", "[visVisualResult]"){
 
-    visVisualResult *result = nullptr;
+visVisualResult *result = nullptr;
 
-    result = VisVisualResult_Create();
-    REQUIRE(nullptr != result);
+result = VisVisualResult_Create();
+REQUIRE(nullptr != result);
 
-    VisVisualResult_Destroy(&result);
-    CHECK(nullptr == result);
-
-}
-
-TEST_CASE("VisVisualResult_SetSize --> not null", "[visVisualResult]"){
-
-
-    visVisualResult result;
-    VisVisualResult_Init(&result);
-    VisVisualResult_SetSize(&result, 10);
-    VisVisualResult_Cleanup(&result);
+VisVisualResult_Destroy(&result);
+CHECK(nullptr == result);
 
 }
+
 TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 
     visVisualResult *result = nullptr;
@@ -38,18 +30,6 @@ TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 
     VisVisualResult_Destroy(&result);
     REQUIRE(nullptr == result);
-
-}
-
-TEST_CASE("VisVisualResult_Init --> data not null", "[visVisualResult]"){
-
-    visVisualResult result;
-
-    VisVisualResult_Init(&result);
-    CHECK(VisVisualResult_SetSize(&result, 10) == 0);
-    REQUIRE(result.data != nullptr);
-    VisVisualResult_Cleanup(&result);
-    REQUIRE(nullptr == result.data);
 
 }
 

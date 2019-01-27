@@ -1,12 +1,12 @@
 //
-// Created by henry on 4/2/18.
+// Created by henry on 1/27/19.
 //
 
 #include "catch.hpp"
 
+
 extern "C" {
 #include "visFrame.h"
-#include "visvid/utils.h"
 }
 
 TEST_CASE("visPixelYUV_Create --> not null", "[PixelYUV]"){
@@ -18,6 +18,7 @@ TEST_CASE("visPixelYUV_Create --> not null", "[PixelYUV]"){
     CHECK(pixel == nullptr);
 
 }
+
 
 TEST_CASE("PixelYUV_Destroy --> null", "[PixelYUV]"){
     PixelYUV *pixel = nullptr;
@@ -57,16 +58,6 @@ SCENARIO("visPixelYUV can be get and set"){
         PixelYUV_Destroy(&pixel);
         CHECK(pixel == nullptr);
     }
-
-}
-
-TEST_CASE("VisYUVFrame_Create --> not null", "[VisYUVFrame]"){
-    VisYUVFrame *frame = nullptr;
-    frame = VisYUVFrame_Create();
-    REQUIRE(frame != nullptr);
-
-    VisYUVFrame_Destroy(&frame);
-    CHECK(frame == nullptr);
 
 }
 SCENARIO("visFrameYUV Functions"){

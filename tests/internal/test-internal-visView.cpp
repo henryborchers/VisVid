@@ -1,6 +1,7 @@
 //
-// Created by henry on 4/2/18.
+// Created by henry on 1/27/19.
 //
+
 
 #include "catch.hpp"
 
@@ -9,35 +10,6 @@ extern "C" {
 #include "visView.h"
 }
 
-TEST_CASE("VisView_Create --> not null", "[visView]"){
-
-
-    visView *pvid = nullptr;
-
-    pvid = VisView_Create(640, 480);
-    REQUIRE(nullptr != pvid);
-
-    REQUIRE(pvid->width == 640);
-    REQUIRE(pvid->height == 480);
-
-    VisView_Destroy(&pvid);
-    CHECK(nullptr == pvid);
-
-}
-
-TEST_CASE("VisView_Destroy --> null", "[visView]"){
-
-    visView *pvid = nullptr;
-
-    pvid = VisView_Create(640, 480);
-    CHECK(nullptr != pvid);
-
-
-    VisView_Destroy(&pvid);
-    REQUIRE(nullptr == pvid);
-
-}
-//
 TEST_CASE("visView Functions on an Empty Buffer"){
 
     visView *pvid = nullptr;
@@ -66,6 +38,7 @@ TEST_CASE("visView Functions on an Empty Buffer"){
     CHECK(nullptr == pvid);
 
 }
+
 SCENARIO("visView full buffer"){
     GIVEN("visView Functions on a full buffer of empty data"){
         visView *pvid = nullptr;

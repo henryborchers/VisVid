@@ -1,7 +1,6 @@
 //
-// Created by henry on 4/2/18.
+// Created by henry on 1/27/19.
 //
-
 #include "catch.hpp"
 
 extern "C" {
@@ -9,25 +8,7 @@ extern "C" {
 #include "visBuffer.h"
 }
 
-
-TEST_CASE("VisBuffer_Create2 --> not null", "[visbuffer]") {
-    visBuffer *buffer = nullptr;
-    buffer = VisBuffer_Create2(10, 10);
-    REQUIRE(buffer != nullptr);
-
-    VisBuffer_Destroy(&buffer);
-    CHECK(buffer == nullptr);
-}
-
-TEST_CASE("VisBuffer_Destroy --> null", "[visbuffer]") {
-    visBuffer *buffer = nullptr;
-    buffer = VisBuffer_Create2(10, 2);
-    CHECK(buffer != nullptr);
-
-    VisBuffer_Destroy(&buffer);
-    REQUIRE(buffer == nullptr);
-}
-
+// TODO: Make internal test
 SCENARIO("visBuffer Functions are used"){
     GIVEN("A pointer to a 10 pixel wide buffer that is empty"){
         visBuffer *buffer = nullptr;
@@ -198,7 +179,7 @@ TEST_CASE("visBufferFunctions", "[visbuffer]") {
     VisBuffer_Destroy(&buffer);
     CHECK(buffer == nullptr);
 }
-
+// TODO: Make internal test
 SCENARIO("Fixed Buffer size"){
     GIVEN("a buffer for 5 results of 10 units wide is created"){
 
