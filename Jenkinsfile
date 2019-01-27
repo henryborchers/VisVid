@@ -96,6 +96,9 @@ pipeline {
                   zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/docs/html')
                   stash includes: "build/docs/html/**", name: 'DOCS_ARCHIVE'
                 }
+//                cleanup{
+//                    cleanWs(patterns: [[pattern: "dist/visvid_documentation.zip", type: 'INCLUDE']])
+//                }
               }
         }
         
@@ -220,7 +223,8 @@ pipeline {
             deleteDirs: true,
             patterns: [
             [pattern: 'build', type: 'INCLUDE'], 
-            [pattern: 'generatedJUnitFiles', type: 'INCLUDE'], 
+            [pattern: 'dist', type: 'INCLUDE'],
+            [pattern: 'generatedJUnitFiles', type: 'INCLUDE'],
             [pattern: 'reports', type: 'INCLUDE'],
             [pattern: 'logs', type: 'INCLUDE'],
             [pattern: 'testresults', type: 'INCLUDE']
