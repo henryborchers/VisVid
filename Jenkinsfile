@@ -68,7 +68,7 @@ pipeline {
               // steps {
               //   stage('Build') {
               steps {
-                unstash "RELEASE_BUILD_FILES"
+//                unstash "RELEASE_BUILD_FILES"
                 cmakeBuild(
                   buildDir: 'build/docs',
                   buildType: 'Release',
