@@ -87,7 +87,7 @@ pipeline {
                       allowMissing: false,
                       alwaysLinkToLastBuild: false,
                       keepAll: false,
-                      reportDir: 'build/release/html/',
+                      reportDir: 'build/docs/html/',
                       reportFiles: 'index.html',
                       reportName: 'Documentation',
                       reportTitles: '',
