@@ -113,9 +113,6 @@ pipeline {
               installation: 'InSearchPath', 
               workingDir: 'build/debug'
               )
-
-            // sh 'ctest -S build.cmake --verbose'
-
           }
         }
         stage("CTest: Coverage"){
@@ -126,22 +123,12 @@ pipeline {
           }
           post{
             always{
-              dir("reports/coverage"){
-                deleteDir()
-                sh "ls"
-              }
               sh "mkdir -p reports/coverage && gcovr -r . --xml -o reports/coverage/coverage.xml build/debug"
               sh "gcovr -r . --html --html-details -o reports/coverage/coverage.html build/debug"
               archiveArtifacts 'reports/coverage/coverage.xml'
               publishCoverage adapters: [coberturaAdapter('reports/coverage/coverage.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
               publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
 
-            }
-            cleanup{
-              dir("reports/coverage"){
-                deleteDir()
-              }
-            //   // cleanWs(patterns: [[pattern: "${WORKSPACE}/reports/coverage/coverage.xml", type: 'INCLUDE']])
             }
           }
         }
@@ -186,29 +173,17 @@ pipeline {
         }
       }
     }
+    stage('Package') {
+       steps {
+            cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist':
+            archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
 
-//     stage('Package') {
-//       steps {
-//         sh '''cd build
-// cpack -G ZIP'''
-//         archiveArtifacts(artifacts: 'build/*.zip', fingerprint: true, onlyIfSuccessful: true)
-//       }
-//     }
-  // } 
+       }
     }
-    post {
-//        failure {
-
-      //     step([$class: 'XUnitBuilder',
-      //       thresholds: [
-      //             [$class: 'SkippedThreshold', failureThreshold: '0'],
-      //             [$class: 'FailedThreshold', failureThreshold: '0']],
-      //         tools: [[$class: 'CTestType', pattern: 'build/Testing/**/*.xml']]])
-      //       echo 'cleaning up'
-      //       deleteDir()
-//        }
-        cleanup{
-          cleanWs(
+  }
+  post {
+    cleanup{
+        cleanWs(
             deleteDirs: true,
             patterns: [
             [pattern: 'build', type: 'INCLUDE'], 
@@ -219,7 +194,6 @@ pipeline {
             [pattern: '*tmp', type: 'INCLUDE'],
             [pattern: 'testresults', type: 'INCLUDE']
             ])
-        }   
-      // }
     }
+  }
 }
