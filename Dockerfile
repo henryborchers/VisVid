@@ -34,6 +34,7 @@ RUN apt-get update -y && \
 RUN mkdir /opt/cmake
 RUN sh /cmake-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
 RUN ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
+RUN ln -s /opt/cmake/bin/cpack /usr/local/bin/cpack
 RUN ln -s /opt/cmake/bin/ctest /usr/local/bin/ctest
 RUN wget https://libsdl.org/release/SDL2-2.0.7.tar.gz && \
     tar -xvzf SDL2-2.0.7.tar.gz && \
