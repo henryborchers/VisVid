@@ -97,7 +97,7 @@ pipeline {
                 deleteDir()
                 sh "ls"
               }
-              sh "gcovr -r . --xml -o reports/coverage/coverage.xml build/debug"
+              sh "mkdir -p reports/coverage && gcovr -r . --xml -o reports/coverage/coverage.xml build/debug"
               sh "gcovr -r . --html --html-details -o reports/coverage/coverage.html build/debug"
               archiveArtifacts 'reports/coverage/coverage.xml'
               publishCoverage adapters: [coberturaAdapter('reports/coverage/coverage.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
