@@ -36,7 +36,8 @@ pipeline {
           }
           post{
             success{
-              stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'      
+              stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
+              recordIssues(tools: [gcc4(pattern: 'logs/gcc_*.log')])
             }
           }
         }
@@ -96,18 +97,10 @@ pipeline {
                   zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/docs/html')
                   stash includes: "build/docs/html/**", name: 'DOCS_ARCHIVE'
                 }
-//                cleanup{
-//                    cleanWs(patterns: [[pattern: "dist/visvid_documentation.zip", type: 'INCLUDE']])
-//                }
               }
         }
         
       }
-      post{
-          success{
-            recordIssues(tools: [gcc4(pattern: 'logs/gcc_*.log')])
-          }
-        }
     }
     stage('Test') {
       stages{
@@ -205,10 +198,6 @@ pipeline {
     }
     post {
         failure {
-          sh "tree > tree.log"
-          archiveArtifacts(
-            artifacts: "tree.log"
-            )
 
       //     step([$class: 'XUnitBuilder',
       //       thresholds: [
@@ -227,6 +216,7 @@ pipeline {
             [pattern: 'generatedJUnitFiles', type: 'INCLUDE'],
             [pattern: 'reports', type: 'INCLUDE'],
             [pattern: 'logs', type: 'INCLUDE'],
+            [pattern: '*tmp', type: 'INCLUDE'],
             [pattern: 'testresults', type: 'INCLUDE']
             ])
         }   
