@@ -64,6 +64,40 @@ pipeline {
             }
           }
         }
+        stage('Documentation') {
+              // steps {
+              //   stage('Build') {
+              steps {
+                unstash "RELEASE_BUILD_FILES"
+                cmakeBuild(
+                  buildDir: 'build/docs',
+                  buildType: 'Release',
+                  cleanBuild: true,
+                  cmakeArgs: '',
+                  installation: 'InSearchPath',
+                  sourceDir: 'scm',
+                  steps: [[args: '--target documentation', withCmake: true]]
+                )
+              }
+              post{
+                success{
+                  publishHTML(
+                    [
+                      allowMissing: false,
+                      alwaysLinkToLastBuild: false,
+                      keepAll: false,
+                      reportDir: 'build/release/html/',
+                      reportFiles: 'index.html',
+                      reportName: 'Documentation',
+                      reportTitles: '',
+                      includes: '**/*',
+                    ]
+                  )
+                  zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/docs/html')
+                  stash includes: "build/docs/html/**", name: 'DOCS_ARCHIVE'
+                }
+              }
+        }
         
       }
       post{
@@ -156,44 +190,7 @@ pipeline {
         }
       }
     }
-    stage('Documentation') {
-      // steps {
-      //   stage('Build') {
-      steps {
-        unstash "RELEASE_BUILD_FILES"
-        cmakeBuild(
-          buildDir: 'build/release', 
-          buildType: 'Release', 
-          cleanBuild: true, 
-          cmakeArgs: '', 
-          installation: 'InSearchPath', 
-          sourceDir: 'scm',  
-          steps: [[args: '--target documentation', withCmake: true]]
-        )
-//         sh '''cd build
-// cmake --build . --target documentation
-// '''
-//         zip(zipFile: 'visvid_documentation.zip', archive: true, dir: 'build/html')
-      }
-      post{
-        success{
-          publishHTML(
-            [
-              allowMissing: false, 
-              alwaysLinkToLastBuild: false, 
-              keepAll: false, 
-              reportDir: 'build/release/html/', 
-              reportFiles: 'index.html', 
-              reportName: 'Documentation', 
-              reportTitles: '',
-              includes: '**/*',
-            ]
-          )
-          zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/release/html')
-          stash includes: "build/release/html/**", name: 'DOCS_ARCHIVE'
-        }
-      }
-    }
+
 //     stage('Package') {
 //       steps {
 //         sh '''cd build
