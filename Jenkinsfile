@@ -189,7 +189,7 @@ pipeline {
               includes: '**/*',
             ]
           )
-          zip(zipFile: 'build/visvid_documentation.zip', archive: true, dir: 'build/release/html')
+          zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/release/html')
           stash includes: "build/release/html/**", name: 'DOCS_ARCHIVE'
         }
       }
