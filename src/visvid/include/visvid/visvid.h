@@ -49,16 +49,6 @@ struct visProcessContext;
 typedef struct visProcessContext visProcessContext;
 
 
-/**
- * The produces a similar result to a video waveform monitor.
- * @param result
- * @param frame
- * @return
- */
-int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame);
-// TODO: Create a creater for visProcessContext.
-
-int visVisProcess(visVisualResult *pRes, VisYUVFrame *pFrame, visProcessContext *processContext);
 
 typedef struct visBufferNode visBufferNode;
 /**
@@ -87,17 +77,6 @@ struct visBuffer {
 
 
 /**
- *
- * @param width Number of pixels used by each result slice that will be stored in the buffer.
- * @param bufferSize The size of a buffer. If bufferSize is 0, the buffer size is unlimited.
- * @return Returns a pointer the new visBuffer.
- * @note You are responsible for freeing this data when you are done with it. Use DestroyVisBuffer() to release any
- * memory reserved by this.
- */
-visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize);
-
-
-/**
  * @struct VisImageRGB
  * @brief RGB image data
  */
@@ -110,27 +89,22 @@ typedef struct visImageRGB{
 } visImageRGB;
 
 typedef struct visImageRGB visImageRGB;
-/**
- * Allocates the amount of memory needed to store a the data for an RGBA8888 image. You are responsible for freeing
- * this data when you are finished with it by using freeImageRGB().
- * @param t Pointer to the VisImageRGB object to allocate the memory for.
- * @param height The number of pixels high for the desired image.
- * @param width The number of pixels wide for the desired image.
- * @return 0 Returns zero on success. Anything else is an error.
- */
-int visImageRGB_Alloc(visImageRGB *t, int width, int height);
 
 /**
- * Allocates a new frame on the heap with zero pixels high and and zero pixels wide and returns a pointer to it's
- * location.
- * @brief Create a new VisYUVFrame.
- * @return Pointer to new frame.
- * @note You are responsible for freeing up any memory when done. Use DestroyVisYUVFrame() to release any memory
- * @ingroup public_header
- * reserved on the heap.
+ *
+ * @param width Number of pixels used by each result slice that will be stored in the buffer.
+ * @param bufferSize The size of a buffer. If bufferSize is 0, the buffer size is unlimited.
+ * @return Returns a pointer the new visBuffer.
+ * @note You are responsible for freeing this data when you are done with it. Use DestroyVisBuffer() to release any
+ * memory reserved by this.
  */
-VisYUVFrame *VisYUVFrame_Create();
+visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize);
 
+/**
+ * Cleans up and destroys the given visBuffer.
+ * @param buffer The visBuffer to be cleaned up.
+ */
+void VisBuffer_Destroy(visBuffer **buffer);
 
 /**
  * Pushes a visVisualResult to the end of the buffer.
@@ -143,23 +117,21 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
 
 
 /**
- * Sets the pixel dimensions of a given frame.
- * @param frame Pointer to a frame in which to size or resize.
- * @param width Change the width of the frame to given value.
- * @param height Change the height of the frame to given value.
- * @return
- * @ingroup public_header
+ * Allocates the amount of memory needed to store a the data for an RGBA8888 image. You are responsible for freeing
+ * this data when you are finished with it by using freeImageRGB().
+ * @param t Pointer to the VisImageRGB object to allocate the memory for.
+ * @param height The number of pixels high for the desired image.
+ * @param width The number of pixels wide for the desired image.
+ * @return 0 Returns zero on success. Anything else is an error.
  */
-int VisYUVFrame_SetSize(VisYUVFrame *frame, int width, int height);
-
+int visImageRGB_Alloc(visImageRGB *t, int width, int height);
 
 /**
- * Sizes or re-sizes the length of the visVisualResult. Any existing data will be lost.
- * @param pRest Pointer to visVisualResult to set the length.
- * @param size The new length to set the result to. This is most like the width or the height of the frame.
- * @return Returns 0 on success.
+ * Frees up the data being used by a VisImageRGB object
+ * @param t VisImageRGB to write pixel data to
  */
-int VisVisualResult_SetSize(visVisualResult *pRest, size_t size);
+void visImageRGB_FreeData(visImageRGB *t);
+
 
 /**
  * Generates a visView type on the heap. Use DestroyVisView() to clean up afterwards.
@@ -169,7 +141,37 @@ int VisVisualResult_SetSize(visVisualResult *pRest, size_t size);
  */
 visView *VisView_Create(int width, int height);
 
+/**
+ * Cleans up and free memory used in a visView type stored on the heap.
+ * @param pvd Pointer to the visView to clean up and freed.
+ * @ingroup public_header
+ */
+void VisView_Destroy(visView **pvd);
 
+
+int visView_Update3(visView *pView, visBuffer *buffer);
+
+/**
+ * Creates a Black and white image in RGBA888 format to be used with other tools.
+ * @param out A pointer to where to save the rendered image format.
+ * @param pView A pointer to the view image.
+ * @return Returns zero on success.
+ */
+int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView,
+                            int(*callback)(PixelValue result, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a));
+
+/**
+ * Callback for generating a color heatmap.
+ */
+int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
+
+/**
+ * Frees up the memory used by a given visVisualResult.
+ * @param pRes Pointer to the visVisualResult to free up.
+ */
+void VisVisualResult_Destroy(visVisualResult **pRes);
+
+void VisVisualResult_Cleanup(visVisualResult *pRes);
 
 /**
  * Performs a memory copy of the data and sets visVisualResult->ready to true.
@@ -180,61 +182,14 @@ visView *VisView_Create(int width, int height);
  * @ingroup public_header.
  */
 int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length);
-int VisVisualResult_Init(visVisualResult *newResult);
-int visView_Update3(visView *pView, visBuffer *buffer);
 
 /**
- * Creates a Black and white image in RGBA888 format to be used with other tools.
- * @param out A pointer to where to save the rendered image format.
- * @param pView A pointer to the view image.
- * @return Returns zero on success.
+ * Sizes or re-sizes the length of the visVisualResult. Any existing data will be lost.
+ * @param pRest Pointer to visVisualResult to set the length.
+ * @param size The new length to set the result to. This is most like the width or the height of the frame.
+ * @return Returns 0 on success.
  */
-//int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView);
-int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView,
-                            int(*callback)(PixelValue result, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a));
-
-/**
- * Callback for generating a color heatmap.
- */
-int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
-
-
-/**
- * Frees up the memory used by a given visVisualResult.
- * @param pRes Pointer to the visVisualResult to free up.
- */
-void VisVisualResult_Destroy(visVisualResult **pRes);
-
-void VisVisualResult_Cleanup(visVisualResult *pRes);
-
-
-/**
- * Frees up the data being used by a VisImageRGB object
- * @param t VisImageRGB to write pixel data to
- */
-void visImageRGB_FreeData(visImageRGB *t);
-
-
-/**
- * Frees up the memory used by the given frame.
- * @param frame The frame to cleaned up.
- * @ingroup public_header
- */
-void VisYUVFrame_Destroy(VisYUVFrame **frame);
-
-
-/**
- * Cleans up and destroys the given visBuffer.
- * @param buffer The visBuffer to be cleaned up.
- */
-void VisBuffer_Destroy(visBuffer **buffer);
-
-/**
- * Cleans up and free memory used in a visView type stored on the heap.
- * @param pvd Pointer to the visView to clean up and freed.
- * @ingroup public_header
- */
-void VisView_Destroy(visView **pvd);
+int VisVisualResult_SetSize(visVisualResult *pRest, size_t size);
 
 /**
  * Gets the size of length of a visVisualResult.
@@ -243,6 +198,47 @@ void VisView_Destroy(visView **pvd);
  * @return Returns 0 on success.
  */
 int VisVisualResult_GetSize(int *size, visVisualResult *pRest);
+
+int VisVisualResult_Init(visVisualResult *newResult);
+/**
+ * The produces a similar result to a video waveform monitor.
+ * @param result
+ * @param frame
+ * @return
+ */
+int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame);
+// TODO: Create a creater for visProcessContext.
+
+int visVisProcess(visVisualResult *pRes, VisYUVFrame *pFrame, visProcessContext *processContext);
+
+
+/**
+ * Allocates a new frame on the heap with zero pixels high and and zero pixels wide and returns a pointer to it's
+ * location.
+ * @brief Create a new VisYUVFrame.
+ * @return Pointer to new frame.
+ * @note You are responsible for freeing up any memory when done. Use DestroyVisYUVFrame() to release any memory
+ * @ingroup public_header
+ * reserved on the heap.
+ */
+VisYUVFrame *VisYUVFrame_Create();
+
+/**
+ * Frees up the memory used by the given frame.
+ * @param frame The frame to cleaned up.
+ * @ingroup public_header
+ */
+void VisYUVFrame_Destroy(VisYUVFrame **frame);
+
+/**
+ * Sets the pixel dimensions of a given frame.
+ * @param frame Pointer to a frame in which to size or resize.
+ * @param width Change the width of the frame to given value.
+ * @param height Change the height of the frame to given value.
+ * @return
+ * @ingroup public_header
+ */
+int VisYUVFrame_SetSize(VisYUVFrame *frame, int width, int height);
 
 
 /**
