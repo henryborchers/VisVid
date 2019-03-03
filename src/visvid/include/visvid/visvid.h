@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 /** \example createVisuals/videoAndVisualPlayer.c
- *
+ * Example of creating, adding to and deleting buffers
  */
 
 typedef uint8_t PixelValue;
