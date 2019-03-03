@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+/** \example createVisuals/videoAndVisualPlayer.c
+ *
+ */
 
 typedef uint8_t PixelValue;
 
@@ -105,6 +108,7 @@ typedef struct visImageRGB visImageRGB;
  * @ingroup visBuffer
  */
 visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize);
+
 
 /**
  * Cleans up and destroys the given visBuffer.
