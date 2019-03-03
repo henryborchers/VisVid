@@ -87,14 +87,14 @@ pipeline {
                       allowMissing: false,
                       alwaysLinkToLastBuild: false,
                       keepAll: false,
-                      reportDir: 'build/docs/html/',
+                      reportDir: 'build/docs/docs/html/',
                       reportFiles: 'index.html',
                       reportName: 'Documentation',
                       reportTitles: '',
                       includes: '**/*',
                     ]
                   )
-                  zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/docs/html')
+                  zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/docs/docs/html')
                   stash includes: "build/docs/html/**", name: 'DOCS_ARCHIVE'
                 }
               }
