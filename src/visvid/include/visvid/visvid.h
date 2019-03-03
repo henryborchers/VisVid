@@ -93,8 +93,7 @@ typedef struct visImageRGB visImageRGB;
 
 /**
  * @defgroup visBuffer visBuffer
- *
- * @brief visBuffer functions to use
+ * @brief Functions for manipulating calculation data buffers
  */
 
 
