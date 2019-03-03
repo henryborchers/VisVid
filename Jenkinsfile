@@ -95,7 +95,7 @@ pipeline {
                     ]
                   )
                   zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/docs/docs/html')
-                  stash includes: "build/docs/html/**", name: 'DOCS_ARCHIVE'
+                  stash includes: "build/docs/docs/html/**", name: 'DOCS_ARCHIVE'
                 }
               }
         }
