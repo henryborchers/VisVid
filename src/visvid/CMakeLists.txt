@@ -25,11 +25,6 @@ set_target_properties(Visvid PROPERTIES
         )
 
 
-if (VISVID_MEMDEBUG)
-    MESSAGE(WARNING "MEMORY debug messages turned on")
-    target_compile_definitions(Visvid PRIVATE MEMORY_DEBUG)
-endif ()
-
 target_include_directories(Visvid PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
