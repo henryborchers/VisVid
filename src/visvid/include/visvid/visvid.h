@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-/** \example createVisuals/videoAndVisualPlayer.c
+/** \example make_image.c
  * Example of creating, adding to and deleting buffers
  */
 

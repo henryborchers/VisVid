@@ -104,7 +104,11 @@ int main(int argc, char *argv[]){
         exit(1);
     }
     printf("Using %s\n",filename);
-
+    visBuffer *buffer = VisBuffer_Create2(avFormatCtx->streams[video_stream]->codecpar->width, 100);
+    if(buffer == NULL){
+        fprintf(stderr, "Unable to allocate a visbuffer\n");
+        exit(1);
+    }
     while(1) {
         if((ret = av_read_frame(avFormatCtx, &pkt)) < 0){
             break;
@@ -116,7 +120,7 @@ int main(int argc, char *argv[]){
         av_packet_unref(&pkt);
 
     }
-
+    VisBuffer_Destroy(&buffer);
     fclose(f);
     av_parser_close(parser);
     avcodec_free_context(&codecCtx);
