@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
     int video_stream = -1;
 
     AVPacket pkt;
-    int ret;
+    int ret = 0;
 
     if(argc < 2){
         fprintf(stderr, "Usage %s <input>\n", argv[0]);
@@ -111,6 +111,11 @@ int main(int argc, char *argv[]){
     }
     while(1) {
         if((ret = av_read_frame(avFormatCtx, &pkt)) < 0){
+            if(ret != AVERROR_EOF){
+                char error_msg[1000];
+                av_strerror(ret, error_msg, 1000);
+                puts(error_msg);
+            }
             break;
         }
         if(pkt.stream_index == video_stream){
@@ -126,5 +131,6 @@ int main(int argc, char *argv[]){
     avcodec_free_context(&codecCtx);
     av_frame_free(&frame);
     avformat_close_input(&avFormatCtx);
+
     return 0;
 }
