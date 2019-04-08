@@ -8,8 +8,6 @@
 
 #include <visvid/visvid.h>
 #include <visvid/utils.h>
-#include <visBuffer.h>
-#include "visView.h"
 
 struct VisYUVFrame{
     int height;                     /**< Number of rows of pixels in the frame.*/
