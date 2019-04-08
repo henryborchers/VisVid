@@ -4,19 +4,7 @@
 #include "visBuffer.h"
 #include <stdlib.h>
 #include <string.h>
-
-
-/**
- * @struct visBufferNode
- * @brief Wraps the visVisualResult into a linked list.
- */
-struct visBufferNode {
-    visVisualResult *result;
-    visBufferNode *previous;
-    visBufferNode *next;
-    size_t position;
-};
-
+#include <stdio.h>
 
 
 /**
@@ -117,7 +105,7 @@ visBufferNode *visBufferPreviousNode(visBufferNode *node) {
 }
 
 int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
-    int ret;
+    int ret = -1;
 //    TODO: CHECK IF buffer is unlimited or not. If unlimited, just add, otherwise, shift it left and replace the right most
     // check result size first if it's not null
     if (pRes != NULL) {
@@ -144,7 +132,7 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
     if ((ret = visBuffer_ShiftLeft(buffer)) != 0) {
 //                TODO clean up
         return ret;
-    };
+    }
 
     // use the last one
     if ((ret = visBuffer_setResult(buffer, buffer->bufferLen - 1, pRes)) != 0) {

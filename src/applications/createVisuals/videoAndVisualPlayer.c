@@ -230,7 +230,7 @@ int playVideoVis(const char *filename) {
             };
 
             // update a view of the buffer
-            if((rc = visView_Update3(view, buffer)) != 0){
+            if((rc = visView_Update4(view, buffer)) != 0){
                 returncode = rc;
                 fprintf(stderr, "visView_Update Failed with code %d.\n", rc);
                 break;
@@ -270,34 +270,6 @@ int playVideoVis(const char *filename) {
     vidVis_cleanup();
     return returncode;
 }
-//
-//int generate_fakeresult(visVisualResult *pResult) {
-//    static uint8_t value = 0;
-//    int length = 0;
-//    VisVisualResult_GetSize(&length, pResult);
-//    PixelValue data[length];
-//
-//
-//    for (int i = 0; i < length; ++i) {
-////        data[i] = value;
-//        int location = length - i - 1;
-//        uint8_t n_value = (uint8_t)((float)i/length * 256) + value;
-//        data[location] = n_value;
-//    }
-//    VisVisualResult_SetData(pResult, data, (size_t)length);
-//    value++;
-//    return 0;
-//}
-
-//bool quitCalled(SDL_Event *pEvent) {
-//    while(SDL_PollEvent(pEvent) != 0){
-//        if(pEvent->type == SDL_QUIT){
-//            return true;
-//        };
-//
-//    }
-//    return false;
-//}
 
 void vidVis_cleanup() {
     SDL_Quit();
@@ -499,67 +471,3 @@ int vidVis_refresh(VidVisContext *ctx, AVFrame *pFrame, visImageRGB *texture) {
     SDL_RenderPresent(ctx->renderer);
     return 0;
 }
-//
-//
-//float min(float d, float d1) {
-//
-//    return (d < d1) ? d: d1;
-//}
-//float enforce_range(float min, float max, float value) {
-//    if(value >= min && value <= max){
-//        return value;
-//    } else{
-//        if(value >= max){
-//            return max;
-//        }
-//
-//        if(value <= min){
-//            return min;
-//        }
-//    }
-//    return value;
-//}
-//
-//int variable_color(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
-//    // FIXME: REPLACE WITH ORIGINAL FUNCTION
-//    // This is temp code that was modified from a web tutorial. Replace this with an original callback function.
-//    float i = (float)value / (float)255;
-////    const int NUM_COLORS = 4;
-////    static float const STARTING_COLORS[NUM_COLORS][3] = { {0,0,0}, {0.2,0.2,0.3}, {0.7,0.7,0.5}, {1,1,1} };
-////    static float const STARTING_COLORS[NUM_COLORS][3] = { {0,0,0}, {0.0,0.5,0.5}, {0.9,0.6,0.6}, {1,1,1} };
-//    static float const STARTING_COLORS[NUM_COLORS][3] = { {0,0,0}, {0.5,0.5,0.5}, {0.9,0.9,0.9}, {1,1,1} };
-////    static float const STARTING_COLORS[NUM_COLORS][3] = { {0,0,0}, {1,0.2,0.2}, {1,1,0.2}, {1,1,1} };
-//    static float color[NUM_COLORS][3];
-////    static float color[NUM_COLORS][3] = { {0,0,0}, {1,0.2,0.2}, {1,1,0.2}, {1,1,1} };
-//
-//    color[1][0] = STARTING_COLORS[1][0] * offset_color_midtones;
-//    color[1][1] = STARTING_COLORS[1][1] * offset_color_midtones;
-//    color[1][2] = STARTING_COLORS[1][2] * offset_color_midtones;
-//
-//    color[2][0] = (color[1][0] + STARTING_COLORS[2][0]) * offset_color_highlights;
-//    color[2][1] = (color[1][1] + STARTING_COLORS[2][1]) * offset_color_highlights;
-//    color[2][2] = (color[1][2] + STARTING_COLORS[2][2]) * offset_color_highlights;
-//
-//    // A static array of 4 colors:  (blue,   green,  yellow,  red) using {r,g,b} for each.
-//
-//    int idx1;        // |-- Our desired color will be between these two indexes in "color".
-//    int idx2;        // |
-//    float fractBetween = 0;  // Fraction between "idx1" and "idx2" where our value is.
-//
-//    if(i <= 0)      {  idx1 = idx2 = 0;            }    // accounts for an input <=0
-//    else if(i>= 1)  {  idx1 = idx2 = NUM_COLORS-1; }    // accounts for an input >=0
-//    else
-//    {
-//        i = i * (NUM_COLORS-1);        // Will multiply value by 3.
-//        idx1  = (int)floor(i);                  // Our desired color will be after this index.
-//        idx2  = idx1+1;                        // ... and before this index (inclusive).
-//        fractBetween = i - (float)(idx1);    // Distance between the two indexes (0-1).
-//
-//    }
-//
-//    *r = (uint8_t)(value * min(1.0f, (color[idx2][0] - color[idx1][0])*fractBetween + color[idx1][0]));
-//    *g = (uint8_t)(value * min(1.0f, (color[idx2][1] - color[idx1][1])*fractBetween + color[idx1][1]));
-//    *b = (uint8_t)(value * min(1.0f, (color[idx2][2] - color[idx1][2])*fractBetween + color[idx1][2]));
-//    *a = value;
-//    return 0;
-//}

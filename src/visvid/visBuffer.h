@@ -18,6 +18,19 @@
 
 
 typedef struct visBufferNode visBufferNode;
+
+
+/**
+ * @struct visBufferNode
+ * @brief Wraps the visVisualResult into a linked list.
+ */
+struct visBufferNode {
+    visVisualResult *result;
+    visBufferNode *previous;
+    visBufferNode *next;
+    size_t position;
+};
+
 typedef struct visBuffer visBuffer;
 
 /**

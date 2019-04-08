@@ -2,6 +2,12 @@
 // Created by henry on 10/11/2016.
 //
 
+#include <visBuffer.h>
+#include <visvid/utils.h>
+#include <visvid/visvid.h>
+#include <libavutil/pixdesc.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
 #include "visView.h"
 #include <errno.h>
 #include <math.h>
@@ -12,6 +18,8 @@
 #define NUM_COLORS 4
 
 static float min(float d, float d1);
+
+
 
 visView *VisView_Create(int width, int height) {
     visView *new_visView = NULL;
@@ -95,6 +103,68 @@ int visView_Update3(visView *pView, visBuffer *buffer) {
     }
     return 0;
 }
+
+int visView_Update4(visView *pView, visBuffer *buffer) {
+    if(pView == NULL || buffer == NULL){
+        return -1;
+    }
+    PixelValue currentSlice[pView->width];
+    size_t length = visBuffer_getLength(buffer);
+    for (int y = 0; y < pView->height; ++y) {
+            int res = visBuffer_getResult(currentSlice, buffer, buffer->bufferLen - 1 - y);
+            if(res != 0 ){
+                return res;
+            }
+            int offset =  (pView->width * y);
+            PixelValue *data = pView->data + offset;
+            memcpy(data, currentSlice, pView->width);
+    }
+    return 0;
+}
+
+
+int index_lookup(int x, int y, int view_width){
+//    int index = (view_width * (y-1)) + (view_width - x);
+    int index = (view_width * y) + x;
+    return index;
+}
+
+//int visView_Update4(visView *pView, visBuffer *buffer) {
+//    int x;
+//    int y;
+//    int res = 0;
+//
+//    PixelValue currentSlice[pView->width];
+//
+//
+//    for (x = 0; x < pView->width; x++) {
+//        size_t length = visBuffer_getLength(buffer);
+//        res = visBuffer_getResult(currentSlice, buffer, length - x - 1);
+//        if (res == 0) {
+//
+//            for (y = 0; y < pView->height; ++y) {
+//                int index = index_lookup(x, y, pView->width);
+////                int index = ((pView->width * y) + (pView->width - x - 1)) - 1;
+////                int index = (pView->width * (y-1)) + (pView->width - x);
+//                PixelValue value = currentSlice[y];
+////                int index = (pView->width - x) + pView->width * y;
+//                pView->data[index] = value;
+//
+//            }
+//        } else {
+//            for (y = 0; y < pView->height; ++y) {
+//                int index = index_lookup(x, y, pView->width);
+////                int index = (pView->width * (y-1)) + (pView->width - x);
+////                int index = (pView->width * y) + (pView->width - x - 1);
+//                pView->data[index] = 0;
+//
+//            }
+//        }
+//
+//
+//    }
+//    return 0;
+//}
 
 
 // FIXME visView_Update is broken
@@ -226,4 +296,23 @@ int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *
     return 0;
 }
 
+size_t calculateImageBWOffset(int x, int y, int width, int num_pix_components){
+    int source_line_offset = y * width;
+    int pixel_offset = x * num_pix_components;
+    return source_line_offset + pixel_offset;
+}
 
+int visView_GenerateBW(visImage *pImage, visView *pView) {
+//    FIGURE OUT the line offset of the view
+    for (int y = 0; y < pImage->height; ++y) {
+        for (int x = 0; x < pImage->width; ++x) {
+            int offset = calculateImageBWOffset(x, y, pImage->width, pImage->num_pix_components);
+            int view_line_offset = pView->width * y;
+            int view_offset = view_line_offset + x;
+            PixelValue value =  pView->data[view_offset];
+            pImage->plane[offset] = value;
+
+        }
+    }
+    return 0;
+}

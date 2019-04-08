@@ -91,6 +91,15 @@ typedef struct visImageRGB{
 
 typedef struct visImageRGB visImageRGB;
 
+typedef struct visImage{
+    uint8_t *plane;     /**< Raw data for pixel information.*/
+    int     pitch;      /**< Pitch of the image.*/
+    int     height;     /**< Height of the image.*/
+    int     width;      /**< Width of the image.*/
+    int     num_pix_components;      /**< Number of Components used to describe a pixel. For example RGBA would be 4 and BW is 1*/
+} visImage;
+
+
 /**
  * @defgroup visBuffer visBuffer
  * @brief Functions for manipulating calculation data buffers
@@ -136,6 +145,9 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
  */
 int visImageRGB_Alloc(visImageRGB *t, int width, int height);
 
+int visImage_Alloc(visImage *t, int width, int height, int components_per_pixel);
+void visImage_FreeData(visImage *pImage);
+int visView_GenerateBW(visImage *pImage, visView *pView);
 /**
  * Frees up the data being used by a VisImageRGB object
  * @param t VisImageRGB to write pixel data to
@@ -166,6 +178,8 @@ void VisView_Destroy(visView **pvd);
 
 
 int visView_Update3(visView *pView, visBuffer *buffer);
+int visView_Update4(visView *pView, visBuffer *buffer);
+
 
 /**
  * Creates a Black and white image in RGBA888 format to be used with other tools.
