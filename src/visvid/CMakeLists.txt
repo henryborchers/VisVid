@@ -1,3 +1,5 @@
+include(CheckFunctionExists)
+
 configure_file("visVersion.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/visvid/visVersion.h")
 
@@ -31,8 +33,18 @@ target_include_directories(Visvid PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<INSTALL_INTERFACE:include>
         )
-# todo: test for floorf and if not avaliable without adding m, then link it
-target_link_libraries(Visvid PRIVATE m)
+
+# test for floorf and if not avaliable without adding m, then link it
+check_function_exists(floorf FLOORF_FUNCTIONS_EXISTS)
+if(NOT FLOORF_FUNCTIONS_EXISTS)
+    unset(FLOORF_FUNCTIONS_EXISTS CACHE)
+    list(APPEND CMAKE_REQUIRED_LIBRARIES m)
+    check_function_exists(floorf FLOORF_FUNCTIONS_EXISTS)
+    if(FLOORF_FUNCTIONS_EXISTS)
+        target_link_libraries(Visvid PRIVATE m)
+    endif()
+endif()
+
 include(GenerateExportHeader)
 generate_export_header(Visvid)
 
