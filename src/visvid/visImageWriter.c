@@ -64,7 +64,7 @@ int visImageRGB_WritePixel(visImageRGB *t, int pixelX, int pixelY, uint8_t r, ui
     return 0;
 }
 
-int visImageRGB_readPixel(visImageRGB *t, int pixelX, int pixelY, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
+int visImageRGB_readPixel(const visImageRGB *t, int pixelX, int pixelY, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
 
 
     int y_offset = pixelY * t->pitch;

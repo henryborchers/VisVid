@@ -50,14 +50,14 @@ DEPRECATED visBuffer *VisBuffer_Create(size_t width);
  * @param buffer The buffer to check if it's empty.
  * @return Returns 0 if the buffer is not empty and returns 1 the buffer is empty.
  */
-int visBuffer_isEmpty(visBuffer *buffer);
+int visBuffer_isEmpty(const visBuffer *buffer);
 
 /**
  * Gets the size of the buffer stored in the buffer's metadata.
  * @param buffer The visBuffer to see the size.
  * @return The number of nodes inside the buffer.
  */
-size_t visBuffer_getLength(visBuffer *buffer);
+size_t visBuffer_getLength(const visBuffer *buffer);
 
 /**
  * Pops a visVisualResult off the front of the a visBuffer.
@@ -74,7 +74,7 @@ visVisualResult *visBuffer_PopShiftResult(visBuffer *buffer);
  */
 void VisBufferNode_Destroy(visBufferNode **node);
 
-visBufferNode * _BufferNode_get(visBuffer *buffer, size_t index);
+visBufferNode * _BufferNode_get(const visBuffer *buffer, size_t index);
 
 int _nodePosition(visBufferNode *node);
 /**
@@ -84,7 +84,7 @@ int _nodePosition(visBufferNode *node);
  * @param index
  * @return Returns 0 when the result is null. Returns a 1 when a valid result is found. Returns a negative number on failure.
  */
-int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index);
+int visBuffer_getResult(PixelValue *pRes, const visBuffer *buffer, size_t index);
 
 int visBuffer_ShiftLeft(visBuffer *pBuffer);
 #endif //VISVID_VISBUFFER_H

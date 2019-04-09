@@ -8,7 +8,7 @@
 #include "visFrame.h"
 #include "visTypes.h"
 
-int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame){
+int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame){
     int x, y;
     int frameHeight = -1;
     int frameWidth = -1;
@@ -43,7 +43,7 @@ int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame
     return 0;
 }
 
-int visVisProcess(visVisualResult *pRes, VisYUVFrame *pFrame, visProcessContext *processContext) {
+int visVisProcess(visVisualResult *pRes, const VisYUVFrame *pFrame, const visProcessContext *processContext) {
     int res;
     if(pRes == NULL || pFrame == NULL || processContext == NULL || processContext->processCb == NULL){
         return EFAULT;

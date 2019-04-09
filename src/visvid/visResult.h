@@ -31,7 +31,7 @@ visVisualResult *VisVisualResult_Create();
 /**
  * Checks the result has valid data from a calculation
  */
-bool VisVisualResult_IsReady(visVisualResult *pRes);
+bool VisVisualResult_IsReady(const visVisualResult *pRes);
 
 /**
  * Get the value of a visVisualResult at a certain offset.
@@ -40,9 +40,9 @@ bool VisVisualResult_IsReady(visVisualResult *pRes);
  * @param offset The index for the value in the data.
  * @return Returns 0 on success.
  */
-int VisVisualResult_GetValue(PixelValue *value, visVisualResult *pRes, int offset);
+int VisVisualResult_GetValue(PixelValue *value, const visVisualResult *pRes, int offset);
 
 
 
-int VisVisualResult_copy(visVisualResult *dst, visVisualResult *src);
+int VisVisualResult_copy(visVisualResult *dst, const visVisualResult *src);
 #endif //VISVID_VISRESULT_H

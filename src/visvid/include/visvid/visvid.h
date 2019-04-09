@@ -42,7 +42,7 @@ struct visVisualResult{
 typedef struct visVisualResult visVisualResult;
 
 struct visProcessContext{
-    int(*processCb)(visVisualResult *result, VisYUVFrame *frame);
+    int(*processCb)(visVisualResult *result, const VisYUVFrame *frame);
 };
 struct visProcessContext;
 typedef struct visProcessContext visProcessContext;
@@ -147,7 +147,7 @@ int visImageRGB_Alloc(visImageRGB *t, int width, int height);
 
 int visImage_Alloc(visImage *t, int width, int height, int components_per_pixel);
 void visImage_FreeData(visImage *pImage);
-int visView_GenerateBW(visImage *pImage, visView *pView);
+int visView_GenerateBW(const visImage *pImage, visView *pView);
 /**
  * Frees up the data being used by a VisImageRGB object
  * @param t VisImageRGB to write pixel data to
@@ -178,7 +178,7 @@ void VisView_Destroy(visView **pvd);
 
 
 int visView_Update3(visView *pView, visBuffer *buffer);
-int visView_Update4(visView *pView, visBuffer *buffer);
+int visView_Update4(visView *pView, const visBuffer *buffer);
 
 
 /**
@@ -188,7 +188,7 @@ int visView_Update4(visView *pView, visBuffer *buffer);
  * @ingroup visView
  * @return Returns zero on success.
  */
-int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView,
+int visViewRGB_GenerateRGBA(visImageRGB *out, const visView *pView,
                             int(*callback)(PixelValue result, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a));
 
 /**
@@ -219,7 +219,7 @@ void VisVisualResult_Cleanup(visVisualResult *pRes);
  * @return Returns 0 on success
  * @ingroup visVisualResult
  */
-int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length);
+int VisVisualResult_SetData(visVisualResult *pRes, const PixelValue *data, size_t length);
 
 /**
  * Sizes or re-sizes the length of the visVisualResult. Any existing data will be lost.
@@ -237,7 +237,7 @@ int VisVisualResult_SetSize(visVisualResult *pRest, size_t size);
  * @return Returns 0 on success.
  * @ingroup visVisualResult
  */
-int VisVisualResult_GetSize(int *size, visVisualResult *pRest);
+int VisVisualResult_GetSize(int *size, const visVisualResult *pRest);
 
 int VisVisualResult_Init(visVisualResult *newResult);
 /**
@@ -247,10 +247,10 @@ int VisVisualResult_Init(visVisualResult *newResult);
  * @return
  * @ingroup visVisualResult
  */
-int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, VisYUVFrame *frame);
+int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame);
 // TODO: Create a creater for visProcessContext.
 
-int visVisProcess(visVisualResult *pRes, VisYUVFrame *pFrame, visProcessContext *processContext);
+int visVisProcess(visVisualResult *pRes, const VisYUVFrame *pFrame, const visProcessContext *processContext);
 
 
 /**
@@ -296,7 +296,7 @@ int VisYUVFrame_SetSize(VisYUVFrame *frame, int width, int height);
  * @return Returns 0 on success.
  * @ingroup VisYUVFrame
  */
-int VisYUVFrame_GetSize(VisYUVFrame *frame, int *width, int *height);
+int VisYUVFrame_GetSize(const VisYUVFrame *frame, int *width, int *height);
 
 
 #endif //LIBVISVID_VISVID_H

@@ -56,7 +56,7 @@ int PixelYUV_setValue(PixelYUV *pixel, PixelValue y, PixelValue u, PixelValue v)
     return 0;
 }
 
-int PixelYUV_getValue(PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
+int PixelYUV_getValue(const PixelYUV *pixel, PixelValue *y, PixelValue *u, PixelValue *v) {
     if(pixel == NULL){
         return EFAULT;
     }
@@ -100,7 +100,7 @@ void FreeFrameData(VisYUVFrame **pFrame) {
 
 }
 
-int VisYUVFrame_GetSize(VisYUVFrame *frame, int *width, int *height) {
+int VisYUVFrame_GetSize(const VisYUVFrame *frame, int *width, int *height) {
     if(frame == NULL){
         return EFAULT;
     }
@@ -155,7 +155,7 @@ int visYUVFrame_Fill(VisYUVFrame *frame, visBrush *brush) {
     return 0;
 }
 
-int VisYUVFrame_getPixelYUV(PixelYUV *result, VisYUVFrame *frame, int x, int y) {
+int VisYUVFrame_getPixelYUV(PixelYUV *result, const VisYUVFrame *frame, int x, int y) {
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }

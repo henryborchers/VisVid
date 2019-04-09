@@ -104,12 +104,12 @@ int visView_Update3(visView *pView, visBuffer *buffer) {
     return 0;
 }
 
-int visView_Update4(visView *pView, visBuffer *buffer) {
+int visView_Update4(visView *pView, const visBuffer *buffer) {
     if(pView == NULL || buffer == NULL){
         return -1;
     }
     PixelValue currentSlice[pView->width];
-    size_t length = visBuffer_getLength(buffer);
+//    size_t length = visBuffer_getLength(buffer);
     for (int y = 0; y < pView->height; ++y) {
             int res = visBuffer_getResult(currentSlice, buffer, buffer->bufferLen - 1 - y);
             if(res != 0 ){
@@ -217,7 +217,7 @@ int visView_Update(visView *pView, visBuffer *buffer) {
 }
 
 
-int visViewRGB_GenerateRGBA(visImageRGB *out, visView *pView,
+int visViewRGB_GenerateRGBA(visImageRGB *out, const visView *pView,
                             int (*callback)(PixelValue, uint8_t *, uint8_t *, uint8_t *, uint8_t *)) {
 
     // assert that neither pointer is NULL.
@@ -302,7 +302,7 @@ size_t calculateImageBWOffset(int x, int y, int width, int num_pix_components){
     return source_line_offset + pixel_offset;
 }
 
-int visView_GenerateBW(visImage *pImage, visView *pView) {
+int visView_GenerateBW(const visImage *pImage, visView *pView) {
 //    FIGURE OUT the line offset of the view
     for (int y = 0; y < pImage->height; ++y) {
         for (int x = 0; x < pImage->width; ++x) {
