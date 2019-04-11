@@ -4,7 +4,7 @@ project(libvisvid
         VERSION 0.1.0
         DESCRIPTION "Turns video data into a visual map"
         )
-
+option(libvisvid_build_examples "Build example files")
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Set version metadata
@@ -26,6 +26,11 @@ include(CTest)
 enable_testing()
 
 add_subdirectory(src)
+
+if(libvisvid_build_examples)
+    add_subdirectory(examples)
+endif(libvisvid_build_examples)
+
 
 # build tests
 add_subdirectory(tests)

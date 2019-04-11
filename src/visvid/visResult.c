@@ -40,7 +40,7 @@ void VisVisualResult_Cleanup(visVisualResult *pRes) {
     (pRes)->ready = false;
 }
 
-bool VisVisualResult_IsReady(visVisualResult *pRes) {
+bool VisVisualResult_IsReady(const visVisualResult *pRes) {
     return pRes->ready;
 }
 
@@ -66,7 +66,7 @@ int VisVisualResult_SetSize(visVisualResult *pRest, size_t size) {
     return 0;
 }
 
-int VisVisualResult_GetSize(int *size, visVisualResult *pRest) {
+int VisVisualResult_GetSize(int *size, const visVisualResult *pRest) {
     if(pRest == NULL){
         return EFAULT;
     }
@@ -74,7 +74,7 @@ int VisVisualResult_GetSize(int *size, visVisualResult *pRest) {
     return 0;
 }
 
-int VisVisualResult_GetValue(PixelValue *value, visVisualResult *pRes, int offset) {
+int VisVisualResult_GetValue(PixelValue *value, const visVisualResult *pRes, int offset) {
     if(value == NULL){
         return EFAULT;
     }
@@ -88,7 +88,7 @@ int VisVisualResult_GetValue(PixelValue *value, visVisualResult *pRes, int offse
     return 0;
 }
 
-int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t length) {
+int VisVisualResult_SetData(visVisualResult *pRes, const PixelValue *data, size_t length) {
     if(data == NULL){
         return EFAULT;
     }
@@ -100,7 +100,7 @@ int VisVisualResult_SetData(visVisualResult *pRes, PixelValue *data, size_t leng
     return 0;
 }
 
-int VisVisualResult_copy(visVisualResult *dst, visVisualResult *src) {
+int VisVisualResult_copy(visVisualResult *dst, const visVisualResult *src) {
     if(NULL == src){
         return 1;
     }

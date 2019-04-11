@@ -64,7 +64,7 @@ int visImageRGB_WritePixel(visImageRGB *t, int pixelX, int pixelY, uint8_t r, ui
     return 0;
 }
 
-int visImageRGB_readPixel(visImageRGB *t, int pixelX, int pixelY, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
+int visImageRGB_readPixel(const visImageRGB *t, int pixelX, int pixelY, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
 
 
     int y_offset = pixelY * t->pitch;
@@ -90,4 +90,25 @@ int visImageRGB_readPixel(visImageRGB *t, int pixelX, int pixelY, uint8_t *r, ui
 
 
     return 0;
+}
+
+//TODO: Create a memory test for visImage allocation and deallocation
+int visImage_Alloc(visImage *t, int width, int height, int components_per_pixel) {
+    int padding = calculate_padding(width * components_per_pixel * sizeof(uint8_t), 4);
+
+    t->height = height;
+    t->width = width;
+    t->num_pix_components = components_per_pixel;
+    t->pitch = (width + (size_t)padding) * sizeof(uint8_t);
+    t->plane = malloc(sizeof(PixelValue) * height * t->pitch);
+    return 0;
+}
+void visImage_FreeData(visImage *pImage) {
+    pImage->height = -1;
+    pImage->width = -1;
+    pImage->num_pix_components = -1;
+    pImage->pitch = -1;
+    free(pImage->plane);
+    pImage->plane = NULL;
+
 }

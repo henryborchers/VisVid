@@ -4,19 +4,7 @@
 #include "visBuffer.h"
 #include <stdlib.h>
 #include <string.h>
-
-
-/**
- * @struct visBufferNode
- * @brief Wraps the visVisualResult into a linked list.
- */
-struct visBufferNode {
-    visVisualResult *result;
-    visBufferNode *previous;
-    visBufferNode *next;
-    size_t position;
-};
-
+#include <stdio.h>
 
 
 /**
@@ -24,21 +12,21 @@ struct visBufferNode {
  * @param buffer The buffer to find the first node.
  * @return Returns a node in the visBuffer.
  */
-static visBufferNode *visBufferFront(visBuffer *buffer);
+static visBufferNode *visBufferFront(const visBuffer *buffer);
 
 /**
  * Gets the next node after the given one.
  * @param node The node which to find the next node.
  * @return Returns a pointer to the next node. Returns NULL if none exists.
  */
-static visBufferNode *visBufferNextNode(visBufferNode *node);
+static visBufferNode *visBufferNextNode(const visBufferNode *node);
 
 /**
  * Gets the previous node after the given one.
  * @param node The node which to find the previous node.
  * @return Returns a pointer to the previous node. Returns NULL if none exists.
  */
-static visBufferNode *visBufferPreviousNode(visBufferNode *node);
+static visBufferNode *visBufferPreviousNode(const visBufferNode *node);
 
 /**
  * Pushes a visBufferNode to the end of a visBuffer.
@@ -60,7 +48,7 @@ static visBufferNode *visBufferPop(visBuffer *buffer);
  * @param pRes The Result to added to node.
  * @return Returns a new visBufferNode with the visVisualResult.
  */
-static visBufferNode *CreateVisBufferNode(visVisualResult *pRes);
+static visBufferNode *CreateVisBufferNode(const visVisualResult *pRes);
 
 /**
  * Get the visVisualResult from a given visBufferNode.
@@ -88,7 +76,7 @@ visBuffer *VisBuffer_Create(size_t width) {
     return buffer;
 }
 
-int visBuffer_isEmpty(visBuffer *buffer) {
+int visBuffer_isEmpty(const visBuffer *buffer) {
     return buffer->first == NULL && buffer->last == NULL;
 }
 
@@ -104,20 +92,20 @@ void VisBuffer_Destroy(visBuffer **buffer) {
     }
 }
 
-visBufferNode *visBufferFront(visBuffer *buffer) {
+visBufferNode *visBufferFront(const visBuffer *buffer) {
     return buffer->first;
 }
 
-visBufferNode *visBufferNextNode(visBufferNode *node) {
+visBufferNode *visBufferNextNode(const visBufferNode *node) {
     return node->next;
 }
 
-visBufferNode *visBufferPreviousNode(visBufferNode *node) {
+visBufferNode *visBufferPreviousNode(const visBufferNode *node) {
     return node->previous;
 }
 
 int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
-    int ret;
+    int ret = -1;
 //    TODO: CHECK IF buffer is unlimited or not. If unlimited, just add, otherwise, shift it left and replace the right most
     // check result size first if it's not null
     if (pRes != NULL) {
@@ -144,7 +132,7 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
     if ((ret = visBuffer_ShiftLeft(buffer)) != 0) {
 //                TODO clean up
         return ret;
-    };
+    }
 
     // use the last one
     if ((ret = visBuffer_setResult(buffer, buffer->bufferLen - 1, pRes)) != 0) {
@@ -271,7 +259,7 @@ visBufferNode *visBufferPop(visBuffer *buffer) {
     return rNode;
 }
 
-size_t visBuffer_getLength(visBuffer *buffer) {
+size_t visBuffer_getLength(const visBuffer *buffer) {
     return buffer->bufferLen;
 }
 
@@ -283,7 +271,7 @@ void VisBufferNode_Destroy(visBufferNode **node) {
     free(*node);
 }
 
-visBufferNode *CreateVisBufferNode(visVisualResult *pRes) {
+visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
 
     visBufferNode *node = NULL;
     int length = 0;
@@ -314,7 +302,7 @@ visVisualResult *visBufferNodeResult(visBufferNode *pNode) {
     return pNode->result;
 }
 
-visBufferNode *_BufferNode_get(visBuffer *buffer, size_t index) {
+visBufferNode *_BufferNode_get(const visBuffer *buffer, size_t index) {
     if (buffer->bufferLen <= index) {
         return NULL;
     }
@@ -339,7 +327,7 @@ int _nodePosition(visBufferNode *node) {
     return (int) node->position;
 }
 
-int visBuffer_getResult(PixelValue *pRes, visBuffer *buffer, size_t index) {
+int visBuffer_getResult(PixelValue *pRes, const visBuffer *buffer, size_t index) {
     int x;
     visBufferNode *node = NULL;
     node = _BufferNode_get(buffer, index);
