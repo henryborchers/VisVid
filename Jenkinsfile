@@ -2,6 +2,7 @@ pipeline {
   agent {
     dockerfile {
       filename 'scm/Dockerfile'
+      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
     }
     
   }
@@ -50,7 +51,7 @@ pipeline {
                 buildType: 'Debug', 
                 cleanBuild: true, 
                 installation: 'InSearchPath', 
-                cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_C_FLAGS=\"-Wall\"",
+                cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_C_FLAGS=\"-Wall\" -DVALGRIND_COMMAND_OPTIONS=\"--xml=yes --xml-file=mem-%p.memcheck\"",
                 sourceDir: 'scm',
                 steps: [
                 [args: '--target test-visvid', withCmake: true],
@@ -61,9 +62,34 @@ pipeline {
           }
           post{
             success{
-              stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'   
+              stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'
+              publishValgrind (
+                        failBuildOnInvalidReports: false,
+                        failBuildOnMissingReports: false,
+                        failThresholdDefinitelyLost: '',
+                        failThresholdInvalidReadWrite: '',
+                        failThresholdTotal: '',
+                        pattern: 'build/debug/**/*.memcheck',
+                        publishResultsForAbortedBuilds: false,
+                        publishResultsForFailedBuilds: false,
+                        sourceSubstitutionPaths: '',
+                        unstableThresholdDefinitelyLost: '',
+                        unstableThresholdInvalidReadWrite: '',
+                        unstableThresholdTotal: ''
+                      )
+
+            }
+            cleanup{
+                cleanWs(patterns: [[pattern: "build/debug/**/*.memcheck", type: 'INCLUDE']])
             }
           }
+        }
+        stage("Building Python Extension"){
+            steps{
+                dir("scm"){
+                    sh "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
+                }
+            }
         }
         stage('Documentation') {
               // steps {
@@ -103,50 +129,165 @@ pipeline {
       }
     }
     stage('Test') {
-      parallel{
-        
-        stage("Run CTest"){
-          steps{
-            unstash "DEBUG_BUILD_FILES"
-            ctest( 
-              arguments: "--output-on-failure --no-compress-output -T Test", 
-              installation: 'InSearchPath', 
-              workingDir: 'build/debug'
-              )
-          }
-        }
-        stage("CTest: Coverage"){
-          steps{
-            ctest arguments: "-T coverage", 
-              installation: 'InSearchPath', 
-              workingDir: 'build/debug'
-          }
-          post{
-            always{
-              sh "mkdir -p reports/coverage && gcovr -r . --xml -o reports/coverage/coverage.xml build/debug"
-              sh "gcovr -r . --html --html-details -o reports/coverage/coverage.html build/debug"
-              archiveArtifacts 'reports/coverage/coverage.xml'
-              publishCoverage adapters: [coberturaAdapter('reports/coverage/coverage.xml')], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
-              publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+        stages{
+            stage("Setting Up Python Test Environment"){
+                steps{
+                    sh (
+                      label: "Install virtual env",
+                      script: "python3 -m venv venv"
+                      )
 
+                    sh(
+                      label: "Upgrade pip",
+                      script:""". ./venv/bin/activate
+python -m pip install pip --upgrade
+"""
+                    )
+
+                    sh(
+                      label: "Installing Python Testing Packages",
+                      script: """. ./venv/bin/activate
+pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
+                    )
+                    dir("scm"){
+                      sh(
+                          label: "Installing Current Python Package to Virtual Environment in Development Mode",
+                          script: """. ${WORKSPACE}/venv/bin/activate
+  pip install -e ."""
+                      )
+                    }
+                  }
+            }
+            stage("Run Tests"){
+              parallel{
+
+                stage("Run CTest"){
+                  steps{
+                    unstash "DEBUG_BUILD_FILES"
+                    ctest(
+                      arguments: "--output-on-failure --no-compress-output -T Test",
+                      installation: 'InSearchPath',
+                      workingDir: 'build/debug'
+                      )
+                  }
+                }
+                stage("CTest: Coverage"){
+                  steps{
+                    ctest arguments: "-T coverage",
+                      installation: 'InSearchPath',
+                      workingDir: 'build/debug'
+                  }
+                  post{
+                    always{
+                      sh "mkdir -p reports/coverage && gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
+                      sh "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                      archiveArtifacts 'reports/coverage/coverage.xml'
+                      publishCoverage(
+                        adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                        tag: "AllCoverage"
+                        )
+
+                      publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+
+                    }
+                  }
+                }
+                stage("CTest: MemCheck"){
+                  steps{
+                    ctest(
+                      arguments: "-T memcheck",
+                      installation: 'InSearchPath',
+                      workingDir: 'build/debug'
+                      )
+                  }
+                }
+                stage("Running Pytest"){
+                  steps{
+                    dir("scm"){
+                        catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
+                            sh(
+                                label: "Running pytest",
+                                script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=examples/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
+                            )
+                        }
+                    }
+                  }
+                  post{
+                    always{
+                        junit "reports/pytest/junit-pytest.xml"
+                    }
+                  }
+              }
+              stage("Run MyPy Static Analysis") {
+                  steps{
+                      dir("scm"){
+                          catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+                              tee("${WORKSPACE}/logs/mypy.log"){
+                                  sh(
+                                    label: "Running MyPy",
+                                    script: ". ${WORKSPACE}/venv/bin/activate && mypy examples/pyvisvid/pyvisvid  --cache-dir=${WORKSPACE}/mypy_cache --html-report ${WORKSPACE}/reports/mypy/html"
+                                    )
+                                }
+                          }
+
+                      }
+                  }
+                  post {
+                      always {
+                          recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
+                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
+                      }
+                  }
+              }
+              stage("Run Flake8 Static Analysis") {
+                  steps{
+                      dir("scm"){
+                          catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
+
+                              sh(
+                                  label: "Running Flake8",
+                                  script: """. ${WORKSPACE}/venv/bin/activate
+flake8 examples/pyvisvid/pyvisvid --tee --output-file=${WORKSPACE}/logs/flake8.log
+"""
+
+                              )
+                          }
+                      }
+                  }
+                  post {
+                      always {
+                          archiveArtifacts 'logs/flake8.log'
+                          recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+                      }
+                      cleanup{
+                          cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
+                      }
+                  }
+              }
+              stage("Running Tox"){
+
+                  steps{
+                      catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
+                          sh(
+                            label: "Running Tox",
+                            script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
+                          )
+                      }
+
+                  }
+              }
+              }
             }
           }
-        }
-        stage("CTest: MemCheck"){
-          steps{
-            ctest(
-              arguments: "-T memcheck", 
-              installation: 'InSearchPath', 
-              workingDir: 'build/debug'
-              )
-          }
-        }
-      }
       post{
         always{
+            dir("reports/ctest"){
+                sh "ls"
+            }
             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
-            sh "ls reports/ctest"
-            archiveArtifacts "reports/ctest/*.*"
+            // sh "ls reports/ctest"
+            archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
             xunit testTimeMargin: '3000',
                 thresholdMode: 1,
                 thresholds: [
@@ -162,6 +303,26 @@ pipeline {
                     stopProcessingIfError: true
                     )
                   ]
+            dir("scm"){
+                sh(
+                    label: "Combining coverage data",
+                    script: """
+. ${WORKSPACE}/venv/bin/activate
+coverage combine
+coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
+coverage html -d ${WORKSPACE}/reports/python/coverage
+"""
+                )
+            }
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
+            publishCoverage(
+                adapters: [
+                    coberturaAdapter('reports/python/coverage.xml')
+                    ],
+                sourceFileResolver: sourceFiles('STORE_ALL_BUILD'),
+                tag: "AllCoverage"
+
+            )
         }
         cleanup{
             cleanWs(
@@ -174,11 +335,49 @@ pipeline {
       }
     }
     stage('Package') {
-       steps {
-            cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
-            archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
+      parallel{
+          stage("CPack Packages"){
+              stages{
+                stage("CPack Source Package"){
+                  steps {
+                    cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
+                    archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
 
-       }
+                  }
+                }
+              }
+          }
+          stage("Python Packages"){
+              stages{
+                    stage("Building Python Packages"){
+                        steps{
+                            dir("scm"){
+                                sh "python3 setup.py  build --build-temp=${WORKSPACE}/pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
+                            }
+                        }
+                    }
+                    stage("Testing Python Packages"){
+                        steps{
+                            script{
+                                def python_packages = findFiles glob: "pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz"
+                                python_packages.each{
+                                    sh(
+                                        label: "Running Tox with ${it}",
+                                        script: """. ${WORKSPACE}/venv/bin/activate
+cd scm && tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py"""
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                post{
+                    success{
+                      archiveArtifacts(artifacts: 'pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz', fingerprint: true, onlyIfSuccessful: true)
+                    }
+                }
+            }
+      }
     }
   }
   post {
@@ -192,7 +391,10 @@ pipeline {
             [pattern: 'scm', type: 'INCLUDE'],
             [pattern: 'reports', type: 'INCLUDE'],
             [pattern: 'logs', type: 'INCLUDE'],
+            [pattern: 'tox', type: 'INCLUDE'],
+            [pattern: 'pyvisvid', type: 'INCLUDE'],
             [pattern: '*tmp', type: 'INCLUDE'],
+            [pattern: 'venv', type: 'INCLUDE'],
             [pattern: 'testresults', type: 'INCLUDE']
             ])
     }

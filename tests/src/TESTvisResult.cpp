@@ -78,7 +78,7 @@ TEST_F(visVisualResultFunctions, setresultdata) {
     ASSERT_TRUE(VisVisualResult_IsReady(result));
     ASSERT_EQ(value, 0);
 
-    // test heap
+    // tests heap
     VisVisualResult_SetData(result, bar, 10);
     VisVisualResult_GetValue(&value, result, 5);
     ASSERT_EQ(value, 9);

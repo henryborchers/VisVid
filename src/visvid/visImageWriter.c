@@ -92,7 +92,7 @@ int visImageRGB_readPixel(const visImageRGB *t, int pixelX, int pixelY, uint8_t 
     return 0;
 }
 
-//TODO: Create a memory test for visImage allocation and deallocation
+//TODO: Create a memory tests for visImage allocation and deallocation
 int visImage_Alloc(visImage *t, int width, int height, int components_per_pixel) {
     int padding = calculate_padding(width * components_per_pixel * sizeof(uint8_t), 4);
 

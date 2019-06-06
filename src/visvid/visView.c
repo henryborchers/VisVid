@@ -188,8 +188,10 @@ int visView_Update(visView *pView, visBuffer *buffer) {
         valid_result = visBuffer_getResult(currentSlice, buffer, x);
 //        printf("value of x is %d\n", x);
         if (valid_result < 0) {
+//            FIXME: can't use stderr to invalid results because Python cannot link to it because the extension is
+//                compile with -fPIC
 
-            fprintf(stderr, "Invalid result\n");
+//            fprintf(stderr, "Invalid result\n");
             return valid_result;
         };
         for (y = 0; y < pView->width; y++) {

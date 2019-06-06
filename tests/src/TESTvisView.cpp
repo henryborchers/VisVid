@@ -103,7 +103,7 @@ TEST_F(visViewFunctionsFullBuffer1, updateView) {
 }
 
 TEST_F(visViewFunctionsFullBuffer1, Create_visViewRGBA) {
-    // This test needs to be replaced when color maps are added
+    // This tests needs to be replaced when color maps are added
 
     ASSERT_EQ(visView_Update(pvid, buffer), 0);
     visImageRGB imageRGB;
@@ -134,7 +134,7 @@ TEST_F(visViewFunctionsFullBuffer1, Create_visViewRGBA) {
 //        const int FRAME_WIDTH = 255;
 //        const int TOTAL_FRAMES = 255;
 //
-//    //    TODO: visViewFunctionsFullBuffer_ramp test
+//    //    TODO: visViewFunctionsFullBuffer_ramp tests
 //        virtual void SetUp() {
 //
 //            // Create a buffer for frames that are 255 pixels wide

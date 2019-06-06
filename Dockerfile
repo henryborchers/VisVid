@@ -1,9 +1,9 @@
 FROM ubuntu
 MAINTAINER Henry Borchers <henryborchers@yahoo.com>
 
-USER root
+#USER root
 
-ADD https://cmake.org/files/v3.12/cmake-3.12.2-Linux-x86_64.sh /cmake-Linux-x86_64.sh
+ADD https://cmake.org/files/v3.13/cmake-3.13.5-Linux-x86_64.sh /cmake-Linux-x86_64.sh
 
 RUN apt-get update -y && \
     apt-get install \
@@ -19,6 +19,12 @@ RUN apt-get update -y && \
     libswscale-dev \
     libgtk2.0-dev \
     python3-all-dev \
+    python3-venv \
+    python3 \
+    python3-wheel \
+    python3.7-venv \
+    tox \
+    python3-pip \
     valgrind \
     wget \
     build-essential \
@@ -46,4 +52,13 @@ RUN wget https://libsdl.org/release/SDL2-2.0.7.tar.gz && \
     cmake --build . --config Release --target install && \
     rm -rf SDL2-2.0.7
 
-USER jenkins_node
+# Needs this otherwise tox will not have permissions to 
+# create virtual environments
+# Idea from https://issues.jenkins-ci.org/browse/JENKINS-47026?jql=text%20~%20%22virtualenv%22%20ORDER%20BY%20updated%20DESC
+
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN groupadd -g $GROUP_ID user && \
+    useradd -u $USER_ID -s /bin/sh -g user user
+# ==========================================================

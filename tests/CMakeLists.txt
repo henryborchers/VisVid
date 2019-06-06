@@ -1,7 +1,7 @@
 include(FetchContent)
 FetchContent_Declare(
         libcatch2
-        URL https://github.com/catchorg/Catch2/archive/v2.5.0.tar.gz
+        URL https://github.com/catchorg/Catch2/archive/v2.7.2.tar.gz
 )
 FetchContent_GetProperties(libcatch2)
 if(NOT libcatch2_POPULATED)

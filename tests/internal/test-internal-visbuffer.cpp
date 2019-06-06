@@ -8,7 +8,7 @@ extern "C" {
 #include "visBuffer.h"
 }
 
-// TODO: Make internal test
+// TODO: Make internal tests
 SCENARIO("visBuffer Functions are used"){
     GIVEN("A pointer to a 10 pixel wide buffer that is empty"){
         visBuffer *buffer = nullptr;
@@ -179,7 +179,7 @@ TEST_CASE("visBufferFunctions", "[visbuffer]") {
     VisBuffer_Destroy(&buffer);
     CHECK(buffer == nullptr);
 }
-// TODO: Make internal test
+// TODO: Make internal tests
 SCENARIO("Fixed Buffer size"){
     GIVEN("a buffer for 5 results of 10 units wide is created"){
 

@@ -38,7 +38,9 @@ static bool fileExists(const char *filename);
 static int decode(AVCodecContext *pContext, AVFrame *pFrame, int *got_frame, AVPacket *pkt);
 
 void decoder_init() {
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
     av_register_all();
+#endif
 }
 
 DecoderContext *decoderContext_Create(const char *filename) {
