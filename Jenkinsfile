@@ -103,7 +103,7 @@ pipeline {
       }
     }
     stage('Test') {
-      stages{
+      parallel{
         
         stage("Run CTest"){
           steps{
