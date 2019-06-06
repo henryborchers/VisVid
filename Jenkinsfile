@@ -87,15 +87,15 @@ pipeline {
         stage("Building Python Extension"){
             steps{
                 dir("scm"){
-                    sh "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
+                    sh(
+                        label: "Running Python setup script to build extension inplace",
+                        script: "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
+                    )
                 }
             }
         }
         stage('Documentation') {
-              // steps {
-              //   stage('Build') {
               steps {
-//                unstash "RELEASE_BUILD_FILES"
                 cmakeBuild(
                   buildDir: 'build/docs',
                   buildType: 'Release',
@@ -132,7 +132,7 @@ pipeline {
         stages{
             stage("Setting Up Python Test Environment"){
                 steps{
-                    sh (
+                    sh(
                       label: "Install virtual env",
                       script: "python3 -m venv venv"
                       )
@@ -179,8 +179,15 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                   }
                   post{
                     always{
-                      sh "mkdir -p reports/coverage && gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
-                      sh "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                      sh(
+                        label: "Generating coverage report in Coberatura xml file format",
+                        script: "mkdir -p reports/coverage && gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
+                      )
+
+                      sh(
+                          label: "Generating coverage report in html file format",
+                          script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                       )
                       archiveArtifacts 'reports/coverage/coverage.xml'
                       publishCoverage(
                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
@@ -282,11 +289,7 @@ flake8 examples/pyvisvid/pyvisvid --tee --output-file=${WORKSPACE}/logs/flake8.l
           }
       post{
         always{
-            dir("reports/ctest"){
-                sh "ls"
-            }
             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
-            // sh "ls reports/ctest"
             archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
             xunit testTimeMargin: '3000',
                 thresholdMode: 1,
@@ -352,7 +355,10 @@ coverage html -d ${WORKSPACE}/reports/python/coverage
                     stage("Building Python Packages"){
                         steps{
                             dir("scm"){
-                                sh "python3 setup.py  build --build-temp=${WORKSPACE}/pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
+                                sh(
+                                    label: "Running Python setup script to build wheel and sdist",
+                                    script: "python3 setup.py  build --build-temp=${WORKSPACE}/pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
+                                )
                             }
                         }
                     }
