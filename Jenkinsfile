@@ -1,7 +1,7 @@
 pipeline {
   agent {
     dockerfile {
-      filename 'scm/Dockerfile'
+      filename 'scm/ci/dockerfiles/jenkins-main'
       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
     }
     
