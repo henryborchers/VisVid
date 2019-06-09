@@ -131,6 +131,12 @@ pipeline {
     stage("Static Analysis"){
       parallel{
         stage("Clang Tidy"){
+          agent {
+            dockerfile {
+              dir 'ci/dockerfiles'
+              filename 'clang-tidy'
+            }
+          }
           steps{
 
             catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
