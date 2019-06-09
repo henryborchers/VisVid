@@ -33,9 +33,8 @@ RUN apt-get update -y && \
     git \
     tree \
     gcovr \
+    clang-tidy \
     swig3.0 -y
-#RUN wget https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.sh && \
-#    sh cmake-3.10.2-Linux-x86_64.sh --skip-license
 
 RUN mkdir /opt/cmake
 RUN sh /cmake-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
