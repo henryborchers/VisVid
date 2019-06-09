@@ -131,7 +131,6 @@ pipeline {
     stage("Static Analysis"){
       parallel{
         stage("Clang Tidy"){
-          
           options{
             timeout(5)
           }
@@ -146,7 +145,8 @@ pipeline {
                   cleanBuild: true, 
                   installation: 'InSearchPath', 
                   cmakeArgs: "-DCMAKE_C_CLANG_TIDY=/usr/bin/clang-tidy",
-                  sourceDir: 'scm'
+                  sourceDir: 'scm',
+                  steps: [[withCmake: true]]
                 )
               }
             }
