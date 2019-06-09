@@ -133,10 +133,22 @@ pipeline {
         stage("Clang Tidy"){
           steps{
             // todo: check if clang tidy is installed
-            catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-              sh "which clang-tidy"
-              echo "Running clang tidy"
-              // Todo: Build cmake with  -DCMAKE_C_CLANG_TIDY=clang-tidy set
+            catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
+              tee('logs/clang-tidy_debug.log') {
+
+                cmakeBuild(
+                  buildDir: 'build/clang-tidy',
+                  buildType: 'Debug', 
+                  cleanBuild: true, 
+                  installation: 'InSearchPath', 
+                  cmakeArgs: "-DCMAKE_C_CLANG_TIDY=/usr/bin/clang-tidy",
+                  sourceDir: 'scm',
+                  steps: [
+                  [args: '--target test-visvid', withCmake: true],
+                  [args: '--target test-visvid-internal', withCmake: true],
+                  ]
+                )
+              }
             }
           }
         }
