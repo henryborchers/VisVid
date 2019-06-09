@@ -131,13 +131,6 @@ pipeline {
     stage("Static Analysis"){
       parallel{
         stage("Clang Tidy"){
-          agent {
-            dockerfile {
-              filename 'scm/ci/dockerfiles/jenkins-main'
-              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-              label 'Linux'
-            }
-            
           }
           options{
             timeout(5)
@@ -153,11 +146,7 @@ pipeline {
                   cleanBuild: true, 
                   installation: 'InSearchPath', 
                   cmakeArgs: "-DCMAKE_C_CLANG_TIDY=/usr/bin/clang-tidy",
-                  sourceDir: 'scm',
-                  steps: [
-                  [args: '--target test-visvid', withCmake: true],
-                  [args: '--target test-visvid-internal', withCmake: true],
-                  ]
+                  sourceDir: 'scm'
                 )
               }
             }
