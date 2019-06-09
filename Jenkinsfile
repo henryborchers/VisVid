@@ -137,6 +137,9 @@ pipeline {
               filename 'clang-tidy'
             }
           }
+          options{
+            timeout(5)
+          }
           steps{
 
             catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
