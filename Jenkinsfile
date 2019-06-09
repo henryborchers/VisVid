@@ -202,6 +202,7 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                 }
                 stage("CTest: MemCheck"){
                   steps{
+                    sh "grep -c ^processor /proc/cpuinfo"
                     ctest(
                       arguments: "-T memcheck",
                       installation: 'InSearchPath',
