@@ -128,61 +128,61 @@ pipeline {
         
       }
     }
-    // stage("Static Analysis"){
-    //   parallel{
-    //     stage("Clang Tidy"){
-    //       agent {
-    //         dockerfile {
-    //           // dir ''
-    //           filename 'scm/ci/dockerfiles/clang-tidy'
-    //           // additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-    //         }
-    //       }
-    //       options{
-    //         timeout(5)
-    //       }
-    //       steps{
-
-    //         catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-    //           tee('logs/clang-tidy_debug.log') {
-
-    //             cmakeBuild(
-    //               buildDir: 'build/clang-tidy',
-    //               buildType: 'Debug', 
-    //               cleanBuild: true, 
-    //               installation: 'InSearchPath', 
-    //               cmakeArgs: "-DCMAKE_C_CLANG_TIDY=/usr/bin/clang-tidy",
-    //               sourceDir: 'scm',
-    //               steps: [
-    //               [args: '--target test-visvid', withCmake: true],
-    //               [args: '--target test-visvid-internal', withCmake: true],
-    //               ]
-    //             )
-    //           }
-    //         }
-    //       }
-    //       post{
-    //         always {
-    //             archiveArtifacts(
-    //               allowEmptyArchive: true, 
-    //               artifacts: 'logs/clang-tidy_debug.log'
-    //             )
-
-    //             // recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
-    //         }
-    //         cleanup{
-    //             cleanWs(
-    //               patterns: [
-    //                 [pattern: 'build/clang-tidy', type: 'INCLUDE'],
-    //                 [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
-    //               ]
-    //             )
-    //         }
+    stage("Static Analysis"){
+      parallel{
+        stage("Clang Tidy"){
+          agent {
+            dockerfile {
+              filename 'scm/ci/dockerfiles/jenkins-main'
+              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+            }
             
-    //       }
-    //     }
-    //   }
-    // }
+          }
+          options{
+            timeout(5)
+          }
+          steps{
+
+            catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
+              tee('logs/clang-tidy_debug.log') {
+
+                cmakeBuild(
+                  buildDir: 'build/clang-tidy',
+                  buildType: 'Debug', 
+                  cleanBuild: true, 
+                  installation: 'InSearchPath', 
+                  cmakeArgs: "-DCMAKE_C_CLANG_TIDY=/usr/bin/clang-tidy",
+                  sourceDir: 'scm',
+                  steps: [
+                  [args: '--target test-visvid', withCmake: true],
+                  [args: '--target test-visvid-internal', withCmake: true],
+                  ]
+                )
+              }
+            }
+          }
+          post{
+            always {
+                archiveArtifacts(
+                  allowEmptyArchive: true, 
+                  artifacts: 'logs/clang-tidy_debug.log'
+                )
+
+                // recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+            }
+            cleanup{
+                cleanWs(
+                  patterns: [
+                    [pattern: 'build/clang-tidy', type: 'INCLUDE'],
+                    [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
+                  ]
+                )
+            }
+            
+          }
+        }
+      }
+    }
     stage('Test') {
         stages{
             stage("Setting Up Python Test Environment"){
