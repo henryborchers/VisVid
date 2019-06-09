@@ -128,6 +128,13 @@ pipeline {
         
       }
     }
+    stage("Static Analysis"){
+      stages{
+        stage("Clang Tidy"){
+          echo "Running clang tidy"
+        }
+      }
+    }
     stage('Test') {
         stages{
             stage("Setting Up Python Test Environment"){
@@ -202,20 +209,11 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                 }
                 stage("CTest: MemCheck"){
                   steps{
-                    script{
-                    
-                      def cores = sh(
-                        label: 'looking up number of cores', 
-                        returnStdout: true, 
-                        script: 'grep -c ^processor /proc/cpuinfo'
-                      ).trim()
-
-                      ctest(
-                        arguments: "-T memcheck -j${cores}",
-                        installation: 'InSearchPath',
-                        workingDir: 'build/debug'
-                        )
-                    }
+                    ctest(
+                      arguments: "-T memcheck",
+                      installation: 'InSearchPath',
+                      workingDir: 'build/debug'
+                      )
                   }
                 }
                 stage("Running Pytest"){
