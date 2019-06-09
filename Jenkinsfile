@@ -129,7 +129,7 @@ pipeline {
       }
     }
     stage("Static Analysis"){
-      stages{
+      parallel{
         stage("Clang Tidy"){
           steps{
             echo "Running clang tidy"
