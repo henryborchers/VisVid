@@ -132,7 +132,7 @@ pipeline {
       parallel{
         stage("Clang Tidy"){
           steps{
-            // todo: check if clang tidy is installed
+
             catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
               tee('logs/clang-tidy_debug.log') {
 
@@ -150,6 +150,25 @@ pipeline {
                 )
               }
             }
+          }
+          post{
+            always {
+                archiveArtifacts(
+                  allowEmptyArchive: true, 
+                  artifacts: 'logs/clang-tidy_debug.log'
+                )
+
+                // recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+            }
+            cleanup{
+                cleanWs(
+                  patterns: [
+                    [pattern: 'build/clang-tidy', type: 'INCLUDE'],
+                    [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
+                  ]
+                )
+            }
+            
           }
         }
       }
