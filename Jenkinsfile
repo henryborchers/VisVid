@@ -131,7 +131,7 @@ pipeline {
     stage("Static Analysis"){
       parallel{
         stage("Clang Tidy"){
-          }
+          
           options{
             timeout(5)
           }
