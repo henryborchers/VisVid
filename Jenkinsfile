@@ -157,7 +157,7 @@ pipeline {
                   allowEmptyArchive: true, 
                   artifacts: 'logs/clang-tidy_debug.log'
                 )
-
+                recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
                 // recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
             }
             cleanup{
