@@ -24,8 +24,8 @@ if(Python3_Interpreter_FOUND)
             NO_SYSTEM_ENVIRONMENT_PATH
             )
     execute_process(COMMAND ${VENV_PYTHON} -m pip install wheel)
-    execute_process(COMMAND ${VENV_PYTHON} -m pip wheel --wheel-dir=${PROJECT_BINARY_DIR}/wheels -r ${CMAKE_CURRENT_SOURCE_DIR}/requirements-dev.txt)
-    execute_process(COMMAND ${VENV_PYTHON} -m pip install --no-index --find-links=${PROJECT_BINARY_DIR}/wheels -r ${CMAKE_CURRENT_SOURCE_DIR}/requirements-dev.txt)
+    execute_process(COMMAND ${VENV_PYTHON} -m pip wheel --wheel-dir=${PROJECT_BINARY_DIR}/wheels -r ${CMAKE_SOURCE_DIR}/requirements-dev.txt)
+    execute_process(COMMAND ${VENV_PYTHON} -m pip install --no-index --find-links=${PROJECT_BINARY_DIR}/wheels -r ${CMAKE_SOURCE_DIR}/requirements-dev.txt)
 
     add_custom_target(pyvisvid_build
         COMMAND
