@@ -132,7 +132,12 @@ pipeline {
       parallel{
         stage("Clang Tidy"){
           steps{
-            echo "Running clang tidy"
+            // todo: check if clang tidy is installed
+            catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+              sh "which clang-tidy"
+              echo "Running clang tidy"
+              // Todo: Build cmake with  -DCMAKE_C_CLANG_TIDY=clang-tidy set
+            }
           }
         }
       }
