@@ -133,8 +133,7 @@ pipeline {
         stage("Clang Tidy"){
           agent {
             dockerfile {
-              dir 'scm/ci/dockerfiles'
-              filename 'clang-tidy'
+              filename 'scm/ci/dockerfiles/clang-tidy'
             }
           }
           options{
