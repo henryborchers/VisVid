@@ -149,7 +149,7 @@ pipeline {
               sh "clang-tidy --version"
               tee('logs/clang-tidy_debug.log') {
                 
-                sh "clang-tidy -checks=-* -p ./build/clang-tidy/ ./scm/src/visvid/*.c"
+                sh "clang-tidy -checks=-*,clang-analyzer-*,cppcoreguidelines- -p ./build/clang-tidy/ ./scm/src/visvid/*.c"
                 
               }
             }
