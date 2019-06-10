@@ -146,6 +146,7 @@ pipeline {
                   sourceDir: 'scm',
                   
                 )
+              sh "clang-tidy --version"
               tee('logs/clang-tidy_debug.log') {
                 dir("build/clang-tidy"){
                   sh "clang-tidy -checks=-*,clang-analyzer-*,cppcoreguidelines- -p ./ ${WORKSPACE}/scm/src/visvid/*.c"
