@@ -53,7 +53,7 @@ RUN wget https://libsdl.org/release/SDL2-2.0.7.tar.gz && \
     rm -rf SDL2-2.0.7
 
 ####### install run-clang-tidy clang-tidy
-RUN mkdir /opt/clang-tidy/bin
+RUN mkdir -p /opt/clang-tidy/bin
 ADD https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py /opt/clang-tidy/bin/run-clang-tidy.py
 RUN ln -s /opt/clang-tidy/bin/run-clang-tidy.py /usr/local/bin/run-clang-tidy.py
 
