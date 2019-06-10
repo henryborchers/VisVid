@@ -1,7 +1,7 @@
 pipeline {
   agent {
     dockerfile {
-      filename 'scm/Dockerfile'
+      filename 'scm/ci/dockerfiles/jenkins-main'
       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
     }
     
@@ -51,7 +51,7 @@ pipeline {
                 buildType: 'Debug', 
                 cleanBuild: true, 
                 installation: 'InSearchPath', 
-                cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_C_FLAGS=\"-Wall\" -DVALGRIND_COMMAND_OPTIONS=\"--xml=yes --xml-file=mem-%p.memcheck\"",
+                cmakeArgs: '-DCTEST_DROP_LOCATION=$WORKSPACE/reports/ctest -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-Wall" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
                 sourceDir: 'scm',
                 steps: [
                 [args: '--target test-visvid', withCmake: true],
@@ -128,6 +128,39 @@ pipeline {
         
       }
     }
+    stage("Static Analysis"){
+      parallel{
+        stage("Clang Tidy"){
+          options{
+            timeout(5)
+          }
+          steps{
+            sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
+            tee('logs/clang-tidy_debug.log') {
+              sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy-7 -p ./build/debug/"        
+            }
+          }
+          post{
+            always {
+                archiveArtifacts(
+                  allowEmptyArchive: true, 
+                  artifacts: 'logs/clang-tidy_debug.log'
+                )
+                recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
+            }
+            cleanup{
+                cleanWs(
+                  patterns: [
+                    [pattern: 'build/clang-tidy', type: 'INCLUDE'],
+                    [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
+                  ]
+                )
+            }
+            
+          }
+        }
+      }
+    }
     stage('Test') {
         stages{
             stage("Setting Up Python Test Environment"){
@@ -202,20 +235,11 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                 }
                 stage("CTest: MemCheck"){
                   steps{
-                    script{
-                    
-                      def cores = sh(
-                        label: 'looking up number of cores', 
-                        returnStdout: true, 
-                        script: 'grep -c ^processor /proc/cpuinfo'
-                      ).trim()
-
-                      ctest(
-                        arguments: "-T memcheck -j${cores}",
-                        installation: 'InSearchPath',
-                        workingDir: 'build/debug'
-                        )
-                    }
+                    ctest(
+                      arguments: "-T memcheck",
+                      installation: 'InSearchPath',
+                      workingDir: 'build/debug'
+                      )
                   }
                 }
                 stage("Running Pytest"){
