@@ -148,9 +148,9 @@ pipeline {
               //   )
               
               sh "clang-tidy-7 --version"
-              sh "wget https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
+              // sh "wget https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
               tee('logs/clang-tidy_debug.log') {
-                sh  "run-clang-tidy.py -clang-tidy-binary clang-tidy-7 -p ./build/debug/"
+                sh  "/opt/clang-tidy/bin/run-clang-tidy.py -clang-tidy-binary clang-tidy-7 -p ./build/debug/"
                 // sh "clang-tidy-7 -checks=-*- -p ./build/debug/ ./scm/src/visvid/*.c"
                 
               }
