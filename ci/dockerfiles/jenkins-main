@@ -33,7 +33,8 @@ RUN apt-get update -y && \
     git \
     tree \
     gcovr \
-    clang-tidy \
+    clang-tidy-7 \
+    libclang-common-7-dev \
     swig3.0 -y
 
 RUN mkdir /opt/cmake
