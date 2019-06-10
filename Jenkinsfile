@@ -309,6 +309,9 @@ flake8 examples/pyvisvid/pyvisvid --tee --output-file=${WORKSPACE}/logs/flake8.l
                           archiveArtifacts 'logs/flake8.log'
                           recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
                       }
+                      unstable{
+                        echo "I'm unstable"
+                      }
                       cleanup{
                           cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
                       }
