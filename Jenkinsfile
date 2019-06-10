@@ -147,9 +147,10 @@ pipeline {
                   
                 )
               sh "clang-tidy --version"
+              sh "wget https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
               tee('logs/clang-tidy_debug.log') {
-                
-                sh "clang-tidy -checks=-*,clang-analyzer-*,cppcoreguidelines- -p ./build/clang-tidy/ ./scm/src/visvid/*.c"
+                sh  "python run-clang-tidy.py -p ./build/clang-tidy/"
+                // sh "clang-tidy -checks=-*- -p ./build/clang-tidy/ ./scm/src/visvid/*.c"
                 
               }
             }
