@@ -278,7 +278,7 @@ visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
 
     VisVisualResult_GetSize(&length, pRes);
 
-    node = malloc(sizeof(visBuffer));
+    node = malloc(sizeof(visBufferNode));
     node->previous = NULL;
     node->next = NULL;
 
