@@ -137,17 +137,19 @@ pipeline {
           steps{
 
             catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-              tee('logs/clang-tidy_debug.log') {
-
-                cmakeBuild(
+              cmakeBuild(
                   buildDir: 'build/clang-tidy',
                   buildType: 'Debug', 
                   cleanBuild: true, 
                   installation: 'InSearchPath', 
-                  cmakeArgs: "-DCMAKE_C_CLANG_TIDY=/usr/bin/clang-tidy",
+                  cmakeArgs: "-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON",
                   sourceDir: 'scm',
-                  steps: [[withCmake: true]]
+                  
                 )
+              tee('logs/clang-tidy_debug.log') {
+                dir("build/clang-tidy"){
+                  sh "clang-tidy -checks=-*,clang-analyzer-*,cppcoreguidelines- -p ./ ${WORKSPACE}/scm/src/visvid/*.c"
+                }
               }
             }
           }
