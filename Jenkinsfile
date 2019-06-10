@@ -51,7 +51,7 @@ pipeline {
                 buildType: 'Debug', 
                 cleanBuild: true, 
                 installation: 'InSearchPath', 
-                cmakeArgs: "-DCTEST_DROP_LOCATION=${WORKSPACE}/reports/ctest -DCMAKE_C_FLAGS_DEBUG=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_EXE_LINKER_FLAGS=\"-fprofile-arcs -ftest-coverage\" -DCMAKE_C_FLAGS=\"-Wall\" -DVALGRIND_COMMAND_OPTIONS=\"--xml=yes --xml-file=mem-%p.memcheck\"",
+                cmakeArgs: '-DCTEST_DROP_LOCATION=$WORKSPACE/reports/ctest -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-Wall" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
                 sourceDir: 'scm',
                 steps: [
                 [args: '--target test-visvid', withCmake: true],
@@ -137,21 +137,21 @@ pipeline {
           steps{
 
             catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-              cmakeBuild(
-                  buildDir: 'build/clang-tidy',
-                  buildType: 'Debug', 
-                  cleanBuild: true, 
-                  installation: 'InSearchPath', 
-                  cmakeArgs: "-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON",
-                  sourceDir: 'scm',
+              // cmakeBuild(
+              //     buildDir: 'build/clang-tidy',
+              //     buildType: 'Debug', 
+              //     cleanBuild: true, 
+              //     installation: 'InSearchPath', 
+              //     cmakeArgs: "-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON",
+              //     sourceDir: 'scm',
                   
-                )
+              //   )
               
               sh "clang-tidy-7 --version"
-              sh "wget https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
+              // sh "wget https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
               tee('logs/clang-tidy_debug.log') {
-                sh  "python run-clang-tidy.py -p ./build/clang-tidy/"
-                // sh "clang-tidy -checks=-*- -p ./build/clang-tidy/ ./scm/src/visvid/*.c"
+                // sh  "python run-clang-tidy.py -p ./build/clang-tidy/"
+                sh "clang-tidy-7 -checks=-*- -p ./build/debug/ ./scm/src/visvid/*.c"
                 
               }
             }
