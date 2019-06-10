@@ -137,22 +137,10 @@ pipeline {
           steps{
 
             catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-              // cmakeBuild(
-              //     buildDir: 'build/clang-tidy',
-              //     buildType: 'Debug', 
-              //     cleanBuild: true, 
-              //     installation: 'InSearchPath', 
-              //     cmakeArgs: "-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON",
-              //     sourceDir: 'scm',
-                  
-              //   )
-              
               sh "clang-tidy-7 --version"
-              // sh "wget https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
+              sh "wget https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
               tee('logs/clang-tidy_debug.log') {
-                sh  "/opt/clang-tidy/bin/run-clang-tidy.py -clang-tidy-binary clang-tidy-7 -p ./build/debug/"
-                // sh "clang-tidy-7 -checks=-*- -p ./build/debug/ ./scm/src/visvid/*.c"
-                
+                sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy-7 -p ./build/debug/"        
               }
             }
           }
