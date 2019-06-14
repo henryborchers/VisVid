@@ -151,8 +151,37 @@ pipeline {
             cleanup{
                 cleanWs(
                   patterns: [
-                    [pattern: 'build/clang-tidy', type: 'INCLUDE'],
                     [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
+                  ]
+                )
+            }
+            
+          }
+        }
+        stage("Cppcheck"){
+          options{
+            timeout(5)
+          }
+          steps{
+            // TODO setup supressing files for 3rd party, esp catch2
+
+              sh(
+                label: "Running Cppcheck",
+                script: "cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
+                )
+          }
+          post{
+            always {
+                archiveArtifacts(
+                  allowEmptyArchive: true, 
+                  artifacts: 'logs/cppcheck_debug.log'
+                )
+                recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
+            }
+            cleanup{
+                cleanWs(
+                  patterns: [
+                    [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
                   ]
                 )
             }
