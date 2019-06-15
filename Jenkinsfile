@@ -308,7 +308,7 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                               tee("${WORKSPACE}/logs/mypy.log"){
                                   sh(
                                     label: "Running MyPy",
-                                    script: ". ${WORKSPACE}/venv/bin/activate && mypy src/applications/pyvisvid/pyvisvid  --cache-dir=${WORKSPACE}/mypy_cache --html-report ${WORKSPACE}/reports/mypy/html"
+                                    script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
                                     )
                                 }
                           }
