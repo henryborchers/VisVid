@@ -218,6 +218,7 @@ setup(
     url="http://www.sample.com",
     packages=["pyvisvid"],
     package_dir={"": "src/applications/pyvisvid"},
+    package_data={"pyvisvid": ["visvid.pyi"]},
     setup_requires=["pytest-runner"],
     test_suite='examples/pyvisvid/tests',
     cmdclass={
