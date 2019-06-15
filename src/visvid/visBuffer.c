@@ -121,8 +121,7 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
     // if the buffer is smaller than the max or the buffersize is unlimited, create a new node.
     if (buffer->bufferMaxSize == 0 || buffer->bufferMaxSize > buffer->bufferLen) {
         // copy the result data into a new node
-        visBufferNode *node = NULL;
-        node = CreateVisBufferNode(pRes);
+        visBufferNode *node = CreateVisBufferNode(pRes);
         if (NULL == node) {
             return -1;
         }
