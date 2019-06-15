@@ -241,21 +241,25 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                   }
                   post{
                     always{
-                      sh(
-                        label: "Generating coverage report in Coberatura xml file format",
-                        script: "mkdir -p reports/coverage && gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
-                      )
+                      sh "mkdir -p reports/coverage"
 
                       sh(
-                          label: "Generating coverage report in html file format",
-                          script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
-                       )
+                        label: "Generating coverage report in Coberatura xml file format",
+                        script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
+                      
+                      )
                       archiveArtifacts 'reports/coverage/coverage.xml'
                       publishCoverage(
                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
                         tag: "AllCoverage"
                         )
+                      //////////////////////////////////////////
+                      sh(
+                          label: "Generating coverage report in html file format",
+                          script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                       )
+                     
 
                       publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
 
@@ -286,7 +290,7 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
                             sh(
                                 label: "Running pytest",
-                                script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=examples/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
+                                script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
                             )
                         }
                     }
@@ -304,7 +308,7 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                               tee("${WORKSPACE}/logs/mypy.log"){
                                   sh(
                                     label: "Running MyPy",
-                                    script: ". ${WORKSPACE}/venv/bin/activate && mypy examples/pyvisvid/pyvisvid  --cache-dir=${WORKSPACE}/mypy_cache --html-report ${WORKSPACE}/reports/mypy/html"
+                                    script: ". ${WORKSPACE}/venv/bin/activate && mypy src/applications/pyvisvid/pyvisvid  --cache-dir=${WORKSPACE}/mypy_cache --html-report ${WORKSPACE}/reports/mypy/html"
                                     )
                                 }
                           }
@@ -326,7 +330,7 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                               sh(
                                   label: "Running Flake8",
                                   script: """. ${WORKSPACE}/venv/bin/activate
-flake8 examples/pyvisvid/pyvisvid --tee --output-file=${WORKSPACE}/logs/flake8.log
+flake8 src/applications/pyvisvid/pyvisvid --tee --output-file=${WORKSPACE}/logs/flake8.log
 """
 
                               )

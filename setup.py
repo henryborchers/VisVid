@@ -184,13 +184,13 @@ class BuildCMakeClib(build_clib):
 pyvisvid_extension = Extension(
     "pyvisvid.visvid",
     sources=[
-        'examples/pyvisvid/pyvisvid/visvid_extension.cpp',
-        'examples/pyvisvid/pyvisvid/Visualizer.cpp',
+        'src/applications/pyvisvid/pyvisvid/visvid_extension.cpp',
+        'src/applications/pyvisvid/pyvisvid/Visualizer.cpp',
         'examples/shared/decode.c',
         'examples/shared/pgm.c',
          ],
     include_dirs=[
-        "examples/pyvisvid/pyvisvid",
+        "src/applications/pyvisvid/pyvisvid",
         "examples",
     ],
     libraries=["Visvid", "avformat", "avcodec"],
@@ -217,7 +217,7 @@ setup(
     author_email="fake@fake.com",
     url="http://www.sample.com",
     packages=["pyvisvid"],
-    package_dir={"": "examples/pyvisvid"},
+    package_dir={"": "src/applications/pyvisvid"},
     setup_requires=["pytest-runner"],
     test_suite='examples/pyvisvid/tests',
     cmdclass={
