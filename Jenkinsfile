@@ -34,14 +34,15 @@ pipeline {
                 steps: [[withCmake: true]]
               )
             }
+            recordIssues(
+                qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
+                tools: [gcc4(pattern: 'logs/gcc_*.log')]
+                )
           }
           post{
             always{
               stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
-              recordIssues(
-                qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
-                tools: [gcc4(pattern: 'logs/gcc_*.log')]
-                )
+
             }
           }
         }
