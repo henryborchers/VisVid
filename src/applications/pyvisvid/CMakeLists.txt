@@ -34,7 +34,7 @@ if(Python3_Interpreter_FOUND)
                     --build-base ${CMAKE_CURRENT_BINARY_DIR}/build
                     --build-lib ${CMAKE_CURRENT_BINARY_DIR}/build/lib
                 build_ext
-                    --include-dirs=$<TARGET_FILE_DIR:Visvid::Visvid>:${PROJECT_SOURCE_DIR}/src/visvid/include:${libpybind11_SOURCE_DIR}/include
+                    --include-dirs=$<TARGET_FILE_DIR:Visvid::Visvid>:${PROJECT_SOURCE_DIR}/src/visvid/include:${libpybind11_SOURCE_DIR}/include:${PROJECT_SOURCE_DIR}/example
                     --library-dirs=$<TARGET_FILE_DIR:Visvid::Visvid>
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/build
@@ -50,7 +50,7 @@ if(Python3_Interpreter_FOUND)
             )
     target_include_directories(pyvisvid_module
             PRIVATE
-                ${CMAKE_CURRENT_SOURCE_DIR}/..
+                ${PROJECT_SOURCE_DIR}/examples
             )
 
     add_custom_target(pyvisvid_run
