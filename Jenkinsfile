@@ -38,7 +38,10 @@ pipeline {
           post{
             success{
               stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
-              recordIssues(tools: [gcc4(pattern: 'logs/gcc_*.log')])
+              recordIssues(
+                qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
+                tools: [gcc4(pattern: 'logs/gcc_*.log')]
+                )
             }
           }
         }
