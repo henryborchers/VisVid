@@ -36,7 +36,7 @@ pipeline {
             }
           }
           post{
-            success{
+            always{
               stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
               recordIssues(
                 qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]],
@@ -64,7 +64,7 @@ pipeline {
             }
           }
           post{
-            success{
+            always{
               stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'
               publishValgrind (
                         failBuildOnInvalidReports: false,
