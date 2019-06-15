@@ -22,8 +22,7 @@ static float min(float d, float d1);
 
 
 visView *VisView_Create(int width, int height) {
-    visView *new_visView = NULL;
-    new_visView = (visView *) malloc(sizeof(visView));
+    visView *new_visView = (visView *) malloc(sizeof(visView));
     if (new_visView == NULL) {
         return NULL;
 

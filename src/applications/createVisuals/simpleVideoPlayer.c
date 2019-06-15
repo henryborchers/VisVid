@@ -12,7 +12,6 @@
 #include "videoDecoder.h"
 
 int playVideoSimple(const char *filename) {
-    DecoderContext      *decoderCtx = NULL;
     AVFrame             *frame = NULL;
     SDL_Event           event;
     PlayerContext       playerContext;
@@ -24,7 +23,8 @@ int playVideoSimple(const char *filename) {
     player_init();
 
     puts("Opening video");
-    decoderCtx = decoderContext_Create(filename);
+    DecoderContext *decoderCtx =  decoderContext_Create(filename);
+
     if(decoderCtx == NULL){
         fprintf(stderr, "Unable to load file \"%s\"", filename);
         return 1;

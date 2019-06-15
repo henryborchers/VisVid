@@ -29,8 +29,7 @@ struct VisYUVFrame{
 void FreeFrameData(VisYUVFrame **pFrame);
 
 PixelYUV *PixelYUV_Create() {
-    PixelYUV *newPixel = NULL;
-    newPixel = (PixelYUV*)malloc(sizeof(PixelYUV));
+    PixelYUV *newPixel = (PixelYUV*)malloc(sizeof(PixelYUV));
     if(newPixel == NULL){
         return NULL;
     }
@@ -68,8 +67,7 @@ int PixelYUV_getValue(const PixelYUV *pixel, PixelValue *y, PixelValue *u, Pixel
 
 
 VisYUVFrame *VisYUVFrame_Create() {
-    VisYUVFrame *newFrame = NULL;
-    newFrame = (VisYUVFrame*)malloc(sizeof(VisYUVFrame));
+    VisYUVFrame *newFrame = (VisYUVFrame*)malloc(sizeof(VisYUVFrame));
     if(newFrame == NULL){
         return NULL;
     }

@@ -11,8 +11,7 @@
 
 
 visVisualResult *VisVisualResult_Create() {
-    visVisualResult *newResult = NULL;
-    newResult = (visVisualResult*) malloc(sizeof(visVisualResult));
+    visVisualResult *newResult = (visVisualResult*) malloc(sizeof(visVisualResult));
     VisVisualResult_Init(newResult);
     return newResult;
 }

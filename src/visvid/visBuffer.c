@@ -64,8 +64,7 @@ static int visBuffer_setResult(visBuffer *buffer, size_t index, visVisualResult 
 static bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize);
 
 visBuffer *VisBuffer_Create(size_t width) {
-    visBuffer *buffer = NULL;
-    buffer = (visBuffer *) malloc(sizeof(visBuffer));
+    visBuffer *buffer = (visBuffer *) malloc(sizeof(visBuffer));
     if (buffer == NULL) {
         return NULL;
     }
@@ -159,8 +158,7 @@ int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode) {
 }
 
 visVisualResult *visBuffer_PopResult(visBuffer *buffer) {
-    visBufferNode *node = NULL;
-    node = visBufferPop(buffer);
+    visBufferNode *node = visBufferPop(buffer);
     return visBufferNodeResult(node);
 }
 
@@ -186,10 +184,9 @@ int renumber(visBuffer *pBuffer) {
 
 visVisualResult *visBuffer_PopShiftResult(visBuffer *buffer) {
 
-    visBufferNode *node = NULL;
     visVisualResult *result = NULL;
 
-    node = visBufferPop(buffer);
+    visBufferNode *node = visBufferPop(buffer);
     if (NULL == node) {
         return NULL;
     }
@@ -205,14 +202,11 @@ visVisualResult *visBuffer_PopShiftResult(visBuffer *buffer) {
 }
 
 int visBuffer_ShiftLeft(visBuffer *pBuffer) {
-    visBufferNode *front = NULL;
-    visBufferNode *current = NULL;
     visBufferNode *next = NULL;
-    visVisualResult *first_result = NULL;
-    first_result = pBuffer->first->result;
+    visVisualResult *first_result = pBuffer->first->result;
 
-    front = visBufferFront(pBuffer);
-    current = visBufferFront(pBuffer);
+    visBufferNode *front = visBufferFront(pBuffer);
+    visBufferNode *current = visBufferFront(pBuffer);
     while (current) {
 //        current->position--;
         if (!current->next) {
@@ -272,12 +266,11 @@ void VisBufferNode_Destroy(visBufferNode **node) {
 
 visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
 
-    visBufferNode *node = NULL;
+    visBufferNode *node = malloc(sizeof(visBufferNode));
     int length = 0;
 
     VisVisualResult_GetSize(&length, pRes);
 
-    node = malloc(sizeof(visBufferNode));
     node->previous = NULL;
     node->next = NULL;
 
@@ -328,8 +321,7 @@ int _nodePosition(visBufferNode *node) {
 
 int visBuffer_getResult(PixelValue *pRes, const visBuffer *buffer, size_t index) {
     int x;
-    visBufferNode *node = NULL;
-    node = _BufferNode_get(buffer, index);
+    visBufferNode *node = _BufferNode_get(buffer, index);
     int length = 0;
 
     if (node == NULL) {
@@ -356,10 +348,9 @@ int visBuffer_getResult(PixelValue *pRes, const visBuffer *buffer, size_t index)
 }
 
 visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
-    visBuffer *buffer = NULL;
+    visBuffer *buffer = (visBuffer *) malloc(sizeof(visBuffer));
     bool failed = false;
 
-    buffer = (visBuffer *) malloc(sizeof(visBuffer));
     if (buffer == NULL) {
         return NULL;
     }
@@ -383,8 +374,7 @@ visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
 bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize) {
     bool failed = false;//    Automatically resize
     for (int i = 0; i < bufferSize; i++) {
-        visVisualResult *res = NULL;
-        res = VisVisualResult_Create();
+        visVisualResult *res = VisVisualResult_Create();
 
         if (NULL == res) {
             failed = true;
