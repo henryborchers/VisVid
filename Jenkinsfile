@@ -213,7 +213,7 @@ python -m pip install pip --upgrade
                     sh(
                       label: "Installing Python Testing Packages",
                       script: """. ./venv/bin/activate
-pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
+pip install pytest "tox<3.10" mypy coverage lxml"""
                     )
                     dir("scm"){
                       sh(
@@ -334,7 +334,7 @@ pip install pytest "tox<3.10" flake8 mypy coverage lxml"""
                               sh(
                                   label: "Running Flake8",
                                   script: """. ${WORKSPACE}/venv/bin/activate
-flake8 src/applications/pyvisvid/pyvisvid --tee --output-file=${WORKSPACE}/logs/flake8.log
+tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
 """
 
                               )
