@@ -15,6 +15,7 @@
 #include "visvid/visvid.h"
 //#include "visTypes.h"
 #include "visUtils.h"
+#include "visvid_export.h"
 
 
 typedef struct visBufferNode visBufferNode;
@@ -42,7 +43,7 @@ typedef struct visBuffer visBuffer;
  * @note You are responsible for freeing this data when you are done with it. Use DestroyVisBuffer() to release any
  * memory reserved by this.
  */
-DEPRECATED visBuffer *VisBuffer_Create(size_t width);
+VISVID_DEPRECATED visBuffer *VisBuffer_Create(size_t width);
 
 
 /**

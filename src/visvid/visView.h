@@ -4,7 +4,7 @@
 #ifndef VISVID_VISVIEW_H
 #define VISVID_VISVIEW_H
 
-
+#include "visvid_export.h"
 #include <stdint.h>
 #include "visBuffer.h"
 #include "visImageWriter.h"
@@ -17,7 +17,7 @@
  * @param buffer Pointer to a buffer which to build this information from.
  * @return Returns 0 on success.
  */
-int visView_Update(visView *pView, visBuffer *buffer);
+VISVID_DEPRECATED int visView_Update(visView *pView, visBuffer *buffer);
 int visView_Update2(visView *pView, visBuffer *buffer);
 
 
