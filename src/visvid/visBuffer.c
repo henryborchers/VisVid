@@ -110,9 +110,9 @@ int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
     if (pRes != NULL) {
         // check the size only if there is valid data to check
         if (VisVisualResult_IsReady(pRes)) {
-            int resultSize = -1;
+            signed int resultSize = -1;
             VisVisualResult_GetSize(&resultSize, pRes);
-            if (buffer->bufferWidth != resultSize) {
+            if (buffer->bufferWidth != (unsigned int)resultSize) {
                 return -1;
             }
         }
@@ -373,7 +373,7 @@ visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
 
 bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize) {
     bool failed = false;//    Automatically resize
-    for (int i = 0; i < bufferSize; i++) {
+    for (unsigned int i = 0; i < bufferSize; i++) {
         visVisualResult *res = VisVisualResult_Create();
 
         if (NULL == res) {

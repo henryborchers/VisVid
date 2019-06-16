@@ -169,7 +169,6 @@ int index_lookup(int x, int y, int view_width){
 // FIXME visView_Update is broken
 // depricated
 int visView_Update(visView *pView, visBuffer *buffer) {
-    int x;
     int y;
     int valid_result = 0;
     size_t buffersize = visBuffer_getLength(buffer);
@@ -182,7 +181,7 @@ int visView_Update(visView *pView, visBuffer *buffer) {
     PixelValue currentSlice[pView->height];
     PixelValue lastSlice[pView->height];
 
-    for (x = 0; x < buffersize; x++) {
+    for (size_t x = 0; x < buffersize; x++) {
         // If the result is null the result code will be 0
         valid_result = visBuffer_getResult(currentSlice, buffer, x);
 //        printf("value of x is %d\n", x);
