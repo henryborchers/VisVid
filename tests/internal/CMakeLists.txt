@@ -10,6 +10,7 @@ add_executable(test-visvid-internal EXCLUDE_FROM_ALL
 
 set_target_properties(test-visvid-internal PROPERTIES
         CXX_STANDARD 11
+        C_CLANG_TIDY -Wdeprecated-declaration
         )
 
 target_link_libraries(test-visvid-internal PRIVATE Catch2 Visvid::Visvid)
