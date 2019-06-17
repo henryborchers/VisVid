@@ -11,8 +11,7 @@ extern "C" {
 // TODO: Make internal tests
 SCENARIO("visBuffer Functions are used"){
     GIVEN("A pointer to a 10 pixel wide buffer that is empty"){
-        visBuffer *buffer = nullptr;
-        buffer = VisBuffer_Create2(10, 0);
+        visBuffer *buffer = VisBuffer_Create2(10, 0);
 
         WHEN("Nothing has been done to it"){
             THEN("the buffer is empty"){
@@ -63,8 +62,7 @@ SCENARIO("visBuffer Functions are used"){
 
                 AND_THEN("and every result in the buffer is not ready"){
                     while(visBuffer_isEmpty(buffer) != 0){
-                        visVisualResult *res = nullptr;
-                        res = visBuffer_PopResult(buffer);
+                        visVisualResult *res = visBuffer_PopResult(buffer);
                         CHECK(!VisVisualResult_IsReady(res));
                         VisVisualResult_Destroy(&res);
                     }
@@ -156,8 +154,7 @@ SCENARIO("visBuffer Functions are used"){
 }
 
 TEST_CASE("visBufferFunctions", "[visbuffer]") {
-    visBuffer *buffer = nullptr;
-    buffer = VisBuffer_Create2(10, 0);
+    visBuffer *buffer = VisBuffer_Create2(10, 0);
     CHECK(buffer != nullptr);
 
     SECTION("get node position by position") {
@@ -183,8 +180,7 @@ TEST_CASE("visBufferFunctions", "[visbuffer]") {
 SCENARIO("Fixed Buffer size"){
     GIVEN("a buffer for 5 results of 10 units wide is created"){
 
-        visBuffer *buffer = nullptr;
-        buffer = VisBuffer_Create2(10, 5);
+        visBuffer *buffer = VisBuffer_Create2(10, 5);
         CHECK(buffer != nullptr);
         CHECK(visBuffer_getLength(buffer) == 5);
 
@@ -198,8 +194,7 @@ SCENARIO("Fixed Buffer size"){
             PixelValue fifth[10] = {5, 5, 5, 5, 5, 5, 5, 5, 5, 5};
             PixelValue six[10] = {6, 6, 6, 6, 6, 6, 6, 6, 6, 6};
 
-            visVisualResult *res = nullptr;
-            res = VisVisualResult_Create();
+            visVisualResult *res = VisVisualResult_Create();
 //        VisVisualResult_Init(res);
             VisVisualResult_SetSize(res, 10);
 
