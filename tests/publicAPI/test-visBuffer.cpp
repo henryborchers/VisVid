@@ -10,8 +10,7 @@ extern "C" {
 
 
 TEST_CASE("VisBuffer_Create2 --> not null", "[visbuffer]") {
-    visBuffer *buffer = nullptr;
-    buffer = VisBuffer_Create2(10, 10);
+    visBuffer *buffer = VisBuffer_Create2(10, 10);
     REQUIRE(buffer != nullptr);
 
     VisBuffer_Destroy(&buffer);
@@ -19,8 +18,7 @@ TEST_CASE("VisBuffer_Create2 --> not null", "[visbuffer]") {
 }
 
 TEST_CASE("VisBuffer_Destroy --> null", "[visbuffer]") {
-    visBuffer *buffer = nullptr;
-    buffer = VisBuffer_Create2(10, 2);
+    visBuffer *buffer = VisBuffer_Create2(10, 2);
     CHECK(buffer != nullptr);
 
     VisBuffer_Destroy(&buffer);

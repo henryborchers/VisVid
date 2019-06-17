@@ -12,9 +12,7 @@ extern "C" {
 TEST_CASE("VisView_Create --> not null", "[visView]"){
 
 
-    visView *pvid = nullptr;
-
-    pvid = VisView_Create(640, 480);
+    visView *pvid = VisView_Create(640, 480);
     REQUIRE(nullptr != pvid);
 
     REQUIRE(pvid->width == 640);
@@ -27,9 +25,7 @@ TEST_CASE("VisView_Create --> not null", "[visView]"){
 
 TEST_CASE("VisView_Destroy --> null", "[visView]"){
 
-    visView *pvid = nullptr;
-
-    pvid = VisView_Create(640, 480);
+    visView *pvid = VisView_Create(640, 480);
     CHECK(nullptr != pvid);
 
 

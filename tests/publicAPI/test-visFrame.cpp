@@ -11,8 +11,7 @@ extern "C" {
 
 
 TEST_CASE("VisYUVFrame_Create --> not null", "[VisYUVFrame]"){
-    VisYUVFrame *frame = nullptr;
-    frame = VisYUVFrame_Create();
+    VisYUVFrame *frame = VisYUVFrame_Create();
     REQUIRE(frame != nullptr);
 
     VisYUVFrame_Destroy(&frame);
