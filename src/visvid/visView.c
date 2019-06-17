@@ -289,9 +289,9 @@ int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *
         fractBetween = i - (float) (idx1);    // Distance between the two indexes (0-1).
     }
 
-    *r = (uint8_t) (value * min(1.0f, (color[idx2][0] - color[idx1][0]) * fractBetween + color[idx1][0]));
-    *g = (uint8_t) (value * min(1.0f, (color[idx2][1] - color[idx1][1]) * fractBetween + color[idx1][1]));
-    *b = (uint8_t) (value * min(1.0f, (color[idx2][2] - color[idx1][2]) * fractBetween + color[idx1][2]));
+    *r = (uint8_t) (value * min(1.0F, (color[idx2][0] - color[idx1][0]) * fractBetween + color[idx1][0]));
+    *g = (uint8_t) (value * min(1.0F, (color[idx2][1] - color[idx1][1]) * fractBetween + color[idx1][1]));
+    *b = (uint8_t) (value * min(1.0F, (color[idx2][2] - color[idx1][2]) * fractBetween + color[idx1][2]));
     *a = value;
     return 0;
 }
