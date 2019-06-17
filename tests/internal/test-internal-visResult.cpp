@@ -11,9 +11,7 @@ extern "C" {
 
 TEST_CASE("VisVisualResult_Create --> not null", "[visVisualResult]"){
 
-visVisualResult *result = nullptr;
-
-result = VisVisualResult_Create();
+visVisualResult *result = VisVisualResult_Create();
 REQUIRE(nullptr != result);
 
 VisVisualResult_Destroy(&result);
@@ -23,9 +21,7 @@ CHECK(nullptr == result);
 
 TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 
-    visVisualResult *result = nullptr;
-
-    result = VisVisualResult_Create();
+    visVisualResult *result = VisVisualResult_Create();
     CHECK(nullptr != result);
 
     VisVisualResult_Destroy(&result);
@@ -36,8 +32,7 @@ TEST_CASE("VisVisualResult_Destroy --> null", "[visVisualResult]"){
 SCENARIO("visVisualResult Functions are used"){
     GIVEN("A pointer to a result struct is created on the heap"){
 
-        visVisualResult *result = nullptr;
-        result = VisVisualResult_Create();
+        visVisualResult *result = VisVisualResult_Create();
         WHEN("nothing has been done to it"){
             THEN("the pointer to the newly created result is no longer null"){
                 REQUIRE(nullptr != result);

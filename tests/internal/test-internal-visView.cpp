@@ -12,9 +12,7 @@ extern "C" {
 
 TEST_CASE("visView Functions on an Empty Buffer"){
 
-    visView *pvid = nullptr;
-
-    pvid = VisView_Create(640, 480);
+    visView *pvid = VisView_Create(640, 480);
     CHECK(nullptr != pvid);
 
     SECTION("visView is empty on creation"){

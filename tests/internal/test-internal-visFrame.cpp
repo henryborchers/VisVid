@@ -10,8 +10,7 @@ extern "C" {
 }
 
 TEST_CASE("visPixelYUV_Create --> not null", "[PixelYUV]"){
-    PixelYUV *pixel = nullptr;
-    pixel = PixelYUV_Create();
+    PixelYUV *pixel = PixelYUV_Create();
     REQUIRE(pixel != nullptr);
 
     PixelYUV_Destroy(&pixel);
@@ -21,8 +20,7 @@ TEST_CASE("visPixelYUV_Create --> not null", "[PixelYUV]"){
 
 
 TEST_CASE("PixelYUV_Destroy --> null", "[PixelYUV]"){
-    PixelYUV *pixel = nullptr;
-    pixel = PixelYUV_Create();
+    PixelYUV *pixel = PixelYUV_Create();
     CHECK(pixel != nullptr);
 
     PixelYUV_Destroy(&pixel);
@@ -32,8 +30,7 @@ TEST_CASE("PixelYUV_Destroy --> null", "[PixelYUV]"){
 SCENARIO("visPixelYUV can be get and set"){
     GIVEN("visPixelYUV is on the heap"){
 
-        PixelYUV *pixel = nullptr;
-        pixel = PixelYUV_Create();
+        PixelYUV *pixel = PixelYUV_Create();
         CHECK(pixel != nullptr);
 
         WHEN("PixelYUV is set"){
@@ -63,9 +60,7 @@ SCENARIO("visPixelYUV can be get and set"){
 SCENARIO("visFrameYUV Functions"){
     GIVEN("visFrameYUV is the heap"){
 
-        VisYUVFrame *frame = nullptr;
-
-        frame = VisYUVFrame_Create();
+        VisYUVFrame *frame = VisYUVFrame_Create();
         CHECK(frame != nullptr);
 
         WHEN("nothing has been done to it"){

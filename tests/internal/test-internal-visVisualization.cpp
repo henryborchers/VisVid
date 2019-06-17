@@ -11,8 +11,6 @@ extern "C" {
 SCENARIO("Visualization of a SolidColor"){
     GIVEN("a frame containing a single color"){
 
-        VisYUVFrame     *frame = nullptr;
-
         visBrush        brush;
 
         int             width = 640;
@@ -22,7 +20,7 @@ SCENARIO("Visualization of a SolidColor"){
         brush.U = 60;
         brush.V = 70;
 
-        frame = VisYUVFrame_Create();
+        VisYUVFrame *frame = VisYUVFrame_Create();
 
         CHECK(frame != nullptr);
         CHECK(VisYUVFrame_SetSize(frame, width, height) == 0);
@@ -31,9 +29,7 @@ SCENARIO("Visualization of a SolidColor"){
 
         WHEN("Calculating the brightness of the frame") {
 
-            visVisualResult     *result = nullptr;
-
-            result = VisVisualResult_Create();
+            visVisualResult *result = VisVisualResult_Create();
 
             CHECK(result != nullptr);
             CHECK(VisVisualResult_SetSize(result, width) == 0);
@@ -60,7 +56,7 @@ SCENARIO("Visualization of a SolidColor"){
 SCENARIO("Visualization Ramping Luma values") {
     GIVEN("A frame that's 100 by 480 pixels"){
 
-        VisYUVFrame         *frame = nullptr;
+
         visBrush            brush;
         visVisualResult     result;
 
@@ -74,7 +70,7 @@ SCENARIO("Visualization Ramping Luma values") {
 
         CHECK(VisVisualResult_SetSize(&result, width) == 0);
 
-        frame = VisYUVFrame_Create();
+        VisYUVFrame *frame =  VisYUVFrame_Create();
         CHECK(frame != nullptr);
 
         VisYUVFrame_SetSize(frame, width, height);
