@@ -39,13 +39,11 @@ TEST_CASE("visView Functions on an Empty Buffer"){
 
 SCENARIO("visView full buffer"){
     GIVEN("visView Functions on a full buffer of empty data"){
-        visView *pvid = nullptr;
-        visBuffer *buffer = nullptr;
 
-        buffer= VisBuffer_Create2(10, 0);
+        visBuffer *buffer = VisBuffer_Create2(10, 0);
         CHECK(buffer != nullptr);
 
-        pvid = VisView_Create(2, 480);
+        visView *pvid = VisView_Create(2, 480);
         CHECK(pvid != nullptr);
 
 

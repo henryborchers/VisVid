@@ -69,7 +69,7 @@ SCENARIO("visImageWriterSetup"){
 }
 SCENARIO("visImageWriter functions"){
     GIVEN("an RGB image 4 pixels wide by 5 high"){
-        visImageRGB *imageRGB           = nullptr;
+
         const static int ALPHA_SHIFT    = 0;
         const static int BLUE_SHIFT     = 1;
         const static int GREEN_SHIFT    = 2;
@@ -77,7 +77,7 @@ SCENARIO("visImageWriter functions"){
         int width                       = 4;
         int height                      = 5;
 
-        imageRGB = (visImageRGB*)malloc(sizeof(visImageRGB));
+        visImageRGB *imageRGB = (visImageRGB*)malloc(sizeof(visImageRGB));
         CHECK(visImageRGB_Alloc(imageRGB, width, height) == 0);
 
         WHEN("the image is filled with the color red"){
