@@ -5,6 +5,7 @@ project(libvisvid
         DESCRIPTION "Turns video data into a visual map"
         )
 option(libvisvid_build_examples "Build example files")
+option(${PROJECT_NAME}_TESTS "Build test files" OFF)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Set version metadata
@@ -23,8 +24,8 @@ find_package(SDL2)
 find_package(Doxygen)
 find_package(Python3 COMPONENTS Interpreter)
 
-include(CTest)
-enable_testing()
+#include(CTest)
+
 
 add_subdirectory(src)
 
@@ -34,7 +35,10 @@ endif(libvisvid_build_examples)
 
 
 # build tests
-add_subdirectory(tests)
+if(${PROJECT_NAME}_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 # Build Documentation
 include(cmake/buildDocumentation.cmake)

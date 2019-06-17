@@ -1,4 +1,4 @@
-add_executable(test-visvid-internal EXCLUDE_FROM_ALL
+add_executable(test-visvid-internal
         ../test-main.cpp
         test-internal-visbuffer.cpp
         test-internal-visFrame.cpp

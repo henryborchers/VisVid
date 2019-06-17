@@ -1,4 +1,4 @@
-add_executable(test-visvid EXCLUDE_FROM_ALL
+add_executable(test-visvid
         ../test-main.cpp
         test-visBuffer.cpp
         test-visFrame.cpp
