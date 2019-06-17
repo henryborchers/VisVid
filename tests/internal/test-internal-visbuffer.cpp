@@ -62,7 +62,7 @@ SCENARIO("visBuffer Functions are used"){
                 REQUIRE(visBuffer_getLength(buffer) == 100);
 
                 AND_THEN("and every result in the buffer is not ready"){
-                    while(visBuffer_isEmpty(buffer) == true){
+                    while(visBuffer_isEmpty(buffer)){
                         visVisualResult *res = nullptr;
                         res = visBuffer_PopResult(buffer);
                         CHECK(!VisVisualResult_IsReady(res));
