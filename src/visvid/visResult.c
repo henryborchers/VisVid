@@ -91,7 +91,7 @@ int VisVisualResult_SetData(visVisualResult *pRes, const PixelValue *data, size_
     if(data == NULL){
         return EFAULT;
     }
-    if(pRes->size != length){
+    if(pRes->size != (int)length){
         return EFAULT;
     }
     pRes->data = memcpy(pRes->data, data, sizeof(PixelValue) * length);
