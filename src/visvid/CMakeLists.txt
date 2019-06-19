@@ -15,7 +15,6 @@ add_library(Visvid
         )
 
 add_library(Visvid::Visvid ALIAS Visvid)
-target_compile_features(Visvid PRIVATE c_std_11)
 list(APPEND VISPUBLIC_HEADER include/visvid/visvid.h)
 list(APPEND VISPUBLIC_HEADER include/visvid/utils.h)
 list(APPEND VISPUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/visvid/visVersion.h")
