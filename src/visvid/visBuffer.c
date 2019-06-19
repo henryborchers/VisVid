@@ -63,18 +63,6 @@ static int visBuffer_setResult(visBuffer *buffer, size_t index, visVisualResult 
 
 static bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize);
 
-visBuffer *VisBuffer_Create(size_t width) {
-    visBuffer *buffer = (visBuffer *) malloc(sizeof(visBuffer));
-    if (buffer == NULL) {
-        return NULL;
-    }
-    buffer->bufferLen = 0;
-    buffer->bufferWidth = width;
-    buffer->first = NULL;
-    buffer->last = NULL;
-    return buffer;
-}
-
 int visBuffer_isEmpty(const visBuffer *buffer) {
     return buffer->first == NULL && buffer->last == NULL;
 }

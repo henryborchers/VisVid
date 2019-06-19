@@ -35,18 +35,6 @@ struct visBufferNode {
 typedef struct visBuffer visBuffer;
 
 /**
- * @fn visBuffer *VisBuffer_Create(size_t width);
- * @deprecated Use VisBuffer_Create2() instead.
- * @brief Creates a new visBuffer on the heap.
- * @param width Number of pixels used by each result slice that will be stored in the buffer.
- * @return Returns a pointer the new visBuffer.
- * @note You are responsible for freeing this data when you are done with it. Use DestroyVisBuffer() to release any
- * memory reserved by this.
- */
-VISVID_DEPRECATED visBuffer *VisBuffer_Create(size_t width);
-
-
-/**
  * Check to see if the buffer is empty.
  * @param buffer The buffer to check if it's empty.
  * @return Returns 0 if the buffer is not empty and returns 1 the buffer is empty.
