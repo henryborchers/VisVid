@@ -9,7 +9,6 @@
 #include <stdio.h>
 
 int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame){
-    int x, y;
     int frameHeight = -1;
     int frameWidth = -1;
     int rc = 0;
@@ -21,9 +20,9 @@ int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYU
         return rc;
     }
     PixelValue slice[frameWidth];
-    for(x = 0; x < frameWidth; x++){
+    for(int x = 0; x < frameWidth; x++){
         PixelValue brightest = 0;
-        for(y = 0; y < frameHeight; y++){
+        for(int y = 0; y < frameHeight; y++){
             PixelYUV pix;
             rc = VisYUVFrame_getPixelYUV(&pix, frame, x, y);
             if(pix.Y > brightest){
