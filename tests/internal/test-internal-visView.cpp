@@ -6,8 +6,8 @@
 #include "catch.hpp"
 
 extern "C" {
-#include "visvid/visvid.h"
 #include "visView.h"
+#include "visvid/visvid.h"
 }
 
 TEST_CASE("visView Functions on an Empty Buffer"){

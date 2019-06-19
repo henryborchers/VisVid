@@ -4,8 +4,8 @@
 #include "catch.hpp"
 
 extern "C" {
-#include "visvid/visvid.h"
 #include "visBuffer.h"
+#include "visvid/visvid.h"
 }
 
 // TODO: Make internal tests

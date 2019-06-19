@@ -5,8 +5,8 @@
 #include "catch.hpp"
 
 extern "C" {
-#include "visvid/visvid.h"
 #include "visvid/utils.h"
+#include "visvid/visvid.h"
 }
 
 
