@@ -30,10 +30,10 @@ def generated_pattern(tmpdir_factory):
 def test_create_pgm(generated_pattern, tmpdir_factory):
 
     pgm_out = "output.pgm"
-    my_path =  tmpdir_factory.mktemp("output", numbered=False)
+    my_path = tmpdir_factory.mktemp("output", numbered=False)
     resulting_file = os.path.join(my_path, pgm_out)
 
-    assert visvid.make_pgm(generated_pattern, resulting_file) == 0;
+    assert visvid.make_pgm(generated_pattern, output=resulting_file) == 0
     with open(resulting_file, "rb") as f:
         assert os.path.exists(resulting_file), f"{resulting_file} does not exist"
         magic_number = f.readline().strip()

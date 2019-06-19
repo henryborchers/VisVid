@@ -23,6 +23,7 @@ extern  "C"{
 #include <sstream>
 
 #define MAX_BUFFER_SIZE 200
+namespace py = pybind11;
 
 enum pixel_component{
     Y,
@@ -99,5 +100,5 @@ void init(){
 PYBIND11_MODULE(visvid, m){
     m.def("get_version", &get_version);
     m.def("initialize", &init),
-    m.def("make_pgm", &make_pgm);
+    m.def("make_pgm", &make_pgm, py::arg("source"), py::arg("output"));
 }
