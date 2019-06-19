@@ -3,24 +3,24 @@
 //
 
 
-#include <pybind11/pybind11.h>
-#include <sstream>
-#include <iostream>
-#include <fstream>
 #include "Visualizer.h"
 
 
 extern  "C"{
-#include <visvid/utils.h>
-#include <visvid/visVersion.h>
-#include <visvid/visvid.h>
+#include "shared/decode.h"
+#include "shared/pgm.h"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/pixdesc.h>
-#include "shared/decode.h"
-#include "shared/pgm.h"
+#include <visvid/utils.h>
+#include <visvid/visVersion.h>
+#include <visvid/visvid.h>
 }
 
+#include <fstream>
+#include <iostream>
+#include <pybind11/pybind11.h>
+#include <sstream>
 
 #define MAX_BUFFER_SIZE 200
 

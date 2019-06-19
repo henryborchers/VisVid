@@ -6,10 +6,10 @@
 #include "simpleVideoPlayer.h"
 #include <SDL2/SDL_events.h>
 //#include <SDL2/SDL.h>
-#include <libavutil/frame.h>
-#include <stdio.h>
 #include "simpleVideoPlayerUtils.h"
 #include "videoDecoder.h"
+#include <libavutil/frame.h>
+#include <stdio.h>
 
 int playVideoSimple(const char *filename) {
     AVFrame             *frame = NULL;

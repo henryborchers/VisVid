@@ -2,14 +2,14 @@
 // Created by henry on 10/11/2016.
 //
 
-#include <visBuffer.h>
-#include <visvid/utils.h>
-#include <visvid/visvid.h>
-#include <libavutil/pixdesc.h>
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
 #include "visView.h"
+#include "visBuffer.h"
+#include "visvid/utils.h"
+#include "visvid/visvid.h"
 #include <errno.h>
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/pixdesc.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

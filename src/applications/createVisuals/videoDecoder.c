@@ -10,11 +10,11 @@
 #include <libavutil/log.h>
 #include <libavutil/pixfmt.h>
 #include <libavutil/version.h>
+#include <libswscale/swscale.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <libswscale/swscale.h>
-#include <stdbool.h>
 #include <unistd.h>
 //#include <error.h>
 //#include "mem.h"

@@ -4,9 +4,8 @@
 
 #include "visResult.h"
 #include <errno.h>
-//#include <memory.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 

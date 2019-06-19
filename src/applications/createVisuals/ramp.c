@@ -4,7 +4,7 @@
 
 #include "ramp.h"
 #include <stdint.h>
-#include "stdio.h"
+#include <stdio.h>
 
 int ramp(visImageRGB *t) {
     static uint8_t count = 0;

@@ -3,15 +3,15 @@
 //
 
 
-#include <stdexcept>
-#include <iostream>
+#include "Visualizer.h"
 extern "C"{
 #include "shared/decode.h"
-#include <visvid/utils.h>
 #include <libavutil/pixdesc.h>
+#include <visvid/utils.h>
 
 }
-#include "Visualizer.h"
+#include <iostream>
+#include <stdexcept>
 #define MAX_BUFFER_SIZE 200
 
 

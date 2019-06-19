@@ -1,12 +1,12 @@
 //
 // Created by Borchers, Henry Samuel on 10/22/16.
 //
+#include "visFrame.h"
+#include "visTypes.h"
 #include "visVisualization.h"
 #include "visvid/visvid.h"
 #include <errno.h>
 #include <stdio.h>
-#include "visFrame.h"
-#include "visTypes.h"
 
 int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame){
     int x, y;
