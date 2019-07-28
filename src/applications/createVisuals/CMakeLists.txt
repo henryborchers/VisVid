@@ -63,15 +63,14 @@ set_target_properties(CreateVisual PROPERTIES
     C_STANDARD 11
     )
 
-target_include_directories(CreateVisual PRIVATE ${SDL2_INCLUDE_DIR})
 target_include_directories(CreateVisual PRIVATE ${FFMPEG_INCLUDE_DIR})
 target_link_libraries(CreateVisual
         PRIVATE
             Visvid::Visvid
             m
             ${FFMPEG_LIBRARIES}
-            SDL2
-#            SDL2::SDL2-static
+#            SDL2
+            SDL2::SDL2
 #            ${SDL2_LIBRARIES}
         )
 
