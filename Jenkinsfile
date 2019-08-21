@@ -1,10 +1,10 @@
 pipeline {
   agent {
-    dockerfile {
-      filename 'scm/ci/dockerfiles/jenkins-main'
-      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-    }
-    
+        dockerfile {
+          filename 'scm/ci/dockerfiles/jenkins-main'
+          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+        }
+
   }
   options {
     timeout(30)
@@ -22,6 +22,12 @@ pipeline {
     stage('Build') {
       parallel{
         stage("Create Release Build with Conan"){
+            agent {
+                dockerfile {
+                  filename 'scm/ci/dockerfiles/jenkins-main'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                }
+            }
             steps{
                 echo "asdfasdf"
             }
