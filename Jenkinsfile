@@ -204,6 +204,7 @@ pipeline {
             timeout(5)
           }
           steps{
+            sh "ls -la"
             sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
             unstash "DEBUG_BUILD_FILES"
             tee('logs/clang-tidy_debug.log') {
