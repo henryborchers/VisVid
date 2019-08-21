@@ -9,7 +9,7 @@ RUN apt-get update && \
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add - && \
     apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 
-RUN apt-get install -y build-essential python3-pip cmake
+RUN apt-get update && apt-get install -y build-essential python3-pip cmake
 
 RUN python3 -m pip install --upgrade pip && python3 -m pip install conan && \
     conan profile new x64 --detect && conan profile show x64
