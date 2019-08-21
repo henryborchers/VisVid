@@ -195,12 +195,11 @@ pipeline {
       parallel{
         stage("Clang Tidy"){
         agent {
-                    dockerfile {
-                      filename 'scm/ci/dockerfiles/jenkins-main'
-                      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                    }
-
-              }
+            dockerfile {
+              filename 'scm/ci/dockerfiles/jenkins-main'
+              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+            }
+          }
           options{
             timeout(5)
           }
@@ -230,19 +229,19 @@ pipeline {
           }
         }
         stage("Cppcheck"){
-//         agent {
-//                     dockerfile {
-//                       filename 'scm/ci/dockerfiles/jenkins-main'
-//                       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                     }
-//
-//               }
+        agent {
+                dockerfile {
+                  filename 'scm/ci/dockerfiles/jenkins-main'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                }
+
+          }
           options{
             timeout(5)
           }
           steps{
             // TODO setup supressing files for 3rd party, esp catch2
-
+                unstash "DEBUG_BUILD_FILES"
               sh(
                 label: "Running Cppcheck",
                 script: "cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
