@@ -1,0 +1,8 @@
+.eggs
+.tox
+.scannerwork
+.pytest_cache
+dist
+cmake-build-*
+build*
+venv
