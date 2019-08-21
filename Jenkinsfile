@@ -1,11 +1,12 @@
 pipeline {
-  agent {
-        dockerfile {
-          filename 'scm/ci/dockerfiles/jenkins-main'
-          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-        }
-
-  }
+    agent none
+//   agent {
+//         dockerfile {
+//           filename 'scm/ci/dockerfiles/jenkins-main'
+//           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//         }
+//
+//   }
   options {
     timeout(30)
     checkoutToSubdirectory 'scm'
@@ -33,6 +34,13 @@ pipeline {
             }
         }
         stage("Create Release Build"){
+          agent {
+                dockerfile {
+                  filename 'scm/ci/dockerfiles/jenkins-main'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                }
+
+          }
           steps {
             tee('logs/gcc_release.log') {
               cmakeBuild(
@@ -59,7 +67,14 @@ pipeline {
             }
           }
         }
-        stage("Create Debug Build"){       
+        stage("Create Debug Build"){
+          agent {
+                dockerfile {
+                  filename 'scm/ci/dockerfiles/jenkins-main'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                }
+
+          }
           steps {
             tee('logs/gcc_debug.log') {
 
@@ -109,6 +124,13 @@ pipeline {
           }
         }
         stage("Building Python Extension"){
+          agent {
+                dockerfile {
+                  filename 'scm/ci/dockerfiles/jenkins-main'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                }
+
+          }
             steps{
                 dir("scm"){
                     sh(
@@ -119,6 +141,13 @@ pipeline {
             }
         }
         stage('Documentation') {
+              agent {
+                    dockerfile {
+                      filename 'scm/ci/dockerfiles/jenkins-main'
+                      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    }
+
+              }
               steps {
                 cmakeBuild(
                   buildDir: 'build/docs',
@@ -153,8 +182,16 @@ pipeline {
       }
     }
     stage("Static Analysis"){
+
       parallel{
         stage("Clang Tidy"){
+        agent {
+                    dockerfile {
+                      filename 'scm/ci/dockerfiles/jenkins-main'
+                      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    }
+
+              }
           options{
             timeout(5)
           }
@@ -183,6 +220,13 @@ pipeline {
           }
         }
         stage("Cppcheck"){
+        agent {
+                    dockerfile {
+                      filename 'scm/ci/dockerfiles/jenkins-main'
+                      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    }
+
+              }
           options{
             timeout(5)
           }
@@ -215,6 +259,13 @@ pipeline {
       }
     }
     stage('Test') {
+        agent {
+            dockerfile {
+              filename 'scm/ci/dockerfiles/jenkins-main'
+              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+            }
+
+        }
         stages{
             stage("Setting Up Python Test Environment"){
                 steps{
@@ -248,49 +299,69 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
               parallel{
 
                 stage("Run CTest"){
-                  steps{
-                    unstash "DEBUG_BUILD_FILES"
-                    ctest(
-                      arguments: "--output-on-failure --no-compress-output -T Test",
-                      installation: 'InSearchPath',
-                      workingDir: 'build/debug'
-                      )
-                  }
-                }
-                stage("CTest: Coverage"){
-                  steps{
-                    ctest arguments: "-T coverage",
-                      installation: 'InSearchPath',
-                      workingDir: 'build/debug'
-                  }
-                  post{
-                    always{
-                      sh "mkdir -p reports/coverage"
-
-                      sh(
-                        label: "Generating coverage report in Coberatura xml file format",
-                        script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
-                      
-                      )
-                      archiveArtifacts 'reports/coverage/coverage.xml'
-                      publishCoverage(
-                        adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                        tag: "AllCoverage"
-                        )
-                      //////////////////////////////////////////
-                      sh(
-                          label: "Generating coverage report in html file format",
-                          script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
-                       )
-                     
-
-                      publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+                    agent {
+                        dockerfile {
+                          filename 'scm/ci/dockerfiles/jenkins-main'
+                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                        }
 
                     }
+                    steps{
+                        unstash "DEBUG_BUILD_FILES"
+                        ctest(
+                          arguments: "--output-on-failure --no-compress-output -T Test",
+                          installation: 'InSearchPath',
+                          workingDir: 'build/debug'
+                          )
+                    }
+                }
+                stage("CTest: Coverage"){
+                    agent {
+                            dockerfile {
+                              filename 'scm/ci/dockerfiles/jenkins-main'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            }
+
+                    }
+                    steps{
+                        ctest arguments: "-T coverage",
+                          installation: 'InSearchPath',
+                          workingDir: 'build/debug'
+                    }
+                    post{
+                        always{
+                          sh "mkdir -p reports/coverage"
+
+                          sh(
+                            label: "Generating coverage report in Coberatura xml file format",
+                            script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
+
+                          )
+                          archiveArtifacts 'reports/coverage/coverage.xml'
+                          publishCoverage(
+                            adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                            sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                            tag: "AllCoverage"
+                            )
+                          //////////////////////////////////////////
+                          sh(
+                              label: "Generating coverage report in html file format",
+                              script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                           )
+
+
+                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+
+                        }
                   }
                 }
                 stage("CTest: MemCheck"){
+                    agent {
+                        dockerfile {
+                          filename 'scm/ci/dockerfiles/jenkins-main'
+                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                        }
+                    }
                   steps{
                     script{
                     
@@ -309,6 +380,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
                 }
                 stage("Running Pytest"){
+                    agent {
+                        dockerfile {
+                          filename 'scm/ci/dockerfiles/jenkins-main'
+                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                        }
+
+                    }
                   steps{
                     dir("scm"){
                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
@@ -326,6 +404,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
               }
               stage("Run MyPy Static Analysis") {
+                    agent {
+                          dockerfile {
+                            filename 'scm/ci/dockerfiles/jenkins-main'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                          }
+
+                    }
                   steps{
                       dir("scm"){
                           catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
@@ -347,6 +432,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
               }
               stage("Run Flake8 Static Analysis") {
+                    agent {
+                          dockerfile {
+                            filename 'scm/ci/dockerfiles/jenkins-main'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                          }
+
+                    }
                   steps{
                       dir("scm"){
                           catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
@@ -375,7 +467,12 @@ tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
                   }
               }
               stage("Running Tox"){
-
+                    agent {
+                            dockerfile {
+                              filename 'scm/ci/dockerfiles/jenkins-main'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            }
+                    }
                   steps{
                       catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
                           sh(
@@ -440,8 +537,16 @@ coverage html -d ${WORKSPACE}/reports/python/coverage
       }
     }
     stage('Package') {
+
       parallel{
           stage("CPack Packages"){
+            agent {
+                  dockerfile {
+                    filename 'scm/ci/dockerfiles/jenkins-main'
+                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                  }
+
+            }
               stages{
                 stage("CPack Source Package"){
                   steps {
@@ -453,6 +558,13 @@ coverage html -d ${WORKSPACE}/reports/python/coverage
               }
           }
           stage("Python Packages"){
+                agent {
+                      dockerfile {
+                        filename 'scm/ci/dockerfiles/jenkins-main'
+                        additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                      }
+
+                }
               stages{
                     stage("Building Python Packages"){
                         steps{
