@@ -18,4 +18,3 @@ RUN python3 -m pip install --upgrade pip && python3 -m pip install conan  && \
 
 ADD conanfile.py /tmp/
 RUN CONAN_SYSREQUIRES_SUDO=0 conan install /tmp/ --no-imports
-RUN chmod -R 0777 /.conan
