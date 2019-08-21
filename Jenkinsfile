@@ -21,6 +21,11 @@ pipeline {
   stages {
     stage('Build') {
       parallel{
+        stage("Create Release Build with Conan"){
+            steps{
+                echo "asdfasdf"
+            }
+        }
         stage("Create Release Build"){
           steps {
             tee('logs/gcc_release.log') {
