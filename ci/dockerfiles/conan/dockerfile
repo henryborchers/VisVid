@@ -17,5 +17,5 @@ RUN python3 -m pip install --upgrade pip && python3 -m pip install conan  && \
     conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
 
 ADD conanfile.py /tmp/
-RUN export CONAN_SYSREQUIRES_SUDO=0 && conan install /tmp/ --no-imports
+RUN CONAN_SYSREQUIRES_SUDO=0 conan install /tmp/ --no-imports
 RUN chmod -R 0777 /.conan
