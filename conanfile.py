@@ -6,7 +6,10 @@ class VisvidConan(ConanFile):
         "sdl2/2.0.10@bincrafters/stable"
     ]
     generators = ["cmake_paths"]
-    default_options = {"ffmpeg:shared": True}
+    default_options = {
+        "ffmpeg:shared": True,
+        "sdl2:shared": True,
+    }
 
     def imports(self):
         self.copy("*.dll", dst="bin", src="bin") # From bin to bin
