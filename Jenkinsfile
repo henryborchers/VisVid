@@ -30,7 +30,7 @@ pipeline {
                 }
             }
             steps{
-                echo "asdfasdf"
+                echo "conan --version"
             }
         }
         stage("Create Release Build"){
