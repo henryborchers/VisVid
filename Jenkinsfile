@@ -179,8 +179,10 @@ pipeline {
                 cleanup{
                     cleanWs(
                         patterns: [
-                            [pattern: "dist/visvid_documentation.zip", type: 'INCLUDE']
-                            ]
+                            [pattern: "dist", type: 'INCLUDE'],
+                            [pattern: "build", type: 'INCLUDE']
+                            ],
+                        deleteDirs: true
                         )
                 }
               }
