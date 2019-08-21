@@ -25,7 +25,7 @@ pipeline {
         stage("Create Release Build with Conan"){
             agent {
                 dockerfile {
-                  filename 'ci/dockerfiles/conan/dockerfile'
+                  filename 'scm/ci/dockerfiles/conan/dockerfile'
 //                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                 }
             }
