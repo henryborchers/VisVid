@@ -101,7 +101,7 @@ pipeline {
           }
           post{
             always{
-              stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'
+              stash includes: "build/debug/**", name: 'DEBUG_BUILD_FILES'
               publishValgrind (
                         failBuildOnInvalidReports: false,
                         failBuildOnMissingReports: false,
