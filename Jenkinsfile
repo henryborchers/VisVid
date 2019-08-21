@@ -30,7 +30,9 @@ pipeline {
                 }
             }
             steps{
-                echo "conan --version"
+                dir("build/conan"){
+                    sh "conan install ${WORKSPACE}/scm/ --profile x64"
+                }
             }
         }
         stage("Create Release Build"){
