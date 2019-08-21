@@ -2,9 +2,9 @@
 // Created by Borchers, Henry Samuel on 12/3/16.
 //
 #include "simpleVideoPlayerUtils.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_error.h>
-#include <SDL2/SDL_pixels.h>
+#include <SDL.h>
+#include <SDL_error.h>
+#include <SDL_pixels.h>
 #include <stdint.h>
 #include <stdio.h>
 

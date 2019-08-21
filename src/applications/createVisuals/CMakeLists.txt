@@ -1,16 +1,16 @@
 include(FetchContent)
-if(NOT SDL2_DIR)
-    FetchContent_Declare(
-        sdl2
-        URL https://libsdl.org/release/SDL2-2.0.8.tar.gz
-    )
-    FetchContent_GetProperties(sdl2)
-    if(NOT sdl2_POPULATED)
-        FetchContent_Populate(sdl2)
-        add_subdirectory(${sdl2_SOURCE_DIR} ${sdl2_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif()
-
-endif(NOT SDL2_DIR)
+#if(NOT SDL2_DIR)
+#    FetchContent_Declare(
+#        sdl2
+#        URL https://libsdl.org/release/SDL2-2.0.8.tar.gz
+#    )
+#    FetchContent_GetProperties(sdl2)
+#    if(NOT sdl2_POPULATED)
+#        FetchContent_Populate(sdl2)
+#        add_subdirectory(${sdl2_SOURCE_DIR} ${sdl2_BINARY_DIR} EXCLUDE_FROM_ALL)
+#    endif()
+#
+#endif(NOT SDL2_DIR)
 
 FetchContent_Declare(
     noc
@@ -70,7 +70,8 @@ target_link_libraries(CreateVisual
             m
             ${FFMPEG_LIBRARIES}
 #            SDL2
-            SDL2::SDL2
+            SDL2::SDL2-static
+            SDL2::SDL2main
 #            ${SDL2_LIBRARIES}
         )
 

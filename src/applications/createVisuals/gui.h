@@ -5,8 +5,8 @@
 #ifndef VISVID_GUI_H
 #define VISVID_GUI_H
 
-#include <SDL2/SDL_video.h>
-#include <SDL2/SDL_render.h>
+#include <SDL_video.h>
+#include <SDL_render.h>
 #include "visImageWriter.h"
 
 typedef struct {

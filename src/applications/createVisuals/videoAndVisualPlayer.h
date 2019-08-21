@@ -9,9 +9,8 @@
 //#include "SDL2/SDL.h"
 //#include "visImageWriter.h"
 //#include "libavutil/frame.h"
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_video.h>
-
+#include <SDL_render.h>
+#include <SDL_video.h>
 typedef struct {
     SDL_Texture *texture;
     int         width;

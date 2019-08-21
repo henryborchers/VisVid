@@ -4,7 +4,7 @@
 
 //#include <libavutil/avutil.h>
 #include "simpleVideoPlayer.h"
-#include <SDL2/SDL_events.h>
+#include <SDL_events.h>
 //#include <SDL2/SDL.h>
 #include "simpleVideoPlayerUtils.h"
 #include "videoDecoder.h"

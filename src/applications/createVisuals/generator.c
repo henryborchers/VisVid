@@ -6,7 +6,7 @@
 #include "gui.h"
 #include "ramp.h"
 #include "visImageWriter.h"
-#include <SDL2/SDL_events.h>
+#include <SDL_events.h>
 #include <stdio.h>
 
 #define SCREENWIDTH 640
