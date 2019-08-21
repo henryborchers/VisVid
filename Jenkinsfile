@@ -32,7 +32,8 @@ pipeline {
             steps{
                 sh "ls -la"
                 dir("build/conan"){
-                    sh "conan install ${WORKSPACE}/scm/ --profile x64"
+                        sh "conan --version && conan profile list"
+//                     sh "conan install ${WORKSPACE}/scm/ --profile x64"
                 }
             }
         }
