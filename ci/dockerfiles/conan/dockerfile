@@ -12,6 +12,7 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
 RUN apt-get update && apt-get install -y build-essential python3-pip cmake
 
 ENV CONAN_USER_HOME=/.conan
-
 RUN python3 -m pip install --upgrade pip && python3 -m pip install conan  && \
     conan profile new x64 --detect && conan profile show x64
+
+RUN chmod -R 0777 /.conan
