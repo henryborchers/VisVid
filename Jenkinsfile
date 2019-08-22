@@ -144,7 +144,7 @@ pipeline {
             }
             post{
                 failure{
-                    deleteDirs()
+                    deleteDir()
                 }
             }
         }
