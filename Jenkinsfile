@@ -261,6 +261,7 @@ pipeline {
           }
           post{
             always {
+                sh "ls -la logs"
                 archiveArtifacts(
                   allowEmptyArchive: true, 
                   artifacts: 'logs/cppcheck_debug.log'
