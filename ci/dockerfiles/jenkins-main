@@ -3,9 +3,13 @@ MAINTAINER Henry Borchers <henryborchers@yahoo.com>
 
 #USER root
 
-ADD https://cmake.org/files/v3.13/cmake-3.13.5-Linux-x86_64.sh /cmake-Linux-x86_64.sh
+# ADD https://cmake.org/files/v3.13/cmake-3.13.5-Linux-x86_64.sh /cmake-Linux-x86_64.sh
 RUN apt-get update && \
     apt-get install -y software-properties-common wget
+
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add - && \
+    apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add && \
     apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main"
 
@@ -44,13 +48,14 @@ RUN apt-get update -y && \
     libclang-common-7-dev \
     clang-9 clang-tools-9 clang-9-doc libclang-common-9-dev libclang-9-dev libclang1-9 clang-format-9 \
     cppcheck \
+    cmake \
     swig3.0 -y
 
-RUN mkdir /opt/cmake
-RUN sh /cmake-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
-RUN ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
-RUN ln -s /opt/cmake/bin/cpack /usr/local/bin/cpack
-RUN ln -s /opt/cmake/bin/ctest /usr/local/bin/ctest
+# RUN mkdir /opt/cmake
+# RUN sh /cmake-Linux-x86_64.sh --prefix=/opt/cmake --skip-license
+# RUN ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
+# RUN ln -s /opt/cmake/bin/cpack /usr/local/bin/cpack
+# RUN ln -s /opt/cmake/bin/ctest /usr/local/bin/ctest
 RUN wget https://libsdl.org/release/SDL2-2.0.7.tar.gz && \
     tar -xvzf SDL2-2.0.7.tar.gz && \
     cd SDL2-2.0.7 && \
