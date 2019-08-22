@@ -314,6 +314,11 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       )
                     }
                   }
+                  post{
+                      failure{
+                          deleteDir()
+                      }
+                  }
             }
             stage("Run Tests"){
               parallel{
