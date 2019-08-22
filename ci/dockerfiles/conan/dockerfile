@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y build-essential \
     libxss-dev:amd64 \
     libvdpau-dev:amd64 \
     libva-dev:amd64 \
-    libxcb-shm0-dev:amd64
+    libxcb-shm0-dev:amd64 \
+  && rm -rf /var/lib/apt/lists/*
 
 ENV CONAN_NON_INTERACTIVE=1
 
