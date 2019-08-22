@@ -335,6 +335,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                         }
 
                     }
+                    options {
+                      lock('Docker')
+                    }
                     steps{
                         unstash "DEBUG_BUILD_FILES"
                         ctest(
@@ -351,6 +354,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             }
 
+                    }
+                    options {
+                        lock('Docker')
                     }
                     steps{
                         ctest arguments: "-T coverage",
@@ -391,6 +397,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                         }
                     }
+                    options {
+                        lock('Docker')
+                    }
                   steps{
                     script{
                     
@@ -416,6 +425,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                         }
 
                     }
+                    options {
+                        lock('Docker')
+                    }
                   steps{
                     dir("scm"){
                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
@@ -439,6 +451,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                           }
 
+                    }
+                    options {
+                        lock('Docker')
                     }
                   steps{
                       dir("scm"){
@@ -467,6 +482,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                           }
 
+                    }
+                    options {
+                        lock('Docker')
                     }
                   steps{
                       dir("scm"){
@@ -501,6 +519,9 @@ tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
                               filename 'scm/ci/dockerfiles/jenkins-main'
                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             }
+                    }
+                    options {
+                        lock('Docker')
                     }
                   steps{
                       catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
