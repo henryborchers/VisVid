@@ -282,6 +282,7 @@ pipeline {
         stages{
             stage("Setting Up Python Test Environment"){
                 steps{
+                    unstash "DEBUG_BUILD_FILES"
                     sh(
                       label: "Install virtual env",
                       script: "python3 -m venv venv"
