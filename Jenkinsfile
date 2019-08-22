@@ -304,6 +304,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       sh(
                           label: "Installing Current Python Package to Virtual Environment in Development Mode",
                           script: """. ${WORKSPACE}/venv/bin/activate
+  python setup.py build
   pip install -e ."""
                       )
                     }
