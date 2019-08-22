@@ -256,7 +256,7 @@ pipeline {
                 unstash "DEBUG_BUILD_FILES"
               sh(
                 label: "Running Cppcheck",
-                script: "cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
+                script: "mkdir -p logs && cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
                 )
           }
           post{
