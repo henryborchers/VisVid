@@ -336,7 +336,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 
                     }
                     options {
-                      lock('Docker')
+                      lock(label: 'Docker')
                     }
                     steps{
                         unstash "DEBUG_BUILD_FILES"
@@ -356,7 +356,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 
                     }
                     options {
-                        lock('Docker')
+                        lock(label: 'Docker')
                     }
                     steps{
                         ctest arguments: "-T coverage",
@@ -398,7 +398,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                         }
                     }
                     options {
-                        lock('Docker')
+                        lock(label: 'Docker')
                     }
                   steps{
                     script{
@@ -426,7 +426,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 
                     }
                     options {
-                        lock('Docker')
+                        lock(label: 'Docker')
                     }
                   steps{
                     dir("scm"){
@@ -453,7 +453,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 
                     }
                     options {
-                        lock('Docker')
+                        lock(label: 'Docker')
                     }
                   steps{
                       dir("scm"){
@@ -484,7 +484,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 
                     }
                     options {
-                        lock('Docker')
+                        lock(label: 'Docker')
                     }
                   steps{
                       dir("scm"){
@@ -521,7 +521,7 @@ tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
                             }
                     }
                     options {
-                        lock('Docker')
+                        lock(label: 'Docker')
                     }
                   steps{
                       catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
