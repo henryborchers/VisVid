@@ -127,19 +127,24 @@ pipeline {
           }
         }
         stage("Building Python Extension"){
-          agent {
+            agent {
                 dockerfile {
                   filename 'scm/ci/dockerfiles/jenkins-main'
                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                 }
 
-          }
+            }
             steps{
                 dir("scm"){
                     sh(
                         label: "Running Python setup script to build extension inplace",
                         script: "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
-                    )
+                        )
+                }
+            }
+            post{
+                failure{
+                    deleteDirs()
                 }
             }
         }
