@@ -325,7 +325,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
             }
             stage("Run Tests"){
-              parallel{
+              stages{
 
                 stage("Run CTest"){
                     agent {
