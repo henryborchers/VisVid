@@ -589,24 +589,24 @@ pipeline {
     stage('Package') {
 
       parallel{
-          stage("CPack Packages"){
-            agent {
-                  dockerfile {
-                    filename 'scm/ci/dockerfiles/jenkins-main'
-                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                  }
-
-            }
-              stages{
-                stage("CPack Source Package"){
-                  steps {
-                    cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
-                    archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
-
-                  }
-                }
-              }
-          }
+//           stage("CPack Packages"){
+//             agent {
+//                   dockerfile {
+//                     filename 'scm/ci/dockerfiles/jenkins-main'
+//                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                   }
+//
+//             }
+//               stages{
+//                 stage("CPack Source Package"){
+//                   steps {
+//                     cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
+//                     archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
+//
+//                   }
+//                 }
+//               }
+//           }
           stage("Python Packages"){
                 agent {
                       dockerfile {
