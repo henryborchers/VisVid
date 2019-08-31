@@ -324,268 +324,268 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       }
                   }
             }
-            stage("Run Tests"){
-              stages{
-
-                stage("Run CTest"){
-                    agent {
-                        dockerfile {
-                          filename 'scm/ci/dockerfiles/jenkins-main'
+//             stage("Run Tests"){
+//               parallel{
+//
+//                 stage("Run CTest"){
+//                     agent {
+//                         dockerfile {
+//                           filename 'scm/ci/dockerfiles/jenkins-main'
 //                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                        }
-
-                    }
-                    options {
-                      lock(label: 'Docker')
-                    }
-                    steps{
-                        unstash "DEBUG_BUILD_FILES"
-                        ctest(
-                          arguments: "--output-on-failure --no-compress-output -T Test",
-                          installation: 'InSearchPath',
-                          workingDir: 'build/debug'
-                          )
-                    }
-                }
-                stage("CTest: Coverage"){
-                    agent {
-                            dockerfile {
-                              filename 'scm/ci/dockerfiles/jenkins-main'
+//                         }
+//
+//                     }
+//                     options {
+//                       lock(label: 'Docker')
+//                     }
+//                     steps{
+//                         unstash "DEBUG_BUILD_FILES"
+//                         ctest(
+//                           arguments: "--output-on-failure --no-compress-output -T Test",
+//                           installation: 'InSearchPath',
+//                           workingDir: 'build/debug'
+//                           )
+//                     }
+//                 }
+//                 stage("CTest: Coverage"){
+//                     agent {
+//                             dockerfile {
+//                               filename 'scm/ci/dockerfiles/jenkins-main'
 //                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                            }
-
-                    }
-                    options {
-                        lock(label: 'Docker')
-                    }
-                    steps{
-                        ctest arguments: "-T coverage",
-                          installation: 'InSearchPath',
-                          workingDir: 'build/debug'
-                    }
-                    post{
-                        always{
-                          sh "mkdir -p reports/coverage"
-
-                          sh(
-                            label: "Generating coverage report in Coberatura xml file format",
-                            script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
-
-                          )
-                          archiveArtifacts 'reports/coverage/coverage.xml'
-                          publishCoverage(
-                            adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-                            sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                            tag: "AllCoverage"
-                            )
-                          //////////////////////////////////////////
-                          sh(
-                              label: "Generating coverage report in html file format",
-                              script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
-                           )
-
-
-                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
-
-                        }
-                  }
-                }
-                stage("CTest: MemCheck"){
-                    agent {
-                        dockerfile {
-                          filename 'scm/ci/dockerfiles/jenkins-main'
+//                             }
+//
+//                     }
+//                     options {
+//                         lock(label: 'Docker')
+//                     }
+//                     steps{
+//                         ctest arguments: "-T coverage",
+//                           installation: 'InSearchPath',
+//                           workingDir: 'build/debug'
+//                     }
+//                     post{
+//                         always{
+//                           sh "mkdir -p reports/coverage"
+//
+//                           sh(
+//                             label: "Generating coverage report in Coberatura xml file format",
+//                             script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
+//
+//                           )
+//                           archiveArtifacts 'reports/coverage/coverage.xml'
+//                           publishCoverage(
+//                             adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+//                             sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+//                             tag: "AllCoverage"
+//                             )
+//                           //////////////////////////////////////////
+//                           sh(
+//                               label: "Generating coverage report in html file format",
+//                               script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+//                            )
+//
+//
+//                           publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+//
+//                         }
+//                   }
+//                 }
+//                 stage("CTest: MemCheck"){
+//                     agent {
+//                         dockerfile {
+//                           filename 'scm/ci/dockerfiles/jenkins-main'
 //                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                        }
-                    }
-                    options {
-                        lock(label: 'Docker')
-                    }
-                  steps{
-                    script{
-                    
-                      def cores = sh(
-                        label: 'looking up number of cores', 
-                        returnStdout: true, 
-                        script: 'grep -c ^processor /proc/cpuinfo'
-                      ).trim()
-
-                      ctest(
-                        arguments: "-T memcheck -j${cores}",
-                        installation: 'InSearchPath',
-                        workingDir: 'build/debug'
-                        )
-                    }
-                  }
-                }
-                stage("Running Pytest"){
-                    agent {
-                        dockerfile {
-                          filename 'scm/ci/dockerfiles/jenkins-main'
+//                         }
+//                     }
+//                     options {
+//                         lock(label: 'Docker')
+//                     }
+//                   steps{
+//                     script{
+//
+//                       def cores = sh(
+//                         label: 'looking up number of cores',
+//                         returnStdout: true,
+//                         script: 'grep -c ^processor /proc/cpuinfo'
+//                       ).trim()
+//
+//                       ctest(
+//                         arguments: "-T memcheck -j${cores}",
+//                         installation: 'InSearchPath',
+//                         workingDir: 'build/debug'
+//                         )
+//                     }
+//                   }
+//                 }
+//                 stage("Running Pytest"){
+//                     agent {
+//                         dockerfile {
+//                           filename 'scm/ci/dockerfiles/jenkins-main'
 //                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                        }
-
-                    }
-                    options {
-                        lock(label: 'Docker')
-                    }
-                  steps{
-                    dir("scm"){
-                        catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
-                            sh(
-                                label: "Running pytest",
-                                script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
-                            )
-                        }
-                    }
-                  }
-                  post{
-                    always{
-                        junit "reports/pytest/junit-pytest.xml"
-                    }
-                  }
-              }
-              stage("Run MyPy Static Analysis") {
-                    agent {
-                          dockerfile {
-                            filename 'scm/ci/dockerfiles/jenkins-main'
+//                         }
+//
+//                     }
+//                     options {
+//                         lock(label: 'Docker')
+//                     }
+//                   steps{
+//                     dir("scm"){
+//                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
+//                             sh(
+//                                 label: "Running pytest",
+//                                 script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
+//                             )
+//                         }
+//                     }
+//                   }
+//                   post{
+//                     always{
+//                         junit "reports/pytest/junit-pytest.xml"
+//                     }
+//                   }
+//               }
+//               stage("Run MyPy Static Analysis") {
+//                     agent {
+//                           dockerfile {
+//                             filename 'scm/ci/dockerfiles/jenkins-main'
 //                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                          }
-
-                    }
-                    options {
-                        lock(label: 'Docker')
-                    }
-                  steps{
-                      dir("scm"){
-                          catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-                              tee("${WORKSPACE}/logs/mypy.log"){
-                                  sh(
-                                    label: "Running MyPy",
-                                    script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
-                                    )
-                                }
-                          }
-
-                      }
-                  }
-                  post {
-                      always {
-                          recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
-                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
-                      }
-                  }
-              }
-              stage("Run Flake8 Static Analysis") {
-                    agent {
-                          dockerfile {
-                            filename 'scm/ci/dockerfiles/jenkins-main'
+//                           }
+//
+//                     }
+//                     options {
+//                         lock(label: 'Docker')
+//                     }
+//                   steps{
+//                       dir("scm"){
+//                           catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+//                               tee("${WORKSPACE}/logs/mypy.log"){
+//                                   sh(
+//                                     label: "Running MyPy",
+//                                     script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
+//                                     )
+//                                 }
+//                           }
+//
+//                       }
+//                   }
+//                   post {
+//                       always {
+//                           recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
+//                           publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
+//                       }
+//                   }
+//               }
+//               stage("Run Flake8 Static Analysis") {
+//                     agent {
+//                           dockerfile {
+//                             filename 'scm/ci/dockerfiles/jenkins-main'
 //                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                          }
-
-                    }
-                    options {
-                        lock(label: 'Docker')
-                    }
-                  steps{
-                      dir("scm"){
-                          catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
-
-                              sh(
-                                  label: "Running Flake8",
-                                  script: """. ${WORKSPACE}/venv/bin/activate
-tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
-"""
-
-                              )
-                          }
-                      }
-                  }
-                  post {
-                      always {
-                          archiveArtifacts 'logs/flake8.log'
-                          recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
-                      }
-                      unstable{
-                        echo "I'm unstable"
-                      }
-                      cleanup{
-                          cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
-                      }
-                  }
-              }
-              stage("Running Tox"){
-                    agent {
-                            dockerfile {
-                              filename 'scm/ci/dockerfiles/jenkins-main'
-                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                            }
-                    }
-                    options {
-                        lock(label: 'Docker')
-                    }
-                  steps{
-                      catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
-                          sh(
-                            label: "Running Tox",
-                            script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
-                          )
-                      }
-
-                  }
-              }
-              }
-            }
-          }
-      post{
-        always{
-            ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
-            archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
-            xunit testTimeMargin: '3000',
-                thresholdMode: 1,
-                thresholds: [
-                  failed(),
-                  skipped()
-                  ],
-                tools: [
-                  CTest(
-                    deleteOutputFiles: true,
-                    failIfNotNew: true,
-                    pattern: "reports/ctest/*.xml",
-                    skipNoTestFiles: true,
-                    stopProcessingIfError: true
-                    )
-                  ]
-            dir("scm"){
-                sh(
-                    label: "Combining coverage data",
-                    script: """
-. ${WORKSPACE}/venv/bin/activate
-coverage combine
-coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
-coverage html -d ${WORKSPACE}/reports/python/coverage
-"""
-                )
-            }
-            publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
-            publishCoverage(
-                adapters: [
-                    coberturaAdapter('reports/python/coverage.xml')
-                    ],
-                sourceFileResolver: sourceFiles('STORE_ALL_BUILD'),
-                tag: "AllCoverage"
-
-            )
-        }
-        cleanup{
-            cleanWs(
-                deleteDirs: true,
-                patterns: [
-                    [pattern: 'reports/ctest', type: 'INCLUDE']
-                    ]
-                )
-        }
-      }
-    }
+//                           }
+//
+//                     }
+//                     options {
+//                         lock(label: 'Docker')
+//                     }
+//                   steps{
+//                       dir("scm"){
+//                           catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
+//
+//                               sh(
+//                                   label: "Running Flake8",
+//                                   script: """. ${WORKSPACE}/venv/bin/activate
+// tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
+// """
+//
+//                               )
+//                           }
+//                       }
+//                   }
+//                   post {
+//                       always {
+//                           archiveArtifacts 'logs/flake8.log'
+//                           recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+//                       }
+//                       unstable{
+//                         echo "I'm unstable"
+//                       }
+//                       cleanup{
+//                           cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
+//                       }
+//                   }
+//               }
+//               stage("Running Tox"){
+//                     agent {
+//                             dockerfile {
+//                               filename 'scm/ci/dockerfiles/jenkins-main'
+//                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                             }
+//                     }
+//                     options {
+//                         lock(label: 'Docker')
+//                     }
+//                   steps{
+//                       catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
+//                           sh(
+//                             label: "Running Tox",
+//                             script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
+//                           )
+//                       }
+//
+//                   }
+//               }
+//               }
+//             }
+//           }
+//       post{
+//         always{
+//             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
+//             archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
+//             xunit testTimeMargin: '3000',
+//                 thresholdMode: 1,
+//                 thresholds: [
+//                   failed(),
+//                   skipped()
+//                   ],
+//                 tools: [
+//                   CTest(
+//                     deleteOutputFiles: true,
+//                     failIfNotNew: true,
+//                     pattern: "reports/ctest/*.xml",
+//                     skipNoTestFiles: true,
+//                     stopProcessingIfError: true
+//                     )
+//                   ]
+//             dir("scm"){
+//                 sh(
+//                     label: "Combining coverage data",
+//                     script: """
+// . ${WORKSPACE}/venv/bin/activate
+// coverage combine
+// coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
+// coverage html -d ${WORKSPACE}/reports/python/coverage
+// """
+//                 )
+//             }
+//             publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
+//             publishCoverage(
+//                 adapters: [
+//                     coberturaAdapter('reports/python/coverage.xml')
+//                     ],
+//                 sourceFileResolver: sourceFiles('STORE_ALL_BUILD'),
+//                 tag: "AllCoverage"
+//
+//             )
+//         }
+//         cleanup{
+//             cleanWs(
+//                 deleteDirs: true,
+//                 patterns: [
+//                     [pattern: 'reports/ctest', type: 'INCLUDE']
+//                     ]
+//                 )
+//         }
+//       }
+//     }
     stage('Package') {
 
       parallel{
