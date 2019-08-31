@@ -622,7 +622,7 @@ pipeline {
                             dir("scm"){
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: "python3 setup.py  build --build-temp=${WORKSPACE}/pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
+                                    script: "python3 setup.py build --build-temp=../pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
                                 )
                             }
                         }
