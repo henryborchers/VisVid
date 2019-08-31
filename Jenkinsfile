@@ -151,6 +151,7 @@ pipeline {
                 }
                 cleanup{
                     cleanWs(
+                        disableDeferredWipeout: true,
                         patterns: [
                             [pattern: "pyvisvid/build", type: 'INCLUDE'],
                             ],
