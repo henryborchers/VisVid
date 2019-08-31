@@ -241,42 +241,42 @@ pipeline {
 //             }
 //         }
         stage("Cppcheck"){
-        agent {
+            agent {
                 dockerfile {
                   filename 'scm/ci/dockerfiles/jenkins-main'
                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                 }
 
-          }
-          options{
-            timeout(5)
-          }
-          steps{
-            // TODO setup supressing files for 3rd party, esp catch2
-                unstash "DEBUG_BUILD_FILES"
-              sh(
-                label: "Running Cppcheck",
-                script: "mkdir -p logs && cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
-                )
-          }
-          post{
-            always {
-                sh "ls -la logs"
-                archiveArtifacts(
-                  allowEmptyArchive: true, 
-                  artifacts: 'logs/cppcheck_debug.log'
-                )
-                recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
             }
-            cleanup{
-                cleanWs(
-                  patterns: [
-                    [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
-                  ]
-                )
-            }
-            
-          }
+              options{
+                timeout(5)
+              }
+              steps{
+                // TODO setup supressing files for 3rd party, esp catch2
+                    unstash "DEBUG_BUILD_FILES"
+                  sh(
+                    label: "Running Cppcheck",
+                    script: "mkdir -p logs && cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
+                    )
+              }
+              post{
+                always {
+                    sh "ls -la logs"
+                    archiveArtifacts(
+                      allowEmptyArchive: true,
+                      artifacts: 'logs/cppcheck_debug.log'
+                    )
+                    recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
+                }
+                cleanup{
+                    cleanWs(
+                      patterns: [
+                        [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
+                      ]
+                    )
+                }
+
+              }
         }
       }
     }
@@ -618,6 +618,7 @@ pipeline {
               stages{
                     stage("Building Python Packages"){
                         steps{
+                            sh "mkdir -p scm"
                             dir("scm"){
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
