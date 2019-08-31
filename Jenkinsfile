@@ -280,50 +280,50 @@ pipeline {
         }
       }
     }
-    stage('Test') {
-        agent {
-            dockerfile {
-              filename 'scm/ci/dockerfiles/jenkins-main'
-              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-            }
-
-        }
-        stages{
-            stage("Setting Up Python Test Environment"){
-                steps{
-                    unstash "PYTHON_BUILD_FILES"
-                    sh(
-                      label: "Install virtual env",
-                      script: "python3 -m venv venv"
-                      )
-
-                    sh(
-                      label: "Upgrade pip",
-                      script:""". ./venv/bin/activate
-python -m pip install pip --upgrade
-"""
-                    )
-
-                    sh(
-                      label: "Installing Python Testing Packages",
-                      script: """. ./venv/bin/activate
-pip install pytest "tox<3.10" mypy coverage lxml"""
-                    )
-                    dir("scm"){
-                      sh(
-                          label: "Installing Current Python Package to Virtual Environment in Development Mode",
-                          script: """. ${WORKSPACE}/venv/bin/activate
-  python setup.py build
-  pip install -e ."""
-                      )
-                    }
-                  }
-                  post{
-                      failure{
-                          deleteDir()
-                      }
-                  }
-            }
+//     stage('Test') {
+//         agent {
+//             dockerfile {
+//               filename 'scm/ci/dockerfiles/jenkins-main'
+//               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//             }
+//
+//         }
+//         stages{
+//             stage("Setting Up Python Test Environment"){
+//                 steps{
+//                     unstash "PYTHON_BUILD_FILES"
+//                     sh(
+//                       label: "Install virtual env",
+//                       script: "python3 -m venv venv"
+//                       )
+//
+//                     sh(
+//                       label: "Upgrade pip",
+//                       script:""". ./venv/bin/activate
+// python -m pip install pip --upgrade
+// """
+//                     )
+//
+//                     sh(
+//                       label: "Installing Python Testing Packages",
+//                       script: """. ./venv/bin/activate
+// pip install pytest "tox<3.10" mypy coverage lxml"""
+//                     )
+//                     dir("scm"){
+//                       sh(
+//                           label: "Installing Current Python Package to Virtual Environment in Development Mode",
+//                           script: """. ${WORKSPACE}/venv/bin/activate
+//   python setup.py build
+//   pip install -e ."""
+//                       )
+//                     }
+//                   }
+//                   post{
+//                       failure{
+//                           deleteDir()
+//                       }
+//                   }
+//             }
 //             stage("Run Tests"){
 //               parallel{
 //
