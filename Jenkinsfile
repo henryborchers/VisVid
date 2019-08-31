@@ -618,7 +618,7 @@ pipeline {
               stages{
                     stage("Building Python Packages"){
                         steps{
-                            sh "mkdir -p scm"
+                            sh "mkdir -p scm && ls pyvisvid/build"
                             dir("scm"){
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
