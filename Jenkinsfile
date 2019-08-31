@@ -149,6 +149,14 @@ pipeline {
                 failure{
                     deleteDir()
                 }
+                cleanup{
+                    cleanWs(
+                        patterns: [
+                            [pattern: "pyvisvid/build", type: 'INCLUDE'],
+                            ],
+                        deleteDirs: true
+                    )
+                }
             }
         }
         stage('Documentation') {
