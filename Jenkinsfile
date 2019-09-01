@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage('Build') {
       parallel{
-//         stage("Create Release Build with Conan"){
+        stage("Create Release Build with Conan"){
 //             agent {
 //                 dockerfile {
 //                     dir 'scm'
@@ -28,18 +28,19 @@ pipeline {
 //                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
 //                 }
 //             }
-//             steps{
-//                 dir("build/conan"){
+            steps{
+                dir("build/conan"){
+                    echo "building conan"
 //                     sh "conan install ${WORKSPACE}/scm/ --profile x64"
-//                 }
-//             }
+                }
+            }
 //             post{
 //                 cleanup{
 //                     deleteDir()
 //                 }
 //             }
 //
-//         }
+        }
         stage("Create Release Build"){
           steps {
             tee('logs/gcc_release.log') {
@@ -221,7 +222,6 @@ pipeline {
               }
               steps{
                 // TODO setup supressing files for 3rd party, esp catch2
-//                     unstash "DEBUG_BUILD_FILES"
                   cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
                   sh(
                     label: "Running Cppcheck",
@@ -250,13 +250,6 @@ pipeline {
       }
     }
     stage('Test') {
-//         agent {
-//             dockerfile {
-//               filename 'scm/ci/dockerfiles/jenkins-main'
-//               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//             }
-
-//         }
         stages{
             stage("Setting Up Python Test Environment"){
                 steps{
@@ -490,13 +483,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 //
       parallel{
           stage("CPack Packages"){
-//             agent {
-//                   dockerfile {
-//                     filename 'scm/ci/dockerfiles/jenkins-main'
-//                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                   }
-//
-//             }
               stages{
                 stage("CPack Source Package"){
                   steps {
@@ -508,13 +494,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
               }
           }
           stage("Python Packages"){
-//                 agent {
-//                       dockerfile {
-//                         filename 'scm/ci/dockerfiles/jenkins-main'
-//                         additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                       }
-//
-//                 }
               stages{
                     stage("Building Python Packages"){
                         steps{
