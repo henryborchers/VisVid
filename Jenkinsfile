@@ -377,6 +377,7 @@ pipeline {
                         unstash "DEBUG_BUILD_FILES"
                         dir("build/debug"){
                             sh "ls -la"
+                            sh "ctest --output-on-failure --no-compress-output -T Test"
                         }
 //                         ctest(
 //                           arguments: "--output-on-failure --no-compress-output -T Test",
