@@ -37,7 +37,7 @@ pipeline {
     -DCMAKE_C_FLAGS=\"-Wall -Wextra\"",
                     installation: 'InSearchPath',
                     sourceDir: 'scm',
-                    steps: [[withCmake: true]]
+//                     steps: [[withCmake: true]]
                   )
             }
 //             post{
