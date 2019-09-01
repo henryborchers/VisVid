@@ -21,22 +21,23 @@ pipeline {
     stage('Build') {
       parallel{
         stage("Create Release Build with Conan"){
-//             agent any
-
-//             agent {
-//                 dockerfile {
-//                     dir 'scm'
-//                     filename 'ci/dockerfiles/conan/dockerfile'
-//                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                 }
-//             }
             steps{
                 dir("build/conan"){
-//                     echo "building conan"
-//                     sh "ls -la"
                     sh 'conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"'
                     sh "conan install ../../scm"
                 }
+                cmakeBuild(
+                    buildDir: 'build/conan',
+                    buildType: 'Release',
+                    cleanBuild: true,
+                    cmakeArgs: '\
+    -DVISVID_BUILDDOCS:BOOL=ON \
+    -CMAKE_TOOLCHAIN_FILE:FILEPATH=conan_paths.cmake \
+    -DCMAKE_C_FLAGS="-Wall -Wextra"',
+                    installation: 'InSearchPath',
+                    sourceDir: 'scm',
+                    steps: [[withCmake: true]]
+                  )
             }
 //             post{
 //                 cleanup{
