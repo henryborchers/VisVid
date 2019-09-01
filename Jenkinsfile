@@ -131,7 +131,13 @@ pipeline {
 
             }
             cleanup{
-                cleanWs(patterns: [[pattern: "build/debug/**/*.memcheck", type: 'INCLUDE']])
+                cleanWs(
+                    deleteDirs: true,
+                    patterns: [
+                        [pattern: "build/debug/**/*.memcheck", type: 'INCLUDE'],
+                        [pattern: "build", type: 'INCLUDE'],
+                        ]
+                )
             }
           }
         }
