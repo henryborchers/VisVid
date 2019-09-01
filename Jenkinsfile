@@ -99,7 +99,7 @@ pipeline {
 //             echo "using ${JENKINS_HOME}/workspace/${JOB_NAME}"
             tee('logs/gcc_debug.log') {
               cmakeBuild(
-                buildDir: "build/debug",
+                buildDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug",
                 buildType: 'Debug',
                 cleanBuild: true,
                 installation: 'InSearchPath',
@@ -386,7 +386,7 @@ pipeline {
                         ctest(
                           arguments: "--output-on-failure --no-compress-output -T Test",
                           installation: 'InSearchPath',
-                          workingDir: "build/debug"
+                          workingDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug"
                           )
                     }
                     post{
