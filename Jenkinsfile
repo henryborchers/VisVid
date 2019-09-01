@@ -97,6 +97,7 @@ pipeline {
           }
           steps {
             tee('logs/gcc_debug.log') {
+                sh "pwd"
                 dir("${JENKINS_HOME}/workspace/${JOB_NAME}"){
                   cmakeBuild(
                     buildDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug",
