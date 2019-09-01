@@ -86,7 +86,7 @@ pipeline {
 //             }
           }
         }
-//         stage("Create Debug Build"){
+        stage("Create Debug Build"){
 // //           agent {
 // //                 dockerfile {
 // //                     filename 'scm/ci/dockerfiles/jenkins-main'
@@ -96,63 +96,62 @@ pipeline {
 // //                 }
 // //
 // //           }
-//           steps {
-//             tee('logs/gcc_debug.log') {
-//                     sh "pwd"
-//               cmakeBuild(
-//                 buildDir: "build/debug",
-//                 buildType: 'Debug',
-//                 cleanBuild: true,
-//                 installation: 'InSearchPath',
-//                 cmakeArgs: '\
-// -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-// -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-// -DCMAKE_C_FLAGS="-Wall -Wextra" \
-// -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-// -Dlibvisvid_TESTS:BOOL=ON ',
-//                 sourceDir: 'scm',
-//                 steps: [
-//                   [args: '--target test-visvid', withCmake: true],
-//                   [args: '--target test-visvid-internal', withCmake: true],
-//                 ]
-//               )
-//
-//             }
-//           }
-//           post{
-//             success{
-//               stash includes: "build/debug/**", name: 'DEBUG_BUILD_FILES'
-//             }
-//             always{
-//               publishValgrind (
-//                         failBuildOnInvalidReports: false,
-//                         failBuildOnMissingReports: false,
-//                         failThresholdDefinitelyLost: '',
-//                         failThresholdInvalidReadWrite: '',
-//                         failThresholdTotal: '',
-//                         pattern: 'build/debug/**/*.memcheck',
-//                         publishResultsForAbortedBuilds: false,
-//                         publishResultsForFailedBuilds: false,
-//                         sourceSubstitutionPaths: '',
-//                         unstableThresholdDefinitelyLost: '',
-//                         unstableThresholdInvalidReadWrite: '',
-//                         unstableThresholdTotal: ''
-//                       )
-//
-//             }
-//             cleanup{
-//                 deleteDir()
-//                 cleanWs(
-//                     disableDeferredWipeout: true,
-//                     deleteDirs: true,
-//                     patterns: [
-//                         [pattern: "build/debug", type: 'INCLUDE'],
-// //                         [pattern: "build/debug/**/*.memcheck", type: 'INCLUDE'],
-//                         ]
-//                 )
-//             }
-//           }
-//         }
+          steps {
+            tee('logs/gcc_debug.log') {
+                    sh "pwd"
+              cmakeBuild(
+                buildDir: "build/debug",
+                buildType: 'Debug',
+                cleanBuild: true,
+                installation: 'InSearchPath',
+                cmakeArgs: '\
+-DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+-DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+-DCMAKE_C_FLAGS="-Wall -Wextra" \
+-DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+-Dlibvisvid_TESTS:BOOL=ON ',
+                sourceDir: 'scm',
+                steps: [
+                  [args: '--target test-visvid', withCmake: true],
+                  [args: '--target test-visvid-internal', withCmake: true],
+                ]
+              )
+
+            }
+          }
+          post{
+            success{
+              stash includes: "build/debug/**", name: 'DEBUG_BUILD_FILES'
+            }
+            always{
+              publishValgrind (
+                        failBuildOnInvalidReports: false,
+                        failBuildOnMissingReports: false,
+                        failThresholdDefinitelyLost: '',
+                        failThresholdInvalidReadWrite: '',
+                        failThresholdTotal: '',
+                        pattern: 'build/debug/**/*.memcheck',
+                        publishResultsForAbortedBuilds: false,
+                        publishResultsForFailedBuilds: false,
+                        sourceSubstitutionPaths: '',
+                        unstableThresholdDefinitelyLost: '',
+                        unstableThresholdInvalidReadWrite: '',
+                        unstableThresholdTotal: ''
+                      )
+
+            }
+            cleanup{
+                cleanWs(
+                    disableDeferredWipeout: true,
+                    deleteDirs: true,
+                    patterns: [
+                        [pattern: "build/debug", type: 'INCLUDE'],
+//                         [pattern: "build/debug/**/*.memcheck", type: 'INCLUDE'],
+                        ]
+                )
+            }
+          }
+        }
         stage("Building Python Extension"){
             agent {
                 dockerfile {
