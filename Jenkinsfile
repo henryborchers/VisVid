@@ -373,15 +373,8 @@ pipeline {
                         }
 
                     }
-//                     options {
-//                       lock(label: 'Docker')
-//                     }
                     steps{
                         unstash "DEBUG_BUILD_FILES"
-//                         dir("build/debug"){
-//                             sh "ls -la"
-//                             sh "ctest --output-on-failure --no-compress-output -T Test"
-//                         }
                         ctest(
                           arguments: "--output-on-failure --no-compress-output -T Test",
                           installation: 'InSearchPath',
@@ -394,22 +387,22 @@ pipeline {
                         }
                     }
                 }
-//                 stage("CTest: Coverage"){
-//                     agent {
-//                             dockerfile {
-//                               filename 'scm/ci/dockerfiles/jenkins-main'
-//                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                             }
-//
-//                     }
+                stage("CTest: Coverage"){
+                    agent {
+                            dockerfile {
+                              filename 'scm/ci/dockerfiles/jenkins-main'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            }
+
+                    }
 //                     options {
 //                         lock(label: 'Docker')
 //                     }
-//                     steps{
-//                         ctest arguments: "-T coverage",
-//                           installation: 'InSearchPath',
-//                           workingDir: 'build/debug'
-//                     }
+                    steps{
+                        ctest arguments: "-T coverage",
+                          installation: 'InSearchPath',
+                          workingDir: 'build/debug'
+                    }
 //                     post{
 //                         always{
 //                           sh "mkdir -p reports/coverage"
@@ -436,7 +429,7 @@ pipeline {
 //
 //                         }
 //                   }
-//                 }
+                }
 //                 stage("CTest: MemCheck"){
 //                     agent {
 //                         dockerfile {
