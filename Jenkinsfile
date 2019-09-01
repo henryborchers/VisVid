@@ -26,6 +26,7 @@ pipeline {
                     sh "conan install ../../scm"
                     sh "ls -la"
                 }
+                sh "ls ${WORKSPACE}/build/conan/"
                 cmakeBuild(
                     buildDir: 'build/conan',
                     buildType: 'Release',
