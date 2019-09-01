@@ -135,7 +135,7 @@ pipeline {
                     deleteDirs: true,
                     patterns: [
                         [pattern: "build/debug/**/*.memcheck", type: 'INCLUDE'],
-                        [pattern: "build", type: 'INCLUDE'],
+                        [pattern: "build/debug", type: 'INCLUDE'],
                         ]
                 )
             }
