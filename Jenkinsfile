@@ -322,14 +322,14 @@ pipeline {
                         ctest(
                           arguments: "--output-on-failure --no-compress-output -T Test",
                           installation: 'InSearchPath',
-                          workingDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug"
+                          workingDir: "build/debug"
                           )
                     }
-                    post{
-                        cleanup{
-                            deleteDir()
-                        }
-                    }
+//                     post{
+//                         cleanup{
+//                             deleteDir()
+//                         }
+//                     }
                 }
 //                 stage("CTest: Coverage"){
 //                     agent {
