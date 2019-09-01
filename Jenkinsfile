@@ -456,27 +456,17 @@ tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
                       }
                   }
               }
-//               stage("Running Tox"){
-//                     agent {
-//                             dockerfile {
-//                               filename 'scm/ci/dockerfiles/jenkins-main'
-//                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                             }
-//                     }
-//                     options {
-//                         lock(label: 'Docker')
-//                     }
-//                   steps{
-//                       catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
-//                           sh(
-//                             label: "Running Tox",
-//                             script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
-//                           )
-//                       }
-//
-//                   }
-//               }
-//               }
+              stage("Running Tox"){
+                  steps{
+                      catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
+                          sh(
+                            label: "Running Tox",
+                            script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
+                          )
+                      }
+
+                  }
+              }
             }
           }
 //       post{
