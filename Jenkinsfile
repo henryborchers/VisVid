@@ -706,23 +706,23 @@ pipeline {
 //       }
 //     }
   }
-//   post {
-//     cleanup{
-//         cleanWs(
-//             deleteDirs: true,
-//             patterns: [
-//             [pattern: 'build', type: 'INCLUDE'],
-//             [pattern: 'dist', type: 'INCLUDE'],
-//             [pattern: 'generatedJUnitFiles', type: 'INCLUDE'],
-//             [pattern: 'scm', type: 'INCLUDE'],
-//             [pattern: 'reports', type: 'INCLUDE'],
-//             [pattern: 'logs', type: 'INCLUDE'],
-//             [pattern: 'tox', type: 'INCLUDE'],
-//             [pattern: 'pyvisvid', type: 'INCLUDE'],
-//             [pattern: '*tmp', type: 'INCLUDE'],
-//             [pattern: 'venv', type: 'INCLUDE'],
-//             [pattern: 'testresults', type: 'INCLUDE']
-//             ])
-//     }
-//   }
+  post {
+    cleanup{
+        cleanWs(
+            deleteDirs: true,
+            patterns: [
+            [pattern: 'build', type: 'INCLUDE'],
+            [pattern: 'dist', type: 'INCLUDE'],
+            [pattern: 'generatedJUnitFiles', type: 'INCLUDE'],
+            [pattern: 'scm', type: 'INCLUDE'],
+            [pattern: 'reports', type: 'INCLUDE'],
+            [pattern: 'logs', type: 'INCLUDE'],
+            [pattern: 'tox', type: 'INCLUDE'],
+            [pattern: 'pyvisvid', type: 'INCLUDE'],
+            [pattern: '*tmp', type: 'INCLUDE'],
+            [pattern: 'venv', type: 'INCLUDE'],
+            [pattern: 'testresults', type: 'INCLUDE']
+            ])
+    }
+  }
 }
