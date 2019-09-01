@@ -30,14 +30,14 @@ pipeline {
                 cmakeBuild(
                     buildDir: 'build/conan',
                     buildType: 'Release',
-                    cleanBuild: true,
+//                     cleanBuild: true,
                     cmakeArgs: "\
     -DVISVID_BUILDDOCS:BOOL=ON \
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${WORKSPACE}/build/conan/conan_paths.cmake \
     -DCMAKE_C_FLAGS=\"-Wall -Wextra\"",
                     installation: 'InSearchPath',
                     sourceDir: 'scm',
-//                     steps: [[withCmake: true]]
+                    steps: [[withCmake: true]]
                   )
             }
 //             post{
