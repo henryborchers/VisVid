@@ -238,7 +238,6 @@ pipeline {
                     recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
                 }
                 cleanup{
-//                     deleteDir()
                     cleanWs(
                       patterns: [
                         [pattern: 'logs/cppcheck_debug.xml', type: 'INCLUDE'],
@@ -298,18 +297,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
               parallel{
 //
                 stage("Run CTest"){
-//                     agent {
-//                         dockerfile {
-//                           filename 'scm/ci/dockerfiles/jenkins-main'
-//                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-// //                           args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
-// //                           customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
-//                         }
-//
-//                     }
-//                     options {
-//                       lock(label: 'Docker')
-//                     }
                     steps{
                         unstash "DEBUG_BUILD_FILES"
                         ctest(
@@ -388,16 +375,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
               }
               stage("Run MyPy Static Analysis") {
-//                     agent {
-//                           dockerfile {
-//                             filename 'scm/ci/dockerfiles/jenkins-main'
-//                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                           }
-//
-//                     }
-//                     options {
-//                         lock(label: 'Docker')
-//                     }
                   steps{
                       dir("scm"){
                           catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
@@ -419,16 +396,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
               }
               stage("Run Flake8 Static Analysis") {
-//                     agent {
-//                           dockerfile {
-//                             filename 'scm/ci/dockerfiles/jenkins-main'
-//                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                           }
-//
-//                     }
-//                     options {
-//                         lock(label: 'Docker')
-//                     }
                   steps{
                       dir("scm"){
                           catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
@@ -519,10 +486,10 @@ tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
 //         }
       }
     }
-//     stage('Package') {
+    stage('Package') {
 //
-//       parallel{
-//           stage("CPack Packages"){
+      parallel{
+          stage("CPack Packages"){
 //             agent {
 //                   dockerfile {
 //                     filename 'scm/ci/dockerfiles/jenkins-main'
@@ -530,16 +497,16 @@ tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
 //                   }
 //
 //             }
-//               stages{
-//                 stage("CPack Source Package"){
-//                   steps {
-//                     cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
-//                     archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
-//
-//                   }
-//                 }
-//               }
-//           }
+              stages{
+                stage("CPack Source Package"){
+                  steps {
+                    cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
+                    archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
+
+                  }
+                }
+              }
+          }
 //           stage("Python Packages"){
 //                 agent {
 //                       dockerfile {
@@ -581,8 +548,8 @@ tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
 //                     }
 //                 }
 //             }
-//       }
-//     }
+      }
+    }
   }
   post {
     cleanup{
