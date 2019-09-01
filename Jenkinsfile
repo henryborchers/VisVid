@@ -95,28 +95,25 @@ pipeline {
           }
           steps {
             tee('logs/gcc_debug.log') {
-                dir("/tmp/visvid_build/debug"){
 
-                  cmakeBuild(
-                    buildDir: 'build/debug',
-                    buildType: 'Debug',
-                    cleanBuild: true,
-                    installation: 'InSearchPath',
-                    cmakeArgs: '\
-    -DCTEST_DROP_LOCATION=$WORKSPACE/reports/ctest \
-    -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-    -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-    -DCMAKE_C_FLAGS="-Wall -Wextra" \
-    -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-    -Dlibvisvid_TESTS:BOOL=ON \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-                    sourceDir: 'scm',
-                    steps: [
-                      [args: '--target test-visvid', withCmake: true],
-                      [args: '--target test-visvid-internal', withCmake: true],
-                    ]
-                  )
-                }
+              cmakeBuild(
+                buildDir: 'build/debug',
+                buildType: 'Debug',
+                cleanBuild: true,
+                installation: 'InSearchPath',
+                cmakeArgs: '\
+-DCTEST_DROP_LOCATION=$WORKSPACE/reports/ctest \
+-DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+-DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+-DCMAKE_C_FLAGS="-Wall -Wextra" \
+-DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+-Dlibvisvid_TESTS:BOOL=ON '
+                sourceDir: 'scm',
+                steps: [
+                  [args: '--target test-visvid', withCmake: true],
+                  [args: '--target test-visvid-internal', withCmake: true],
+                ]
+              )
             }
           }
           post{
@@ -251,15 +248,11 @@ pipeline {
                 timeout(5)
             }
             steps{
-                dir("/tmp/visvid_build/debug"){
-                    sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
-                    unstash "DEBUG_BUILD_FILES"
-                    sh "pwd && ls -laR"
-                }
+                sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
+                unstash "DEBUG_BUILD_FILES"
+                sh "pwd && ls -laR"
                 tee("logs/clang-tidy_debug.log") {
-                    dir("/tmp/visvid_build/debug"){
-                          sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/debug/"
-                        }
+                  sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/debug/"
                 }
             }
             post{
