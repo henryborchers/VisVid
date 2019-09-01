@@ -20,7 +20,7 @@ pipeline {
   stages {
     stage('Build') {
       parallel{
-//         stage("Create Release Build with Conan"){
+        stage("Create Release Build with Conan"){
 //             agent any
 
 //             agent {
