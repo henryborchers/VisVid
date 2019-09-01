@@ -74,13 +74,14 @@ pipeline {
                 stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
             }
             cleanup{
-                  cleanWs(
-                      disableDeferredWipeout: true,
-                      patterns: [
-                          [pattern: "build/release", type: 'INCLUDE'],
-                          ],
-                      deleteDirs: true
-                  )
+                deleteDir()
+//                   cleanWs(
+//                       disableDeferredWipeout: true,
+//                       patterns: [
+//                           [pattern: "build/release", type: 'INCLUDE'],
+//                           ],
+//                       deleteDirs: true
+//                   )
             }
           }
         }
