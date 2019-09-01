@@ -7,6 +7,7 @@ pipeline {
         }
 
   }
+
   options {
     timeout(30)
     checkoutToSubdirectory 'scm'
@@ -22,34 +23,34 @@ pipeline {
   stages {
     stage('Build') {
       parallel{
-        stage("Create Release Build with Conan"){
-            agent {
-                dockerfile {
-                    dir 'scm'
-                    filename 'ci/dockerfiles/conan/dockerfile'
-                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                }
-            }
-            steps{
-                dir("build/conan"){
-                    sh "conan install ${WORKSPACE}/scm/ --profile x64"
-                }
-            }
-            post{
-                cleanup{
-                    deleteDir()
-                }
-            }
-
-        }
+//         stage("Create Release Build with Conan"){
+//             agent {
+//                 dockerfile {
+//                     dir 'scm'
+//                     filename 'ci/dockerfiles/conan/dockerfile'
+//                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                 }
+//             }
+//             steps{
+//                 dir("build/conan"){
+//                     sh "conan install ${WORKSPACE}/scm/ --profile x64"
+//                 }
+//             }
+//             post{
+//                 cleanup{
+//                     deleteDir()
+//                 }
+//             }
+//
+//         }
         stage("Create Release Build"){
-          agent {
-                dockerfile {
-                  filename 'scm/ci/dockerfiles/jenkins-main'
-                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                }
-
-          }
+//           agent {
+//                 dockerfile {
+//                   filename 'scm/ci/dockerfiles/jenkins-main'
+//                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                 }
+//
+//           }
           steps {
             tee('logs/gcc_release.log') {
               cmakeBuild(
@@ -73,8 +74,8 @@ pipeline {
             always{
                 stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
             }
-            cleanup{
-                deleteDir()
+//             cleanup{
+//                 deleteDir()
 //                   cleanWs(
 //                       disableDeferredWipeout: true,
 //                       patterns: [
@@ -82,19 +83,19 @@ pipeline {
 //                           ],
 //                       deleteDirs: true
 //                   )
-            }
+//             }
           }
         }
         stage("Create Debug Build"){
-          agent {
-                dockerfile {
-                    filename 'scm/ci/dockerfiles/jenkins-main'
-                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                     args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
-//                     customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
-                }
-
-          }
+//           agent {
+//                 dockerfile {
+//                     filename 'scm/ci/dockerfiles/jenkins-main'
+//                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+// //                     args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
+// //                     customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
+//                 }
+//
+//           }
           steps {
             tee('logs/gcc_debug.log') {
                     sh "pwd"
@@ -143,8 +144,8 @@ pipeline {
                       )
 
             }
-            cleanup{
-                deleteDir()
+//             cleanup{
+//                 deleteDir()
 //                 cleanWs(
 //                     disableDeferredWipeout: true,
 //                     deleteDirs: true,
@@ -153,7 +154,7 @@ pipeline {
 // //                         [pattern: "build/debug/**/*.memcheck", type: 'INCLUDE'],
 //                         ]
 //                 )
-            }
+//             }
           }
         }
         stage("Building Python Extension"){
@@ -179,8 +180,8 @@ pipeline {
                 failure{
                     deleteDir()
                 }
-                cleanup{
-                    deleteDir()
+//                 cleanup{
+//                     deleteDir()
 //                     cleanWs(
 //                         disableDeferredWipeout: true,
 //                         patterns: [
@@ -188,17 +189,17 @@ pipeline {
 //                             ],
 //                         deleteDirs: true
 //                     )
-                }
+//                 }
             }
         }
         stage('Documentation') {
-              agent {
-                    dockerfile {
-                      filename 'scm/ci/dockerfiles/jenkins-main'
-                      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                    }
-
-              }
+//               agent {
+//                     dockerfile {
+//                       filename 'scm/ci/dockerfiles/jenkins-main'
+//                       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                     }
+//
+//               }
               steps {
                 cmakeBuild(
                   buildDir: 'build/docs',
@@ -228,14 +229,14 @@ pipeline {
                   stash includes: "build/docs/docs/html/**", name: 'DOCS_ARCHIVE'
                 }
                 cleanup{
-                    deleteDir()
-//                     cleanWs(
-//                         patterns: [
-//                             [pattern: "dist", type: 'INCLUDE'],
-//                             [pattern: "build", type: 'INCLUDE']
-//                             ],
-//                         deleteDirs: true
-//                         )
+//                     deleteDir()
+                    cleanWs(
+                        patterns: [
+                            [pattern: "dist", type: 'INCLUDE'],
+                            [pattern: "build", type: 'INCLUDE']
+                            ],
+                        deleteDirs: true
+                        )
                 }
               }
         }
@@ -246,12 +247,12 @@ pipeline {
 
       parallel{
         stage("Clang Tidy"){
-            agent {
-                dockerfile {
-                  filename 'scm/ci/dockerfiles/jenkins-main'
-                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                }
-            }
+//             agent {
+//                 dockerfile {
+//                   filename 'scm/ci/dockerfiles/jenkins-main'
+//                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                 }
+//             }
             options{
                 timeout(5)
             }
@@ -271,24 +272,24 @@ pipeline {
                     recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
                 }
                 cleanup{
-                    deleteDir()
-//                     cleanWs(
-//                       patterns: [
-//                         [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
-//                       ]
-//                     )
+//                     deleteDir()
+                    cleanWs(
+                      patterns: [
+                        [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
+                      ]
+                    )
                 }
 
             }
         }
         stage("Cppcheck"){
-            agent {
-                dockerfile {
-                  filename 'scm/ci/dockerfiles/jenkins-main'
-                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                }
-
-            }
+//             agent {
+//                 dockerfile {
+//                   filename 'scm/ci/dockerfiles/jenkins-main'
+//                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                 }
+//
+//             }
               options{
                 timeout(5)
               }
@@ -311,12 +312,12 @@ pipeline {
                     recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
                 }
                 cleanup{
-                    deleteDir()
-//                     cleanWs(
-//                       patterns: [
-//                         [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
-//                       ]
-//                     )
+//                     deleteDir()
+                    cleanWs(
+                      patterns: [
+                        [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
+                      ]
+                    )
                 }
 
               }
