@@ -1,7 +1,7 @@
 pipeline {
   agent {
     dockerfile {
-      filename 'scm/ci/dockerfiles/jenkins-main'
+      filename 'scm/ci/dockerfiles/jenkins/dockerfile'
       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
     }
   }
@@ -20,8 +20,8 @@ pipeline {
   stages {
     stage('Build') {
       parallel{
-        stage("Create Release Build with Conan"){
-            agent any
+//         stage("Create Release Build with Conan"){
+//             agent any
 
 //             agent {
 //                 dockerfile {
