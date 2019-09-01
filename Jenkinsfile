@@ -107,7 +107,7 @@ pipeline {
 -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
 -DCMAKE_C_FLAGS="-Wall -Wextra" \
 -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
--Dlibvisvid_TESTS:BOOL=ON '
+-Dlibvisvid_TESTS:BOOL=ON ',
                 sourceDir: 'scm',
                 steps: [
                   [args: '--target test-visvid', withCmake: true],
