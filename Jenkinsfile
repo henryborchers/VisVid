@@ -3,7 +3,7 @@ pipeline {
     dockerfile {
       filename 'scm/ci/dockerfiles/jenkins/dockerfile'
       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-      dir "${WORKSPACE}"
+      dir "."
     }
   }
   options {
