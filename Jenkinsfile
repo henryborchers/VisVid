@@ -220,13 +220,14 @@ pipeline {
                   stash includes: "build/docs/docs/html/**", name: 'DOCS_ARCHIVE'
                 }
                 cleanup{
-                    cleanWs(
-                        patterns: [
-                            [pattern: "dist", type: 'INCLUDE'],
-                            [pattern: "build", type: 'INCLUDE']
-                            ],
-                        deleteDirs: true
-                        )
+                    deleteDir()
+//                     cleanWs(
+//                         patterns: [
+//                             [pattern: "dist", type: 'INCLUDE'],
+//                             [pattern: "build", type: 'INCLUDE']
+//                             ],
+//                         deleteDirs: true
+//                         )
                 }
               }
         }
