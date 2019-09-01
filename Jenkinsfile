@@ -71,7 +71,7 @@ pipeline {
                 )
           }
           post{
-            always{
+            success{
                 stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
             }
 //             cleanup{
