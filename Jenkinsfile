@@ -238,42 +238,43 @@ pipeline {
     stage("Static Analysis"){
 
       parallel{
-//         stage("Clang Tidy"){
-//             agent {
-//                 dockerfile {
-//                   filename 'scm/ci/dockerfiles/jenkins-main'
-//                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                 }
-//             }
-//             options{
-//                 timeout(5)
-//             }
-//             steps{
-//                 sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
-//                 unstash "DEBUG_BUILD_FILES"
-//                 sh "pwd && ls -laR"
-//                 tee('logs/clang-tidy_debug.log') {
-//                   sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy-9 -p ./build/debug/"
-//                 }
-//             }
-//             post{
-//                 always {
-//                     archiveArtifacts(
-//                       allowEmptyArchive: true,
-//                       artifacts: 'logs/clang-tidy_debug.log'
-//                     )
-//                     recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
-//                 }
-//                 cleanup{
+        stage("Clang Tidy"){
+            agent {
+                dockerfile {
+                  filename 'scm/ci/dockerfiles/jenkins-main'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                }
+            }
+            options{
+                timeout(5)
+            }
+            steps{
+                sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
+                unstash "DEBUG_BUILD_FILES"
+                sh "pwd && ls -laR"
+                tee('logs/clang-tidy_debug.log') {
+                  sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy-9 -p ./build/debug/"
+                }
+            }
+            post{
+                always {
+                    archiveArtifacts(
+                      allowEmptyArchive: true,
+                      artifacts: 'logs/clang-tidy_debug.log'
+                    )
+                    recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
+                }
+                cleanup{
+                    deleteDir()
 //                     cleanWs(
 //                       patterns: [
 //                         [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
 //                       ]
 //                     )
-//                 }
-//
-//             }
-//         }
+                }
+
+            }
+        }
         stage("Cppcheck"){
             agent {
                 dockerfile {
