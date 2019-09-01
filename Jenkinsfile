@@ -381,6 +381,11 @@ pipeline {
 //                           workingDir: 'build/debug'
 //                           )
                     }
+                    post{
+                        cleanup{
+                            deleteDir()
+                        }
+                    }
                 }
 //                 stage("CTest: Coverage"){
 //                     agent {
