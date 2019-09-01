@@ -378,7 +378,7 @@ pipeline {
                     }
                   }
                 }
-//                 stage("Running Pytest"){
+                stage("Running Pytest"){
 //                     agent {
 //                         dockerfile {
 //                           filename 'scm/ci/dockerfiles/jenkins-main'
@@ -389,22 +389,22 @@ pipeline {
 //                     options {
 //                         lock(label: 'Docker')
 //                     }
-//                   steps{
-//                     dir("scm"){
-//                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
-//                             sh(
-//                                 label: "Running pytest",
-//                                 script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
-//                             )
-//                         }
-//                     }
-//                   }
-//                   post{
-//                     always{
-//                         junit "reports/pytest/junit-pytest.xml"
-//                     }
-//                   }
-//               }
+                  steps{
+                    dir("scm"){
+                        catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
+                            sh(
+                                label: "Running pytest",
+                                script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
+                            )
+                        }
+                    }
+                  }
+                  post{
+                    always{
+                        junit "reports/pytest/junit-pytest.xml"
+                    }
+                  }
+              }
 //               stage("Run MyPy Static Analysis") {
 //                     agent {
 //                           dockerfile {
