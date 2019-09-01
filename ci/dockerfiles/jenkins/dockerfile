@@ -78,7 +78,9 @@ RUN groupadd -g $GROUP_ID user && \
 
 ENV CONAN_NON_INTERACTIVE=1
 RUN python3 -m pip install --upgrade pip && python3 -m pip install conan
-COPY ci/dockerfiles/conan/remotes.json /home/user/.conan/remotes.json
+RUN conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"
+
+# COPY ci/dockerfiles/conan/remotes.json /home/user/.conan/remotes.json
 ENV CONAN_USER_HOME=/home/user/
 
 COPY ci/dockerfiles/conan/profiles/ /home/user/.conan/profiles/
