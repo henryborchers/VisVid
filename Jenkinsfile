@@ -104,7 +104,6 @@ pipeline {
                 cleanBuild: true,
                 installation: 'InSearchPath',
                 cmakeArgs: '\
--DCTEST_DROP_LOCATION=$WORKSPACE/reports/ctest \
 -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
 -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
 -DCMAKE_C_FLAGS="-Wall -Wextra" \
