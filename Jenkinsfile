@@ -1,12 +1,12 @@
 pipeline {
-    agent none
-//   agent {
-//         dockerfile {
-//           filename 'scm/ci/dockerfiles/jenkins-main'
-//           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//         }
-//
-//   }
+//     agent none
+  agent {
+        dockerfile {
+          filename 'scm/ci/dockerfiles/jenkins-main'
+          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+        }
+
+  }
   options {
     timeout(30)
     checkoutToSubdirectory 'scm'
@@ -90,14 +90,14 @@ pipeline {
                 dockerfile {
                     filename 'scm/ci/dockerfiles/jenkins-main'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                    args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
+//                     args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
 //                     customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
                 }
 
           }
           steps {
             tee('logs/gcc_debug.log') {
-                sh "pwd"
+                    sh "pwd"
                 dir("${JENKINS_HOME}/workspace/${JOB_NAME}"){
                   cmakeBuild(
                     buildDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug",
