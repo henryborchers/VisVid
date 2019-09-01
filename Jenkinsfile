@@ -90,11 +90,12 @@ pipeline {
                 dockerfile {
                     filename 'scm/ci/dockerfiles/jenkins-main'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                    args '--workdir=/tmp/visvid'
+//                     args '--workdir=/tmp/visvid'
                 }
 
           }
           steps {
+            echo "JENKINS_HOME = ${JENKINS_HOME}"
             tee('logs/gcc_debug.log') {
               cmakeBuild(
                 buildDir: "build/debug",
