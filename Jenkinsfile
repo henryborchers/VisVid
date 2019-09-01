@@ -595,9 +595,9 @@ pipeline {
 //         }
 //       }
 //     }
-    stage('Package') {
-
-      parallel{
+//     stage('Package') {
+//
+//       parallel{
 //           stage("CPack Packages"){
 //             agent {
 //                   dockerfile {
@@ -616,49 +616,49 @@ pipeline {
 //                 }
 //               }
 //           }
-          stage("Python Packages"){
-                agent {
-                      dockerfile {
-                        filename 'scm/ci/dockerfiles/jenkins-main'
-                        additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                      }
-
-                }
-              stages{
-                    stage("Building Python Packages"){
-                        steps{
-                            sh "mkdir -p scm && ls pyvisvid/build"
-                            dir("scm"){
-                                sh(
-                                    label: "Running Python setup script to build wheel and sdist",
-                                    script: "python3 setup.py build --build-temp=../pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
-                                )
-                            }
-                        }
-                    }
-                    stage("Testing Python Packages"){
-                        steps{
-                            script{
-                                def python_packages = findFiles glob: "pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz"
-                                python_packages.each{
-                                    sh(
-                                        label: "Running Tox with ${it}",
-                                        script: """. ${WORKSPACE}/venv/bin/activate
-cd scm && tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py"""
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                post{
-                    success{
-                      archiveArtifacts(artifacts: 'pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz', fingerprint: true, onlyIfSuccessful: true)
-                    }
-                }
-            }
-      }
-    }
+//           stage("Python Packages"){
+//                 agent {
+//                       dockerfile {
+//                         filename 'scm/ci/dockerfiles/jenkins-main'
+//                         additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                       }
+//
+//                 }
+//               stages{
+//                     stage("Building Python Packages"){
+//                         steps{
+//                             sh "mkdir -p scm && ls pyvisvid/build"
+//                             dir("scm"){
+//                                 sh(
+//                                     label: "Running Python setup script to build wheel and sdist",
+//                                     script: "python3 setup.py build --build-temp=../pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
+//                                 )
+//                             }
+//                         }
+//                     }
+//                     stage("Testing Python Packages"){
+//                         steps{
+//                             script{
+//                                 def python_packages = findFiles glob: "pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz"
+//                                 python_packages.each{
+//                                     sh(
+//                                         label: "Running Tox with ${it}",
+//                                         script: """. ${WORKSPACE}/venv/bin/activate
+// cd scm && tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py"""
+//                                     )
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//                 post{
+//                     success{
+//                       archiveArtifacts(artifacts: 'pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz', fingerprint: true, onlyIfSuccessful: true)
+//                     }
+//                 }
+//             }
+//       }
+//     }
   }
 //   post {
 //     cleanup{
