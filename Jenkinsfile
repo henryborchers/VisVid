@@ -301,15 +301,15 @@ pipeline {
               parallel{
 //
                 stage("Run CTest"){
-                    agent {
-                        dockerfile {
-                          filename 'scm/ci/dockerfiles/jenkins-main'
-                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                           args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
-//                           customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
-                        }
-
-                    }
+//                     agent {
+//                         dockerfile {
+//                           filename 'scm/ci/dockerfiles/jenkins-main'
+//                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+// //                           args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
+// //                           customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
+//                         }
+//
+//                     }
 //                     options {
 //                       lock(label: 'Docker')
 //                     }
