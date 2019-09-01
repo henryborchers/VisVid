@@ -219,13 +219,6 @@ pipeline {
           }
         }
         stage("Cppcheck"){
-//             agent {
-//                 dockerfile {
-//                   filename 'scm/ci/dockerfiles/jenkins-main'
-//                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                 }
-//
-//             }
               options{
                 timeout(5)
               }
@@ -243,7 +236,7 @@ pipeline {
                     sh "ls -la logs"
                     archiveArtifacts(
                       allowEmptyArchive: true,
-                      artifacts: 'logs/cppcheck_debug.log'
+                      artifacts: 'logs/cppcheck_debug.xml'
                     )
                     recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
                 }
@@ -251,7 +244,7 @@ pipeline {
 //                     deleteDir()
                     cleanWs(
                       patterns: [
-                        [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
+                        [pattern: 'logs/cppcheck_debug.xml', type: 'INCLUDE'],
                       ]
                     )
                 }
