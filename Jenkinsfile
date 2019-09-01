@@ -172,13 +172,14 @@ pipeline {
                     deleteDir()
                 }
                 cleanup{
-                    cleanWs(
-                        disableDeferredWipeout: true,
-                        patterns: [
-                            [pattern: "pyvisvid", type: 'INCLUDE'],
-                            ],
-                        deleteDirs: true
-                    )
+                    deleteDir()
+//                     cleanWs(
+//                         disableDeferredWipeout: true,
+//                         patterns: [
+//                             [pattern: "pyvisvid", type: 'INCLUDE'],
+//                             ],
+//                         deleteDirs: true
+//                     )
                 }
             }
         }
