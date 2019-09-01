@@ -21,6 +21,8 @@ pipeline {
     stage('Build') {
       parallel{
         stage("Create Release Build with Conan"){
+            agent any
+
 //             agent {
 //                 dockerfile {
 //                     dir 'scm'
