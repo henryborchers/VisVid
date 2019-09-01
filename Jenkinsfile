@@ -418,7 +418,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       }
                   }
               }
-//               stage("Run Flake8 Static Analysis") {
+              stage("Run Flake8 Static Analysis") {
 //                     agent {
 //                           dockerfile {
 //                             filename 'scm/ci/dockerfiles/jenkins-main'
@@ -429,33 +429,33 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 //                     options {
 //                         lock(label: 'Docker')
 //                     }
-//                   steps{
-//                       dir("scm"){
-//                           catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
-//
-//                               sh(
-//                                   label: "Running Flake8",
-//                                   script: """. ${WORKSPACE}/venv/bin/activate
-// tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
-// """
-//
-//                               )
-//                           }
-//                       }
-//                   }
-//                   post {
-//                       always {
-//                           archiveArtifacts 'logs/flake8.log'
-//                           recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
-//                       }
-//                       unstable{
-//                         echo "I'm unstable"
-//                       }
-//                       cleanup{
-//                           cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
-//                       }
-//                   }
-//               }
+                  steps{
+                      dir("scm"){
+                          catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
+
+                              sh(
+                                  label: "Running Flake8",
+                                  script: """. ${WORKSPACE}/venv/bin/activate
+tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
+"""
+
+                              )
+                          }
+                      }
+                  }
+                  post {
+                      always {
+                          archiveArtifacts 'logs/flake8.log'
+                          recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+                      }
+                      unstable{
+                        echo "I'm unstable"
+                      }
+                      cleanup{
+                          cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
+                      }
+                  }
+              }
 //               stage("Running Tox"){
 //                     agent {
 //                             dockerfile {
