@@ -378,7 +378,7 @@ pipeline {
                         ctest(
                           arguments: "--output-on-failure --no-compress-output -T Test",
                           installation: 'InSearchPath',
-                          workingDir: 'build/debug'
+                          workingDir: "${WORKSPACE}/build/debug"
                           )
                     }
                     post{
