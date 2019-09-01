@@ -90,14 +90,13 @@ pipeline {
                 dockerfile {
                     filename 'scm/ci/dockerfiles/jenkins-main'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                     args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
+                    args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
 //                     customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
                 }
 
           }
           steps {
             tee('logs/gcc_debug.log') {
-                sh "mkdir -p ${JENKINS_HOME}/workspace/${JOB_NAME}"
                 dir("${JENKINS_HOME}/workspace/${JOB_NAME}"){
                   cmakeBuild(
                     buildDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug",
@@ -123,8 +122,10 @@ pipeline {
             }
           }
           post{
-            always{
+            success{
               stash includes: "build/debug/**", name: 'DEBUG_BUILD_FILES'
+            }
+            always{
               publishValgrind (
                         failBuildOnInvalidReports: false,
                         failBuildOnMissingReports: false,
