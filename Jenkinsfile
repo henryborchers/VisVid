@@ -251,7 +251,7 @@ pipeline {
                 sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
 //                 unstash "DEBUG_BUILD_FILES"
 //                 sh "pwd && ls -laR"
-                cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON', installation: 'InSearchPath', workingDir: 'build'
+                cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
                 tee("logs/clang-tidy_debug.log") {
                   sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/"
                 }
