@@ -24,6 +24,7 @@ pipeline {
             steps{
                 dir("build/conan"){
                     sh "conan install ../../scm"
+                    sh "ls -la"
                 }
                 cmakeBuild(
                     buildDir: 'build/conan',
