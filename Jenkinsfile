@@ -96,25 +96,29 @@ pipeline {
 
           }
           steps {
-//             echo "using ${JENKINS_HOME}/workspace/${JOB_NAME}"
             tee('logs/gcc_debug.log') {
-              cmakeBuild(
-                buildDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug",
-                buildType: 'Debug',
-                cleanBuild: true,
-                installation: 'InSearchPath',
-                cmakeArgs: '\
--DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
--DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
--DCMAKE_C_FLAGS="-Wall -Wextra" \
--DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
--Dlibvisvid_TESTS:BOOL=ON ',
-                sourceDir: 'scm',
-                steps: [
-                  [args: '--target test-visvid', withCmake: true],
-                  [args: '--target test-visvid-internal', withCmake: true],
-                ]
-              )
+            dir("${JENKINS_HOME}/workspace/${JOB_NAME}"){
+                  cmakeBuild(
+                    buildDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug",
+                    buildType: 'Debug',
+                    cleanBuild: true,
+                    installation: 'InSearchPath',
+                    cmakeArgs: '\
+    -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+    -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+    -DCMAKE_C_FLAGS="-Wall -Wextra" \
+    -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+    -Dlibvisvid_TESTS:BOOL=ON ',
+                    sourceDir: 'scm',
+                    steps: [
+                      [args: '--target test-visvid', withCmake: true],
+                      [args: '--target test-visvid-internal', withCmake: true],
+                    ]
+                  )
+              }
+            }
+            dir("build"){
+                sh "mv ${JENKINS_HOME}/workspace/${JOB_NAME}/build/ ./build/"
             }
           }
           post{
@@ -368,7 +372,7 @@ pipeline {
                         dockerfile {
                           filename 'scm/ci/dockerfiles/jenkins-main'
                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                          args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
+//                           args "--workdir=${JENKINS_HOME}/workspace/${JOB_NAME}"
 //                           customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}"
                         }
 
