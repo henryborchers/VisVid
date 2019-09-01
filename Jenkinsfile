@@ -331,49 +331,39 @@ pipeline {
 //                         }
 //                     }
                 }
-//                 stage("CTest: Coverage"){
-//                     agent {
-//                             dockerfile {
-//                               filename 'scm/ci/dockerfiles/jenkins-main'
-//                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                             }
-//
-//                     }
-//                     options {
-//                         lock(label: 'Docker')
-//                     }
-//                     steps{
-//                         ctest arguments: "-T coverage",
-//                           installation: 'InSearchPath',
-//                           workingDir: 'build/debug'
-//                     }
-//                     post{
-//                         always{
-//                           sh "mkdir -p reports/coverage"
-//
-//                           sh(
-//                             label: "Generating coverage report in Coberatura xml file format",
-//                             script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
-//
-//                           )
-//                           archiveArtifacts 'reports/coverage/coverage.xml'
-//                           publishCoverage(
-//                             adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-//                             sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-//                             tag: "AllCoverage"
-//                             )
-//                           //////////////////////////////////////////
-//                           sh(
-//                               label: "Generating coverage report in html file format",
-//                               script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
-//                            )
-//
-//
-//                           publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
-//
-//                         }
-//                   }
-//                 }
+                stage("CTest: Coverage"){
+                    steps{
+                        ctest arguments: "-T coverage",
+                          installation: 'InSearchPath',
+                          workingDir: 'build/debug'
+                    }
+                    post{
+                        always{
+                          sh "mkdir -p reports/coverage"
+
+                          sh(
+                            label: "Generating coverage report in Coberatura xml file format",
+                            script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
+
+                          )
+                          archiveArtifacts 'reports/coverage/coverage.xml'
+                          publishCoverage(
+                            adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                            sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                            tag: "AllCoverage"
+                            )
+                          //////////////////////////////////////////
+                          sh(
+                              label: "Generating coverage report in html file format",
+                              script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                           )
+
+
+                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+
+                        }
+                  }
+                }
 //                 stage("CTest: MemCheck"){
 //                     agent {
 //                         dockerfile {
