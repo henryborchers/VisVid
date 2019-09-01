@@ -49,6 +49,24 @@ RUN apt-get update -y && \
 #    clang-9 clang-tools-9 clang-9-doc libclang-common-9-dev libclang-9-dev libclang1-9 clang-format-9 \
     cppcheck \
     cmake \
+    mesa-common-dev:amd64 \
+    libgbm-dev:amd64 \
+    libasound2-dev:amd64 \
+    libjack-dev:amd64 \
+    libpulse-dev:amd64 \
+    autoconf \
+    automake \
+    libtool \
+    libegl1-mesa-dev:amd64 \
+    libaudio-dev:amd64 \
+    libxcursor-dev:amd64 \
+    libxinerama-dev:amd64 \
+    libxi-dev:amd64 \
+    libxrandr-dev:amd64 \
+    libxss-dev:amd64 \
+    libvdpau-dev:amd64 \
+    libva-dev:amd64 \
+    libxcb-shm0-dev:amd64 \
     swig3.0 -y
 
 # RUN mkdir /opt/cmake
