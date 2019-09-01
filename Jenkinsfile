@@ -375,11 +375,11 @@ pipeline {
 //                     }
                     steps{
                         unstash "DEBUG_BUILD_FILES"
-//                         ctest(
-//                           arguments: "--output-on-failure --no-compress-output -T Test",
-//                           installation: 'InSearchPath',
-//                           workingDir: 'build/debug'
-//                           )
+                        ctest(
+                          arguments: "--output-on-failure --no-compress-output -T Test",
+                          installation: 'InSearchPath',
+                          workingDir: 'build/debug'
+                          )
                     }
                     post{
                         cleanup{
