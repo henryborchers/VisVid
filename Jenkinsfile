@@ -101,7 +101,7 @@ pipeline {
                     sh "pwd"
                 dir("${JENKINS_HOME}/workspace/${JOB_NAME}"){
                   cmakeBuild(
-                    buildDir: "${JENKINS_HOME}/workspace/${JOB_NAME}/build/debug",
+                    buildDir: "build/debug",
                     buildType: 'Debug',
                     cleanBuild: true,
                     installation: 'InSearchPath',
