@@ -132,10 +132,11 @@ pipeline {
             }
             cleanup{
                 cleanWs(
+                    disableDeferredWipeout: true,
                     deleteDirs: true,
                     patterns: [
-                        [pattern: "build/debug/**/*.memcheck", type: 'INCLUDE'],
                         [pattern: "build/debug", type: 'INCLUDE'],
+//                         [pattern: "build/debug/**/*.memcheck", type: 'INCLUDE'],
                         ]
                 )
             }
@@ -168,7 +169,7 @@ pipeline {
                     cleanWs(
                         disableDeferredWipeout: true,
                         patterns: [
-                            [pattern: "pyvisvid/build", type: 'INCLUDE'],
+                            [pattern: "pyvisvid", type: 'INCLUDE'],
                             ],
                         deleteDirs: true
                     )
