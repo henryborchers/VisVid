@@ -303,11 +303,12 @@ pipeline {
                     recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
                 }
                 cleanup{
-                    cleanWs(
-                      patterns: [
-                        [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
-                      ]
-                    )
+                    deleteDir()
+//                     cleanWs(
+//                       patterns: [
+//                         [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
+//                       ]
+//                     )
                 }
 
               }
