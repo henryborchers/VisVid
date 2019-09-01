@@ -35,6 +35,11 @@ pipeline {
                     sh "conan install ${WORKSPACE}/scm/ --profile x64"
                 }
             }
+            post{
+                cleanup{
+                    deleteDir()
+                }
+            }
 
         }
         stage("Create Release Build"){
