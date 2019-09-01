@@ -34,7 +34,7 @@ pipeline {
                 dir("build/conan"){
 //                     echo "building conan"
 //                     sh "ls -la"
-                    sh "conan install ../.."
+                    sh "conan install ../../scm"
                 }
             }
 //             post{
