@@ -94,10 +94,11 @@ pipeline {
 
           }
           steps {
+            echo "build dir is ${WORKSPACE}/build/debug"
             tee('logs/gcc_debug.log') {
 
               cmakeBuild(
-                buildDir: 'build/debug',
+                buildDir: "${WORKSPACE}/build/debug",
                 buildType: 'Debug',
                 cleanBuild: true,
                 installation: 'InSearchPath',
