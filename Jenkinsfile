@@ -23,7 +23,6 @@ pipeline {
         stage("Create Release Build with Conan"){
             steps{
                 dir("build/conan"){
-                    sh 'conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"'
                     sh "conan install ../../scm"
                 }
                 cmakeBuild(
