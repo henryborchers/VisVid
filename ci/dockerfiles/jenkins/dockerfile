@@ -86,8 +86,8 @@ ENV CONAN_USER_HOME=/home/user/
 # COPY ci/dockerfiles/conan/profiles/ /home/user/.conan/profiles/
 # ENV CONAN_DEFAULT_PROFILE_PATH=/home/user/.conan/profiles/x64
 
-ADD conanfile.py /tmp/
-RUN conan install /tmp/ --no-imports && conan remove --locks -f
+# ADD conanfile.py /tmp/
+# RUN conan install /tmp/ --no-imports && conan remove --locks -f
 
 RUN chown -R user:user /home/user/
 
