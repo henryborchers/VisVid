@@ -4,7 +4,6 @@ pipeline {
       filename 'scm/ci/dockerfiles/jenkins-main'
       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
     }
-
   }
   options {
     timeout(30)
@@ -137,15 +136,13 @@ pipeline {
                     )
                 }
             }
+            post{
+                success{
+                    stash includes: "pyvisvid/build/**", name: 'PYTHON_BUILD_FILES'
+                }
+            }
         }
         stage('Documentation') {
-//               agent {
-//                     dockerfile {
-//                       filename 'scm/ci/dockerfiles/jenkins-main'
-//                       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                     }
-//
-//               }
               steps {
                 cmakeBuild(
                   buildDir: 'build/docs',
@@ -262,41 +259,41 @@ pipeline {
 
 //         }
         stages{
-//             stage("Setting Up Python Test Environment"){
-//                 steps{
-//                     unstash "PYTHON_BUILD_FILES"
-//                     sh(
-//                       label: "Install virtual env",
-//                       script: "python3 -m venv venv"
-//                       )
-//
-//                     sh(
-//                       label: "Upgrade pip",
-//                       script:""". ./venv/bin/activate
-// python -m pip install pip --upgrade
-// """
-//                     )
-//
-//                     sh(
-//                       label: "Installing Python Testing Packages",
-//                       script: """. ./venv/bin/activate
-// pip install pytest "tox<3.10" mypy coverage lxml"""
-//                     )
-//                     dir("scm"){
-//                       sh(
-//                           label: "Installing Current Python Package to Virtual Environment in Development Mode",
-//                           script: """. ${WORKSPACE}/venv/bin/activate
-//   python setup.py build
-//   pip install -e ."""
-//                       )
-//                     }
-//                   }
-//                   post{
-//                       failure{
-//                           deleteDir()
-//                       }
-//                   }
-//             }
+            stage("Setting Up Python Test Environment"){
+                steps{
+                    unstash "PYTHON_BUILD_FILES"
+                    sh(
+                      label: "Install virtual env",
+                      script: "python3 -m venv venv"
+                      )
+
+                    sh(
+                      label: "Upgrade pip",
+                      script:""". ./venv/bin/activate
+python -m pip install pip --upgrade
+"""
+                    )
+
+                    sh(
+                      label: "Installing Python Testing Packages",
+                      script: """. ./venv/bin/activate
+pip install pytest "tox<3.10" mypy coverage lxml"""
+                    )
+                    dir("scm"){
+                      sh(
+                          label: "Installing Current Python Package to Virtual Environment in Development Mode",
+                          script: """. ${WORKSPACE}/venv/bin/activate
+  python setup.py build
+  pip install -e ."""
+                      )
+                    }
+                  }
+                  post{
+                      failure{
+                          deleteDir()
+                      }
+                  }
+            }
             stage("Run Tests"){
               parallel{
 //
@@ -321,11 +318,6 @@ pipeline {
                           workingDir: "build/debug"
                           )
                     }
-//                     post{
-//                         cleanup{
-//                             deleteDir()
-//                         }
-//                     }
                 }
                 stage("CTest: Coverage"){
                     steps{
@@ -379,16 +371,6 @@ pipeline {
                   }
                 }
                 stage("Running Pytest"){
-//                     agent {
-//                         dockerfile {
-//                           filename 'scm/ci/dockerfiles/jenkins-main'
-//                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                         }
-//
-//                     }
-//                     options {
-//                         lock(label: 'Docker')
-//                     }
                   steps{
                     dir("scm"){
                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
