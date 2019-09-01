@@ -315,15 +315,15 @@ pipeline {
         }
       }
     }
-//     stage('Test') {
+    stage('Test') {
 //         agent {
 //             dockerfile {
 //               filename 'scm/ci/dockerfiles/jenkins-main'
 //               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
 //             }
-//
+
 //         }
-//         stages{
+        stages{
 //             stage("Setting Up Python Test Environment"){
 //                 steps{
 //                     unstash "PYTHON_BUILD_FILES"
@@ -359,29 +359,29 @@ pipeline {
 //                       }
 //                   }
 //             }
-//             stage("Run Tests"){
-//               parallel{
+            stage("Run Tests"){
+              parallel{
 //
-//                 stage("Run CTest"){
-//                     agent {
-//                         dockerfile {
-//                           filename 'scm/ci/dockerfiles/jenkins-main'
-//                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                         }
-//
-//                     }
+                stage("Run CTest"){
+                    agent {
+                        dockerfile {
+                          filename 'scm/ci/dockerfiles/jenkins-main'
+                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                        }
+
+                    }
 //                     options {
 //                       lock(label: 'Docker')
 //                     }
-//                     steps{
-//                         unstash "DEBUG_BUILD_FILES"
+                    steps{
+                        unstash "DEBUG_BUILD_FILES"
 //                         ctest(
 //                           arguments: "--output-on-failure --no-compress-output -T Test",
 //                           installation: 'InSearchPath',
 //                           workingDir: 'build/debug'
 //                           )
-//                     }
-//                 }
+                    }
+                }
 //                 stage("CTest: Coverage"){
 //                     agent {
 //                             dockerfile {
@@ -569,8 +569,8 @@ pipeline {
 //                   }
 //               }
 //               }
-//             }
-//           }
+            }
+          }
 //       post{
 //         always{
 //             ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
@@ -619,8 +619,8 @@ pipeline {
 //                     ]
 //                 )
 //         }
-//       }
-//     }
+      }
+    }
 //     stage('Package') {
 //
 //       parallel{
