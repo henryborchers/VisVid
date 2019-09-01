@@ -95,6 +95,7 @@ pipeline {
           }
           steps {
             echo "build dir is ${WORKSPACE}/build/debug"
+            sh "pwd"
             tee('logs/gcc_debug.log') {
 
               cmakeBuild(
