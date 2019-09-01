@@ -95,7 +95,7 @@ pipeline {
 
           }
           steps {
-            echo "JENKINS_HOME = ${JENKINS_HOME}"
+            echo "using ${JENKINS_HOME}/workspace/${JOB_NAME}"
             tee('logs/gcc_debug.log') {
               cmakeBuild(
                 buildDir: "build/debug",
