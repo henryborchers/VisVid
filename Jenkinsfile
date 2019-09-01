@@ -88,18 +88,16 @@ pipeline {
         stage("Create Debug Build"){
           agent {
                 dockerfile {
-                  filename 'scm/ci/dockerfiles/jenkins-main'
-                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    filename 'scm/ci/dockerfiles/jenkins-main'
+                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    args '--workdir=/tmp/visvid'
                 }
 
           }
           steps {
-            echo "build dir is ${WORKSPACE}/build/debug"
-            sh "pwd"
             tee('logs/gcc_debug.log') {
-
               cmakeBuild(
-                buildDir: "${WORKSPACE}/build/debug",
+                buildDir: "build/debug",
                 buildType: 'Debug',
                 cleanBuild: true,
                 installation: 'InSearchPath',
