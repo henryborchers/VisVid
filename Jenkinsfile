@@ -315,10 +315,6 @@ pipeline {
 //                     }
                     steps{
                         unstash "DEBUG_BUILD_FILES"
-//                         dir("build/debug"){
-//                             sh "ls -la"
-//                             sh "ctest --output-on-failure --no-compress-output -T Test"
-//                         }
                         ctest(
                           arguments: "--output-on-failure --no-compress-output -T Test",
                           installation: 'InSearchPath',
@@ -364,33 +360,24 @@ pipeline {
                         }
                   }
                 }
-//                 stage("CTest: MemCheck"){
-//                     agent {
-//                         dockerfile {
-//                           filename 'scm/ci/dockerfiles/jenkins-main'
-//                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                         }
-//                     }
-//                     options {
-//                         lock(label: 'Docker')
-//                     }
-//                   steps{
-//                     script{
-//
-//                       def cores = sh(
-//                         label: 'looking up number of cores',
-//                         returnStdout: true,
-//                         script: 'grep -c ^processor /proc/cpuinfo'
-//                       ).trim()
-//
-//                       ctest(
-//                         arguments: "-T memcheck -j${cores}",
-//                         installation: 'InSearchPath',
-//                         workingDir: 'build/debug'
-//                         )
-//                     }
-//                   }
-//                 }
+                stage("CTest: MemCheck"){
+                  steps{
+                    script{
+
+                      def cores = sh(
+                        label: 'looking up number of cores',
+                        returnStdout: true,
+                        script: 'grep -c ^processor /proc/cpuinfo'
+                      ).trim()
+
+                      ctest(
+                        arguments: "-T memcheck -j${cores}",
+                        installation: 'InSearchPath',
+                        workingDir: 'build/debug'
+                        )
+                    }
+                  }
+                }
 //                 stage("Running Pytest"){
 //                     agent {
 //                         dockerfile {
