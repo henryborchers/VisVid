@@ -32,7 +32,7 @@ pipeline {
                     cleanBuild: true,
                     cmakeArgs: '\
     -DVISVID_BUILDDOCS:BOOL=ON \
-    -DCMAKE_TOOLCHAIN_FILE:FILEPATH=conan_paths.cmake \
+    -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/conan/conan_paths.cmake \
     -DCMAKE_C_FLAGS="-Wall -Wextra"',
                     installation: 'InSearchPath',
                     sourceDir: 'scm',
