@@ -34,6 +34,7 @@ pipeline {
                 dir("build/conan"){
 //                     echo "building conan"
 //                     sh "ls -la"
+                    sh 'conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan"'
                     sh "conan install ../../scm"
                 }
             }
