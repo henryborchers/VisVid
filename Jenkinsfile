@@ -33,6 +33,7 @@ pipeline {
             steps{
                 dir("build/conan"){
                     echo "building conan"
+                    sh "ls -la"
 //                     sh "conan install ${WORKSPACE}/scm/ --profile x64"
                 }
             }
