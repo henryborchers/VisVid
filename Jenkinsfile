@@ -249,8 +249,6 @@ pipeline {
             }
             steps{
                 sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
-//                 unstash "DEBUG_BUILD_FILES"
-//                 sh "pwd && ls -laR"
                 cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
                 tee("logs/clang-tidy_debug.log") {
                   sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/"
@@ -288,10 +286,11 @@ pipeline {
               }
               steps{
                 // TODO setup supressing files for 3rd party, esp catch2
-                    unstash "DEBUG_BUILD_FILES"
+//                     unstash "DEBUG_BUILD_FILES"
+                  cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
                   sh(
                     label: "Running Cppcheck",
-                    script: "mkdir -p logs && cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
+                    script: "mkdir -p logs && cppcheck --project=build/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/_deps/*' --xml 2>logs/cppcheck_debug.xml"
                     )
               }
               post{
