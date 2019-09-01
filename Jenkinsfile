@@ -387,7 +387,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                     }
                   }
               }
-//               stage("Run MyPy Static Analysis") {
+              stage("Run MyPy Static Analysis") {
 //                     agent {
 //                           dockerfile {
 //                             filename 'scm/ci/dockerfiles/jenkins-main'
@@ -398,26 +398,26 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 //                     options {
 //                         lock(label: 'Docker')
 //                     }
-//                   steps{
-//                       dir("scm"){
-//                           catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-//                               tee("${WORKSPACE}/logs/mypy.log"){
-//                                   sh(
-//                                     label: "Running MyPy",
-//                                     script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
-//                                     )
-//                                 }
-//                           }
-//
-//                       }
-//                   }
-//                   post {
-//                       always {
-//                           recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
-//                           publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
-//                       }
-//                   }
-//               }
+                  steps{
+                      dir("scm"){
+                          catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+                              tee("${WORKSPACE}/logs/mypy.log"){
+                                  sh(
+                                    label: "Running MyPy",
+                                    script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
+                                    )
+                                }
+                          }
+
+                      }
+                  }
+                  post {
+                      always {
+                          recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
+                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
+                      }
+                  }
+              }
 //               stage("Run Flake8 Static Analysis") {
 //                     agent {
 //                           dockerfile {
