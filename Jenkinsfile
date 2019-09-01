@@ -24,15 +24,12 @@ pipeline {
             steps{
                 dir("build/conan"){
                     sh "conan install ../../scm"
-                    sh "ls -la"
                 }
-                sh "ls ${WORKSPACE}/build/conan/conan_paths.cmake"
                 cmakeBuild(
                     buildDir: 'build/conan',
                     buildType: 'Release',
 //                     cleanBuild: true,
                     cmakeArgs: "\
-    -DVISVID_BUILDDOCS:BOOL=ON \
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${WORKSPACE}/build/conan/conan_paths.cmake \
     -DCMAKE_C_FLAGS=\"-Wall -Wextra\"",
                     installation: 'InSearchPath',
