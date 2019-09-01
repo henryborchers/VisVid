@@ -99,25 +99,24 @@ pipeline {
           steps {
             tee('logs/gcc_debug.log') {
                     sh "pwd"
-                dir("${JENKINS_HOME}/workspace/${JOB_NAME}"){
-                  cmakeBuild(
-                    buildDir: "build/debug",
-                    buildType: 'Debug',
-                    cleanBuild: true,
-                    installation: 'InSearchPath',
-                    cmakeArgs: '\
-    -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-    -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-    -DCMAKE_C_FLAGS="-Wall -Wextra" \
-    -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-    -Dlibvisvid_TESTS:BOOL=ON ',
-                    sourceDir: 'scm',
-                    steps: [
-                      [args: '--target test-visvid', withCmake: true],
-                      [args: '--target test-visvid-internal', withCmake: true],
-                    ]
-                  )
-              }
+              cmakeBuild(
+                buildDir: "build/debug",
+                buildType: 'Debug',
+                cleanBuild: true,
+                installation: 'InSearchPath',
+                cmakeArgs: '\
+-DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+-DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+-DCMAKE_C_FLAGS="-Wall -Wextra" \
+-DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+-Dlibvisvid_TESTS:BOOL=ON ',
+                sourceDir: 'scm',
+                steps: [
+                  [args: '--target test-visvid', withCmake: true],
+                  [args: '--target test-visvid-internal', withCmake: true],
+                ]
+              )
+
             }
             dir("build"){
                 sh "mv ${JENKINS_HOME}/workspace/${JOB_NAME}/build/ ./build/"
