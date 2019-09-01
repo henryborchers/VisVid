@@ -29,7 +29,7 @@ pipeline {
                     buildDir: 'build/conan',
                     buildType: 'Release',
                     cleanBuild: true,
-                    cmakeArgs: '
+                    cmakeArgs: '\
     -DVISVID_BUILDDOCS:BOOL=ON \
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=conan_paths.cmake \
     -DCMAKE_C_FLAGS="-Wall -Wextra"',
