@@ -90,7 +90,6 @@ pipeline {
                 cleanBuild: true,
                 installation: 'InSearchPath',
                 cmakeArgs: '\
--DCTEST_DROP_LOCATION=$WORKSPACE/reports/ctest \
 -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
 -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
 -DCMAKE_C_FLAGS="-Wall -Wextra" \
@@ -299,6 +298,11 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               installation: 'InSearchPath',
                               workingDir: "build/debug"
                               )
+                        }
+                        post{
+                            always{
+                                archiveArtifacts "build/debug/Testing/**/Test.xml"
+                            }
                         }
                     }
                     stage("CTest: Coverage"){
