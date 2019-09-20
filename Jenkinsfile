@@ -228,7 +228,7 @@ pipeline {
                   cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
                   sh(
                     label: "Running Cppcheck",
-                    script: "mkdir -p logs && cppcheck --project=build/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/_deps/*' --xml 2>logs/cppcheck_debug.xml"
+                    script: 'mkdir -p logs && cppcheck --project=build/compile_commands.json --enable=all  --suppress="*:build/_deps/*" --xml 2>logs/cppcheck_debug.xml'
                     )
               }
               post{
