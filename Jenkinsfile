@@ -460,23 +460,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
         }
         post{
             always{
-//                 ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
                 archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
-                xunit testTimeMargin: '3000',
-                    thresholdMode: 1,
-                    thresholds: [
-                      failed(),
-                      skipped()
-                      ],
-                    tools: [
-                      CTest(
-                        deleteOutputFiles: true,
-                        failIfNotNew: true,
-                        pattern: "reports/ctest/*.xml",
-                        skipNoTestFiles: true,
-                        stopProcessingIfError: true
-                        )
-                      ]
                 dir("scm"){
                     sh(
                         label: "Combining coverage data",
