@@ -28,7 +28,6 @@ pipeline {
                 cmakeBuild(
                     buildDir: 'build/conan',
                     buildType: 'Release',
-//                     cleanBuild: true,
                     cmakeArgs: "\
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${WORKSPACE}/build/conan/conan_paths.cmake \
     -DCMAKE_C_FLAGS=\"-Wall -Wextra\"",
@@ -37,12 +36,6 @@ pipeline {
                     steps: [[withCmake: true]]
                   )
             }
-//             post{
-//                 cleanup{
-//                     deleteDir()
-//                 }
-//             }
-//
         }
         stage("Create Release Build"){
           steps {
@@ -68,16 +61,6 @@ pipeline {
             success{
                 stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
             }
-//             cleanup{
-//                 deleteDir()
-//                   cleanWs(
-//                       disableDeferredWipeout: true,
-//                       patterns: [
-//                           [pattern: "build/release", type: 'INCLUDE'],
-//                           ],
-//                       deleteDirs: true
-//                   )
-//             }
           }
         }
         stage("Create Debug Build"){
@@ -343,7 +326,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                 sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
                                 tag: "AllCoverage"
                                 )
-                              //////////////////////////////////////////
                               sh(
                                   label: "Generating coverage report in html file format",
                                   script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
@@ -493,7 +475,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
         }
     }
     stage('Package') {
-//
       parallel{
           stage("CPack Packages"){
               stages{
