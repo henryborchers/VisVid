@@ -223,7 +223,6 @@ pipeline {
                 timeout(5)
               }
               steps{
-                // TODO setup supressing files for 3rd party, esp catch2
                   cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
                   sh(
                     label: "Running Cppcheck",
@@ -302,7 +301,25 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                         post{
                             always{
                                 archiveArtifacts "build/debug/Testing/**/Test.xml"
+                                xunit(
+                                    testTimeMargin: '3000',
+                                    thresholdMode: 1,
+                                    thresholds: [
+                                      failed(),
+                                      skipped()
+                                      ],
+                                    tools: [
+                                      CTest(
+                                        deleteOutputFiles: true,
+                                        failIfNotNew: true,
+                                        pattern: "build/debug/Testing/**/*.xml",
+                                        skipNoTestFiles: true,
+                                        stopProcessingIfError: true
+                                        )
+                                      ]
+                                )
                             }
+
                         }
                     }
                     stage("CTest: Coverage"){
@@ -353,6 +370,11 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                             installation: 'InSearchPath',
                             workingDir: 'build/debug'
                             )
+                        }
+                      }
+                      post{
+                        always{
+                            archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
                         }
                       }
                   }
