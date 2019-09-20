@@ -91,7 +91,7 @@ int make_pgm(const std::string &source, const std::string &output_file){
 }
 
 void init(){
-    std::cerr << "Im initing from " __FILE__;
+//    std::cerr << "I'm initing from " __FILE__ << "\n";
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
     av_register_all();
 #endif
