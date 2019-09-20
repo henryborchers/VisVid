@@ -69,10 +69,7 @@ target_link_libraries(CreateVisual
             Visvid::Visvid
             m
             ${FFMPEG_LIBRARIES}
-#            SDL2
-            SDL2::SDL2-static
-            SDL2::SDL2main
-#            ${SDL2_LIBRARIES}
+            SDL2::SDL2
         )
 
 set(DialogBox_src filedialog.c filedialog.h)

@@ -1,0 +1,6 @@
+.*/
+dist/
+cmake-build-*/
+build*/
+venv/
+scm/

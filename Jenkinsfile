@@ -1,10 +1,9 @@
 pipeline {
   agent {
     dockerfile {
-      filename 'scm/ci/dockerfiles/jenkins-main'
+      filename 'scm/ci/dockerfiles/jenkins/dockerfile'
       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
     }
-    
   }
   options {
     timeout(30)
@@ -21,6 +20,23 @@ pipeline {
   stages {
     stage('Build') {
       parallel{
+        stage("Create Release Build with Conan"){
+            steps{
+                dir("build/conan"){
+                    sh "conan install ../../scm"
+                }
+                cmakeBuild(
+                    buildDir: 'build/conan',
+                    buildType: 'Release',
+                    cmakeArgs: "\
+    -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${WORKSPACE}/build/conan/conan_paths.cmake \
+    -DCMAKE_C_FLAGS=\"-Wall -Wextra\"",
+                    installation: 'InSearchPath',
+                    sourceDir: 'scm',
+                    steps: [[withCmake: true]]
+                  )
+            }
+        }
         stage("Create Release Build"){
           steps {
             tee('logs/gcc_release.log') {
@@ -42,23 +58,21 @@ pipeline {
                 )
           }
           post{
-            always{
-              stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
-
+            success{
+                stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
             }
           }
         }
-        stage("Create Debug Build"){       
+        stage("Create Debug Build"){
           steps {
             tee('logs/gcc_debug.log') {
 
               cmakeBuild(
                 buildDir: 'build/debug',
-                buildType: 'Debug', 
-                cleanBuild: true, 
-                installation: 'InSearchPath', 
+                buildType: 'Debug',
+                cleanBuild: true,
+                installation: 'InSearchPath',
                 cmakeArgs: '\
--DCTEST_DROP_LOCATION=$WORKSPACE/reports/ctest \
 -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
 -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
 -DCMAKE_C_FLAGS="-Wall -Wextra" \
@@ -74,8 +88,10 @@ pipeline {
             }
           }
           post{
-            always{
+            success{
               stash includes: "build/debug/", name: 'DEBUG_BUILD_FILES'
+            }
+            always{
               publishValgrind (
                         failBuildOnInvalidReports: false,
                         failBuildOnMissingReports: false,
@@ -104,6 +120,11 @@ pipeline {
                         label: "Running Python setup script to build extension inplace",
                         script: "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
                     )
+                }
+            }
+            post{
+                success{
+                    stash includes: "pyvisvid/build/**", name: 'PYTHON_BUILD_FILES'
                 }
             }
         }
@@ -136,6 +157,15 @@ pipeline {
                   zip(zipFile: 'dist/visvid_documentation.zip', archive: true, dir: 'build/docs/docs/html')
                   stash includes: "build/docs/docs/html/**", name: 'DOCS_ARCHIVE'
                 }
+                cleanup{
+                    cleanWs(
+                        patterns: [
+                            [pattern: "dist/visvid_documentation.zip", type: 'INCLUDE'],
+                            [pattern: "build/docs", type: 'INCLUDE']
+                            ],
+                        deleteDirs: true
+                        )
+                }
               }
         }
         
@@ -150,13 +180,13 @@ pipeline {
           steps{
             sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
             tee('logs/clang-tidy_debug.log') {
-              sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy-9 -p ./build/debug/"
+              sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/debug/"
             }
           }
           post{
             always {
                 archiveArtifacts(
-                  allowEmptyArchive: true, 
+                  allowEmptyArchive: true,
                   artifacts: 'logs/clang-tidy_debug.log'
                 )
                 recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
@@ -168,38 +198,38 @@ pipeline {
                   ]
                 )
             }
-            
+
           }
         }
         stage("Cppcheck"){
-          options{
-            timeout(5)
-          }
-          steps{
-            // TODO setup supressing files for 3rd party, esp catch2
+              options{
+                timeout(5)
+              }
+              steps{
+                  cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
+                  sh(
+                    label: "Running Cppcheck",
+                    script: 'mkdir -p logs && cppcheck --project=build/compile_commands.json --enable=all  -ibuild/_deps --xml 2>logs/cppcheck_debug.xml'
+                    )
+              }
+              post{
+                always {
+                    sh "ls -la logs"
+                    archiveArtifacts(
+                      allowEmptyArchive: true,
+                      artifacts: 'logs/cppcheck_debug.xml'
+                    )
+                    recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
+                }
+                cleanup{
+                    cleanWs(
+                      patterns: [
+                        [pattern: 'logs/cppcheck_debug.xml', type: 'INCLUDE'],
+                      ]
+                    )
+                }
 
-              sh(
-                label: "Running Cppcheck",
-                script: "cppcheck --project=build/debug/compile_commands.json --enable=all  --suppress='*:${WORKSPACE}/build/debug/_deps/*' --xml 2>logs/cppcheck_debug.xml"
-                )
-          }
-          post{
-            always {
-                archiveArtifacts(
-                  allowEmptyArchive: true, 
-                  artifacts: 'logs/cppcheck_debug.log'
-                )
-                recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
-            }
-            cleanup{
-                cleanWs(
-                  patterns: [
-                    [pattern: 'logs/cppcheck_debug.log', type: 'INCLUDE'],
-                  ]
-                )
-            }
-            
-          }
+              }
         }
       }
     }
@@ -207,6 +237,7 @@ pipeline {
         stages{
             stage("Setting Up Python Test Environment"){
                 steps{
+                    unstash "PYTHON_BUILD_FILES"
                     sh(
                       label: "Install virtual env",
                       script: "python3 -m venv venv"
@@ -228,205 +259,220 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       sh(
                           label: "Installing Current Python Package to Virtual Environment in Development Mode",
                           script: """. ${WORKSPACE}/venv/bin/activate
+  python setup.py build
   pip install -e ."""
                       )
                     }
                   }
+                  post{
+                      failure{
+                          deleteDir()
+                      }
+                  }
             }
             stage("Run Tests"){
-              parallel{
+                parallel{
+                    stage("Run CTest"){
+                        steps{
+                            unstash "DEBUG_BUILD_FILES"
+                            ctest(
+                              arguments: "--output-on-failure --no-compress-output -T Test",
+                              installation: 'InSearchPath',
+                              workingDir: "build/debug"
+                              )
+                        }
+                        post{
+                            always{
+                                archiveArtifacts "build/debug/Testing/**/Test.xml"
+                                xunit(
+                                    testTimeMargin: '3000',
+                                    thresholdMode: 1,
+                                    thresholds: [
+                                      failed(),
+                                      skipped()
+                                      ],
+                                    tools: [
+                                      CTest(
+                                        deleteOutputFiles: true,
+                                        failIfNotNew: true,
+                                        pattern: "build/debug/Testing/**/*.xml",
+                                        skipNoTestFiles: true,
+                                        stopProcessingIfError: true
+                                        )
+                                      ]
+                                )
+                            }
 
-                stage("Run CTest"){
-                  steps{
-                    unstash "DEBUG_BUILD_FILES"
-                    ctest(
-                      arguments: "--output-on-failure --no-compress-output -T Test",
-                      installation: 'InSearchPath',
-                      workingDir: 'build/debug'
-                      )
-                  }
-                }
-                stage("CTest: Coverage"){
-                  steps{
-                    ctest arguments: "-T coverage",
-                      installation: 'InSearchPath',
-                      workingDir: 'build/debug'
-                  }
-                  post{
-                    always{
-                      sh "mkdir -p reports/coverage"
-
-                      sh(
-                        label: "Generating coverage report in Coberatura xml file format",
-                        script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
-                      
-                      )
-                      archiveArtifacts 'reports/coverage/coverage.xml'
-                      publishCoverage(
-                        adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                        tag: "AllCoverage"
-                        )
-                      //////////////////////////////////////////
-                      sh(
-                          label: "Generating coverage report in html file format",
-                          script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
-                       )
-                     
-
-                      publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
-
-                    }
-                  }
-                }
-                stage("CTest: MemCheck"){
-                  steps{
-                    script{
-                    
-                      def cores = sh(
-                        label: 'looking up number of cores', 
-                        returnStdout: true, 
-                        script: 'grep -c ^processor /proc/cpuinfo'
-                      ).trim()
-
-                      ctest(
-                        arguments: "-T memcheck -j${cores}",
-                        installation: 'InSearchPath',
-                        workingDir: 'build/debug'
-                        )
-                    }
-                  }
-                }
-                stage("Running Pytest"){
-                  steps{
-                    dir("scm"){
-                        catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
-                            sh(
-                                label: "Running pytest",
-                                script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
-                            )
                         }
                     }
-                  }
-                  post{
-                    always{
-                        junit "reports/pytest/junit-pytest.xml"
-                    }
-                  }
-              }
-              stage("Run MyPy Static Analysis") {
-                  steps{
-                      dir("scm"){
-                          catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-                              tee("${WORKSPACE}/logs/mypy.log"){
-                                  sh(
-                                    label: "Running MyPy",
-                                    script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
-                                    )
-                                }
-                          }
-
-                      }
-                  }
-                  post {
-                      always {
-                          recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
-                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
-                      }
-                  }
-              }
-              stage("Run Flake8 Static Analysis") {
-                  steps{
-                      dir("scm"){
-                          catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
+                    stage("CTest: Coverage"){
+                        steps{
+                            ctest arguments: "-T coverage",
+                              installation: 'InSearchPath',
+                              workingDir: 'build/debug'
+                        }
+                        post{
+                            always{
+                              sh "mkdir -p reports/coverage"
 
                               sh(
-                                  label: "Running Flake8",
-                                  script: """. ${WORKSPACE}/venv/bin/activate
-tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
-"""
+                                label: "Generating coverage report in Coberatura xml file format",
+                                script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
 
                               )
+                              archiveArtifacts 'reports/coverage/coverage.xml'
+                              publishCoverage(
+                                adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                                tag: "AllCoverage"
+                                )
+                              sh(
+                                  label: "Generating coverage report in html file format",
+                                  script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                               )
+
+
+                              publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/coverage', reportFiles: 'coverage.html', reportName: 'Coverage HTML Report', reportTitles: ''])
+
+                            }
+                      }
+                    }
+                    stage("CTest: MemCheck"){
+                      steps{
+                        script{
+
+                          def cores = sh(
+                            label: 'looking up number of cores',
+                            returnStdout: true,
+                            script: 'grep -c ^processor /proc/cpuinfo'
+                          ).trim()
+
+                          ctest(
+                            arguments: "-T memcheck -j${cores}",
+                            installation: 'InSearchPath',
+                            workingDir: 'build/debug'
+                            )
+                        }
+                      }
+                      post{
+                        always{
+                            archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                        }
+                      }
+                  }
+                    stage("Running Pytest"){
+                      steps{
+                        dir("scm"){
+                            catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
+                                sh(
+                                    label: "Running pytest",
+                                    script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
+                                )
+                            }
+                        }
+                      }
+                      post{
+                        always{
+                            junit "reports/pytest/junit-pytest.xml"
+                        }
+                      }
+                  }
+                    stage("Run MyPy Static Analysis") {
+                      steps{
+                          dir("scm"){
+                              catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+                                  tee("${WORKSPACE}/logs/mypy.log"){
+                                      sh(
+                                        label: "Running MyPy",
+                                        script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
+                                        )
+                                    }
+                              }
+
+                          }
+                      }
+                      post {
+                          always {
+                              recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
+                              publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
                           }
                       }
                   }
-                  post {
-                      always {
-                          archiveArtifacts 'logs/flake8.log'
-                          recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+                    stage("Run Flake8 Static Analysis") {
+                      steps{
+                          dir("scm"){
+                              catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
+
+                                  sh(
+                                      label: "Running Flake8",
+                                      script: """. ${WORKSPACE}/venv/bin/activate
+    tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
+    """
+
+                                  )
+                              }
+                          }
                       }
-                      unstable{
-                        echo "I'm unstable"
-                      }
-                      cleanup{
-                          cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
+                      post {
+                          always {
+                              archiveArtifacts 'logs/flake8.log'
+                              recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+                          }
+                          unstable{
+                            echo "I'm unstable"
+                          }
+                          cleanup{
+                              cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
+                          }
                       }
                   }
-              }
-              stage("Running Tox"){
+                    stage("Running Tox"){
+                        steps{
+                            catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
+                                sh(
+                                    label: "Running Tox",
+                                    script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
+                                )
+                            }
+                        }
+                    }
+                }
 
-                  steps{
-                      catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
-                          sh(
-                            label: "Running Tox",
-                            script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
-                          )
-                      }
-
-                  }
-              }
-              }
             }
-          }
-      post{
-        always{
-            ctest arguments: "-T Submit", installation: 'InSearchPath', workingDir: 'build/debug'
-            archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
-            xunit testTimeMargin: '3000',
-                thresholdMode: 1,
-                thresholds: [
-                  failed(),
-                  skipped()
-                  ],
-                tools: [
-                  CTest(
-                    deleteOutputFiles: true,
-                    failIfNotNew: true,
-                    pattern: "reports/ctest/*.xml",
-                    skipNoTestFiles: true,
-                    stopProcessingIfError: true
+        }
+        post{
+            always{
+                archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
+                dir("scm"){
+                    sh(
+                        label: "Combining coverage data",
+                        script: """
+    . ${WORKSPACE}/venv/bin/activate
+    coverage combine
+    coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
+    coverage html -d ${WORKSPACE}/reports/python/coverage
+    """
                     )
-                  ]
-            dir("scm"){
-                sh(
-                    label: "Combining coverage data",
-                    script: """
-. ${WORKSPACE}/venv/bin/activate
-coverage combine
-coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
-coverage html -d ${WORKSPACE}/reports/python/coverage
-"""
+                }
+                publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
+                publishCoverage(
+                    adapters: [
+                        coberturaAdapter('reports/python/coverage.xml')
+                        ],
+                    sourceFileResolver: sourceFiles('STORE_ALL_BUILD'),
+                    tag: "AllCoverage"
+
                 )
             }
-            publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
-            publishCoverage(
-                adapters: [
-                    coberturaAdapter('reports/python/coverage.xml')
-                    ],
-                sourceFileResolver: sourceFiles('STORE_ALL_BUILD'),
-                tag: "AllCoverage"
-
-            )
-        }
-        cleanup{
-            cleanWs(
-                deleteDirs: true,
-                patterns: [
-                    [pattern: 'reports/ctest', type: 'INCLUDE']
-                    ]
+            cleanup{
+                cleanWs(
+                    deleteDirs: true,
+                    patterns: [
+                        [pattern: 'reports/ctest', type: 'INCLUDE']
+                        ]
                 )
+            }
         }
-      }
     }
     stage('Package') {
       parallel{
@@ -445,10 +491,11 @@ coverage html -d ${WORKSPACE}/reports/python/coverage
               stages{
                     stage("Building Python Packages"){
                         steps{
+                            sh "mkdir -p scm && ls pyvisvid/build"
                             dir("scm"){
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: "python3 setup.py  build --build-temp=${WORKSPACE}/pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
+                                    script: "python3 setup.py build --build-temp=../pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
                                 )
                             }
                         }
@@ -482,7 +529,7 @@ cd scm && tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py
         cleanWs(
             deleteDirs: true,
             patterns: [
-            [pattern: 'build', type: 'INCLUDE'], 
+            [pattern: 'build', type: 'INCLUDE'],
             [pattern: 'dist', type: 'INCLUDE'],
             [pattern: 'generatedJUnitFiles', type: 'INCLUDE'],
             [pattern: 'scm', type: 'INCLUDE'],

@@ -98,6 +98,7 @@ class BuildExt(build_ext):
 
         # Include the paths built by the clib
         self.include_dirs.append(".")
+        self.include_dirs.append("./src/visvid/include")
 
         self.include_dirs.insert(
             0, os.path.join(clib_cmd.build_clib, "include"))
