@@ -17,7 +17,7 @@
 
 #define NUM_COLORS 4
 
-static float min(float d, float d1);
+static float minimum(float d, float d1);
 
 
 
@@ -49,8 +49,7 @@ int visView_Update2(visView *pView, visBuffer *buffer) {
     int y;
     int res = 0;
 
-    PixelValue currentSlice[pView->width];
-
+    PixelValue *currentSlice = malloc(sizeof(int) * pView->width);
 
     for (x = 0; x < pView->width; x++) {
         res = visBuffer_getResult(currentSlice, buffer, x);
@@ -70,6 +69,7 @@ int visView_Update2(visView *pView, visBuffer *buffer) {
 
 
     }
+    free(currentSlice);
     return 0;
 }
 
@@ -78,8 +78,7 @@ int visView_Update3(visView *pView, visBuffer *buffer) {
     int y;
     int res = 0;
 
-    PixelValue currentSlice[pView->width];
-
+    PixelValue *currentSlice = malloc(sizeof(int) * pView->width);
 
     for (x = 0; x < pView->width; x++) {
         size_t length = visBuffer_getLength(buffer);
@@ -100,6 +99,7 @@ int visView_Update3(visView *pView, visBuffer *buffer) {
 
 
     }
+    free(currentSlice);
     return 0;
 }
 
@@ -107,7 +107,7 @@ int visView_Update4(visView *pView, const visBuffer *buffer) {
     if(pView == NULL || buffer == NULL){
         return -1;
     }
-    PixelValue currentSlice[pView->width];
+    PixelValue *currentSlice = malloc(sizeof(int) * pView->width);
 //    size_t length = visBuffer_getLength(buffer);
     for (int y = 0; y < pView->height; ++y) {
             int res = visBuffer_getResult(currentSlice, buffer, buffer->bufferLen - 1 - y);
@@ -118,6 +118,7 @@ int visView_Update4(visView *pView, const visBuffer *buffer) {
             PixelValue *data = pView->data + offset;
             memcpy(data, currentSlice, pView->width);
     }
+    free(currentSlice);
     return 0;
 }
 
@@ -177,9 +178,8 @@ int visView_Update(visView *pView, visBuffer *buffer) {
 //        starting = 0;
 //    }
 //    int ending = starting + pView->width;
-
-    PixelValue currentSlice[pView->height];
-    PixelValue lastSlice[pView->height];
+    PixelValue *currentSlice = malloc(sizeof(int) * pView->width);
+    PixelValue *lastSlice = malloc(sizeof(int) * pView->height);
 
     for (size_t x = 0; x < buffersize; x++) {
         // If the result is null the result code will be 0
@@ -190,6 +190,8 @@ int visView_Update(visView *pView, visBuffer *buffer) {
 //                compile with -fPIC
 
 //            fprintf(stderr, "Invalid result\n");
+            free(lastSlice);
+            free(currentSlice);
             return valid_result;
         };
         for (y = 0; y < pView->width; y++) {
@@ -213,6 +215,8 @@ int visView_Update(visView *pView, visBuffer *buffer) {
             memcpy(lastSlice, currentSlice, pView->height);
         }
     }
+    free(lastSlice);
+    free(currentSlice);
     return 0;
 }
 
@@ -258,7 +262,7 @@ int visViewRGBA_value2BW(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, u
     return 0;
 }
 
-float min(float d, float d1) {
+float minimum(float d, float d1) {
 
     return (d < d1) ? d : d1;;
 }
@@ -289,9 +293,9 @@ int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *
         fractBetween = i - (float) (idx1);    // Distance between the two indexes (0-1).
     }
 
-    *r = (uint8_t) (value * min(1.0F, (color[idx2][0] - color[idx1][0]) * fractBetween + color[idx1][0]));
-    *g = (uint8_t) (value * min(1.0F, (color[idx2][1] - color[idx1][1]) * fractBetween + color[idx1][1]));
-    *b = (uint8_t) (value * min(1.0F, (color[idx2][2] - color[idx1][2]) * fractBetween + color[idx1][2]));
+    *r = (uint8_t) (value * minimum(1.0F, (color[idx2][0] - color[idx1][0]) * fractBetween + color[idx1][0]));
+    *g = (uint8_t) (value * minimum(1.0F, (color[idx2][1] - color[idx1][1]) * fractBetween + color[idx1][1]));
+    *b = (uint8_t) (value * minimum(1.0F, (color[idx2][2] - color[idx1][2]) * fractBetween + color[idx1][2]));
     *a = value;
     return 0;
 }

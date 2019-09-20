@@ -15,7 +15,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+
+#ifdef _MSC_VER
+  #include <io.h>
+  #define access _access_s
+#else
+  #include <unistd.h>
+#endif
 //#include <error.h>
 //#include "mem.h"
 //#include <swscale.h>
@@ -226,9 +232,9 @@ int decoderContext_Rewind(DecoderContext *pDecoderContext) {
     return 0;
 }
 
-
 bool fileExists(const char *filename) {
-    if(access(filename, F_OK) == -1){
+
+    if(access(filename, 0) == -1){
         return false;
     }
     return true;

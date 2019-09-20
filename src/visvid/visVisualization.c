@@ -7,6 +7,7 @@
 #include "visvid/visvid.h"
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame){
     int frameHeight = -1;
@@ -19,7 +20,8 @@ int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYU
     if(rc != 0){
         return rc;
     }
-    PixelValue slice[frameWidth];
+    PixelValue *slice = malloc(sizeof(int) * frameWidth);
+//    PixelValue slice[frameWidth];
     for(int x = 0; x < frameWidth; x++){
         PixelValue brightest = 0;
         for(int y = 0; y < frameHeight; y++){
@@ -29,6 +31,7 @@ int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYU
                 brightest = pix.Y;
             }
             if(rc != 0){
+                free(slice);
                 return rc;
             }
 
@@ -39,6 +42,7 @@ int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYU
     if(rc != 0){
         return rc;
     };
+    free(slice);
     return 0;
 }
 

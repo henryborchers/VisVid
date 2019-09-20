@@ -67,7 +67,6 @@ target_include_directories(CreateVisual PRIVATE ${FFMPEG_INCLUDE_DIR})
 target_link_libraries(CreateVisual
         PRIVATE
             Visvid::Visvid
-            m
             ${FFMPEG_LIBRARIES}
             SDL2::SDL2
         )

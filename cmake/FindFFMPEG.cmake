@@ -76,6 +76,7 @@ if ("avformat" IN_LIST FFMPEG_FIND_COMPONENTS)
                 avformat
                 libavformat
             HINTS
+                ${CONAN_FFMPEG_ROOT}/bin
                 ${FFMPEG_DIR}/lib
                 $ENV{FFMPEG_DIR}
                 $ENV{FFMPEG_DIR}/lib
@@ -122,6 +123,7 @@ if ("avcodec" IN_LIST FFMPEG_FIND_COMPONENTS)
                 avcodec
                 libavcodec
             HINTS
+                ${CONAN_FFMPEG_ROOT}/bin
                 ${FFMPEG_DIR}/lib
                 $ENV{FFMPEG_DIR}
                 $ENV{FFMPEG_DIR}/lib
@@ -172,6 +174,7 @@ if ("avutil" IN_LIST FFMPEG_FIND_COMPONENTS)
             avutil
             libavutil
         HINTS
+            ${CONAN_FFMPEG_ROOT}/bin
             ${FFMPEG_DIR}/lib
             $ENV{FFMPEG_DIR}
             $ENV{FFMPEG_DIR}/lib
@@ -200,6 +203,7 @@ endif ()
 if ("avutil" IN_LIST FFMPEG_FIND_COMPONENTS)
     find_path(FFMPEG_SWSCALE_INCLUDE_DIR libswscale/swscale.h
         HINTS
+            ${CONAN_FFMPEG_ROOT}/bin
             ${FFMPEG_DIR}
             ${FFMPEG_DIR}/include
             $ENV{FFMPEG_DIR}
@@ -222,6 +226,7 @@ if ("avutil" IN_LIST FFMPEG_FIND_COMPONENTS)
             libswscale
         HINTS
             ${FFMPEG_DIR}/lib
+            ${CONAN_FFMPEG_ROOT}/bin
             $ENV{FFMPEG_DIR}
             $ENV{FFMPEG_DIR}/lib
             $ENV{FFMPEG_DIR}/libswscale
@@ -250,6 +255,7 @@ if ("avutil" IN_LIST FFMPEG_FIND_COMPONENTS)
             avdevice
             libavdevice
         HINTS
+            ${CONAN_FFMPEG_ROOT}/bin
             ${FFMPEG_DIR}/lib
             $ENV{FFMPEG_DIR}
             $ENV{FFMPEG_DIR}/lib
