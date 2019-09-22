@@ -101,8 +101,9 @@ void Visualizer::process() {
                 if((ret = VisVisualResult_SetSize(&result, frame_width)) != 0){
                     throw std::runtime_error("VisVisualResult_SetSize failed \n");
                 }
-
-                if((ret = visVisProcess(&result, yuvFrame, &proCtx)) != 0){
+//                FIXME:!!!
+                PixelValue *slice= new PixelValue[frame_width];
+                if((ret = visVisProcess(&result, yuvFrame, &proCtx, slice)) != 0){
                     throw std::runtime_error("visVisProcess failed");
                 }
                 if(mCodecCtx->frame_number % 100 == 0){
@@ -114,6 +115,7 @@ void Visualizer::process() {
                 if((ret = visBuffer_PushBackResult(mBuffer, &result)) != 0){
                     throw std::runtime_error("visBuffer_PushBackResult failed");
                 }
+                delete[] slice;
                 VisVisualResult_Cleanup(&result);
                 VisYUVFrame_Destroy(&yuvFrame);
             }

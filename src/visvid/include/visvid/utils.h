@@ -30,6 +30,8 @@ int YUVPixel_Draw(VisYUVFrame *frame, struct visBrush *brush, int x, int y);
  * @internal Do not use
  */
 int VisYUVFrame_getPixelYUV(PixelYUV *result, const VisYUVFrame *frame, int x, int y);
+int VisYUVFrame_getPixelYUV2(const VisYUVFrame *frame, int x, int y, PixelValue* cy, PixelValue* cu, PixelValue* cv);
+int VisYUVFrame_getPixelY(const VisYUVFrame *frame, int x, int y, PixelValue* cy);
 
 /**
  * @internal Do not use

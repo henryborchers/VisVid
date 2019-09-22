@@ -16,11 +16,10 @@ const char outfilename[] = "output.pgm";
 #define MAX_BUFFER_SIZE 200
 
 
-size_t yuv_pixel_offset(AVFrame *frame, int x, int y, char component){
+size_t yuv_pixel_offset(AVFrame *frame, int x, int y, char component, const AVPixFmtDescriptor *pixFormat){
     size_t offset = 0;
-    AVPixFmtDescriptor *desc = (AVPixFmtDescriptor *) av_pix_fmt_desc_get(frame->format);
-    signed int uvx = x >> desc->log2_chroma_w;
-    signed int uvy = y >> desc->log2_chroma_h;
+    signed int uvx = x >> pixFormat->log2_chroma_w;
+    signed int uvy = y >> pixFormat->log2_chroma_h;
 
     switch(component){
         case 'y':
@@ -47,15 +46,9 @@ int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src) {
         for(int x = 0; x < src->width; x++){
 
             visBrush brush;
-            signed int uvx = x >> desc->log2_chroma_w;
-            signed int uvy = y >> desc->log2_chroma_h;
-
-            brush.Y = (PixelValue)src->data[0][yuv_pixel_offset(src, x, y, 'y')];
-//            brush.Y = (PixelValue)src->data[0][src->linesize[0] * y + x];
-            brush.U = (PixelValue)src->data[1][yuv_pixel_offset(src, x, y, 'u')];
-//            brush.U = (PixelValue)src->data[1][src->linesize[1] * uvy + uvx];
-//            brush.V = (PixelValue)src->data[2][src->linesize[2] * uvy + uvx];
-            brush.V = (PixelValue)src->data[2][yuv_pixel_offset(src, x, y, 'v')];
+            brush.Y = (PixelValue)src->data[0][yuv_pixel_offset(src, x, y, 'y', desc)];
+            brush.U = (PixelValue)src->data[1][yuv_pixel_offset(src, x, y, 'u', desc)];
+            brush.V = (PixelValue)src->data[2][yuv_pixel_offset(src, x, y, 'v', desc)];
             if((res = YUVPixel_Draw(dst, &brush, x, y)) != 0){
                 return res;
             }
@@ -142,7 +135,7 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
-
+    PixelValue *sliceBuffer = malloc(sizeof(PixelValue) * frame_width);
     while(1) {
         if((ret = av_read_frame(avFormatCtx, &pkt)) < 0){
             if(ret == AVERROR_EOF){
@@ -191,10 +184,14 @@ int main(int argc, char *argv[]){
                     fprintf(stderr, "VisVisualResult_SetSize failed with code %d\n", ret);
                     exit(1);
                 }
-                if((ret = visVisProcess(&result, yuvFrame, &proCtx)) != 0){
+
+
+
+                if((ret = visVisProcess(&result, yuvFrame, &proCtx, sliceBuffer)) != 0){
                     fprintf(stdout, "visVisProcess failed\n");
                     exit(ret);
                 }
+
 
                 if(codecCtx->frame_number % 100 == 0){
                     fprintf(stdout, "Adding frame %d to buffer\n", codecCtx->frame_number);
@@ -215,6 +212,7 @@ int main(int argc, char *argv[]){
         }
 
     }
+    free(sliceBuffer);
     av_frame_free(&frame);
     avformat_close_input(&avFormatCtx);
     visView *view = VisView_Create(buffer->bufferWidth, codecCtx->frame_number);

@@ -215,9 +215,13 @@ int decoderContext_NextFrame(DecoderContext *pDecoderContext, AVFrame **out) {
     return AVERROR_EOF;
 }
 
-void decoderContext_GetSize(DecoderContext *pDecoderContext, int *width, int *height) {
-    *width = pDecoderContext->codecContext->width;
-    *height = pDecoderContext->codecContext->height;
+void decoderContext_GetSize(const DecoderContext *pDecoderContext, int *width, int *height) {
+    if(width != NULL){
+        *width = pDecoderContext->codecContext->width;
+    }
+    if(height != NULL){
+        *height = pDecoderContext->codecContext->height;
+    }
 
 }
 

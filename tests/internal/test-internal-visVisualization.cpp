@@ -37,7 +37,10 @@ SCENARIO("Visualization of a SolidColor"){
 
             int buffersize = -1;
             VisVisualResult_GetSize(&buffersize, result);
-            CHECK(visVisResult_CaculateBrightestOverWidth(result, frame) == 0);
+            PixelValue *slice = new PixelValue[width];
+//            PixelValue *slice = malloc(sizeof(PixelValue) * width);
+            CHECK(visVisResult_CaculateBrightestOverWidth(result, frame, slice) == 0);
+            delete[] slice;
 
             THEN("Each value in the result is the same"){
                 for (int i = 0; i < buffersize; i++) {
@@ -88,7 +91,9 @@ SCENARIO("Visualization Ramping Luma values") {
                 int buffersize = -1;
 
                 VisVisualResult_GetSize(&buffersize, &result);
-                CHECK(visVisResult_CaculateBrightestOverWidth(&result, frame) == 0);
+                PixelValue *slice = new PixelValue[width];
+                CHECK(visVisResult_CaculateBrightestOverWidth(&result, frame, slice) == 0);
+                delete[] slice;
 
                 for(PixelValue i = 0; i < buffersize; i++){
                     PixelValue value = 0;

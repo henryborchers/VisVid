@@ -39,11 +39,13 @@
 #define NUM_COLORS 4
 
 static int vidVis_init();
-static void vidVis_ctx_init(VidVisContext *ctx);
-static int vidVis_build_window(VidVisContext *ctx, int videoWidth, int videoHeight);
-static void vidVis_destroy_window(VidVisContext *ctx);
-static int vidVis_refresh(VidVisContext *ctx, AVFrame *pFrame, visImageRGB *texture);
-static void vidVis_cleanup();
+
+static int setup_visualization_widget(DisplayWidgetContext *ctx);
+static int setup_video_widget(DisplayWidgetContext *ctx);
+static int setup_window(DisplayWidgetContext *ctx, const DecoderContext *decoderCtx, const char* title);
+static int vidVis_refresh(DisplayWidgetContext *ctx, AVFrame *pFrame, visImageRGB *texture);
+static int update_video_widget(DisplayWidgetContext *ctx, AVFrame *pFrame, float scaleY, float scaleX);
+
 //static int variable_color(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
 //static bool quitCalled(SDL_Event *pEvent);
 //static float min(float d, float d1);
@@ -54,57 +56,41 @@ static uint8_t offset = 255;
 static float offset_color_midtones = 1;
 static float offset_color_highlights = 1;
 
-int playVideoVis(const char *filename) {
-    DecoderContext      *decoderCtx = NULL;
-    AVFrame             *frame = NULL;
-    visProcessContext   processContext;
-    visView             *view = NULL;
-    VisYUVFrame         *frameBuffer = NULL;
-    visBuffer           *buffer = NULL;
-    VidVisContext       ctx;
-    SDL_Event           event;
-    int                 rc;
-    visImageRGB         visualization;
-    visVisualResult     result;
-
-    int                 returncode = 0;
-
-
+int playVideoVisInit(){
     decoder_init();
 
+    int rc = 0;
     if((rc = vidVis_init()) !=0){
         fprintf(stderr, "ERROR: Unable to initialized SDL\n");
         return rc;
     };
 
 
+    return rc;
+}
+
+int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx) {
+    DecoderContext      *decoderCtx = decoder;
+    AVFrame             *frame = NULL;
+    visProcessContext   processContext;
+    visView             *view = NULL;
+    VisYUVFrame         *frameBuffer = NULL;
+    visBuffer           *buffer = NULL;
+    SDL_Event           event;
+    int                 rc;
+    visVisualResult     result;
+
+    int                 returncode = 0;
+
     puts("Opening video");
-    decoderCtx = decoderContext_Create(filename);
-    if(decoderCtx == NULL){
-        fprintf(stderr, "Unable to load file \"%s\"", filename);
-        return 1;
-    } else{
-        puts("Video Opened");
-    }
 
     int videoHeight;
     int videoWidth;
     decoderContext_GetSize(decoderCtx, &videoWidth, &videoHeight);
 
-    puts("Initializing context");
-    vidVis_ctx_init(&ctx);
-
-
     puts("Initializing visualization image");
-    if((rc = visImageRGB_Alloc(&visualization, videoWidth, videoWidth)) != 0){
+    if((rc = visImageRGB_Alloc(&vidCtx->buffer, videoWidth, videoWidth)) != 0){
         fprintf(stderr, "visImageRGB_Alloc failed\n");
-        return rc;
-    };
-
-
-    puts("Building Window");
-    if((rc = vidVis_build_window(&ctx, videoWidth, videoHeight)) != 0){
-        fprintf(stderr, "Building Window failed with error code %d\n ", rc);
         return rc;
     };
 
@@ -147,7 +133,7 @@ int playVideoVis(const char *filename) {
     }
 
 
-
+    PixelValue *slice = malloc(sizeof(int) * videoWidth);
     while(1){
         while(SDL_PollEvent(&event) != 0){
             switch(event.type){
@@ -198,6 +184,7 @@ int playVideoVis(const char *filename) {
 
         // If no frame is retrieved, rewind the video
         if(NULL == frame){
+            fprintf(stderr, "rewinding\n");
             decoderContext_Rewind(decoderCtx);
             continue;
         }
@@ -216,7 +203,7 @@ int playVideoVis(const char *filename) {
         } else {
 
             // process the frame and save the data to a result data set
-            if((rc = visVisProcess(&result, frameBuffer, &processContext)) != 0){
+            if((rc = visVisProcess(&result, frameBuffer, &processContext, slice)) != 0){
                 returncode = rc;
                 fprintf(stderr, "visVisProcess Failed\n");
                 break;
@@ -236,7 +223,7 @@ int playVideoVis(const char *filename) {
                 break;
             }
 //            // Render a picture of the view to the visualization image
-            if((rc = visViewRGB_GenerateRGBA(&visualization, view, visViewRGBA_value2color1)) != 0){
+            if((rc = visViewRGB_GenerateRGBA(&vidCtx->buffer, view, visViewRGBA_value2color1)) != 0){
                 returncode = rc;
                 fprintf(stderr, "visViewRGB_GenerateRGBA Failed with code %d.\n", rc);
                 break;
@@ -244,16 +231,13 @@ int playVideoVis(const char *filename) {
         }
 
 
-        vidVis_refresh(&ctx, frame, &visualization);
+        vidVis_refresh(vidCtx, frame, &vidCtx->buffer);
     }
     stopmainloop:
-
+    free(slice);
     VisVisualResult_Cleanup(&result);
 
-    visImageRGB_FreeData(&visualization);
-
-    puts("Destroying decoder Context");
-    decoderContext_Destroy(&decoderCtx);
+    visImageRGB_FreeData(&vidCtx->buffer);
 
     puts("Destroying Frame buffer");
     VisYUVFrame_Destroy(&frameBuffer);
@@ -261,8 +245,7 @@ int playVideoVis(const char *filename) {
     puts("Destroying buffer");
     VisBuffer_Destroy(&buffer);
 
-    puts("Destroying Window");
-    vidVis_destroy_window(&ctx);
+
 
     puts("Destroying view");
     VisView_Destroy(&view);
@@ -288,7 +271,7 @@ int vidVis_init() {
     return 0;
 }
 
-void vidVis_ctx_init(VidVisContext *ctx) {
+void vidVis_ctx_init(DisplayWidgetContext *ctx) {
 
     if(NULL == ctx){
         return;
@@ -314,7 +297,7 @@ void vidVis_ctx_init(VidVisContext *ctx) {
 
 }
 
-int vidVis_build_window(VidVisContext *ctx, int videoWidth, int videoHeight) {
+int vidVis_build_window(DisplayWidgetContext *ctx, int videoWidth, int videoHeight) {
 //    int res;
 
     int window_width = videoWidth;
@@ -379,7 +362,7 @@ int vidVis_build_window(VidVisContext *ctx, int videoWidth, int videoHeight) {
     return 0;
 }
 
-void vidVis_destroy_window(VidVisContext *ctx) {
+void vidVis_destroy_window(DisplayWidgetContext *ctx) {
     puts("Destroying widgets");
     if(NULL != ctx->video.texture){
         SDL_DestroyTexture(ctx->video.texture);
@@ -406,12 +389,130 @@ void vidVis_destroy_window(VidVisContext *ctx) {
 
 }
 
-int vidVis_refresh(VidVisContext *ctx, AVFrame *pFrame, visImageRGB *texture) {
-    int res = 0;
-    SDL_Rect videoOrig;
-    SDL_Rect videoWidget;
+int setup_window(DisplayWidgetContext *ctx, const DecoderContext *decoderCtx, const char* title){
+    int videoWidth;
+    decoderContext_GetSize(decoderCtx, &videoWidth, NULL);
+    ctx->windowWidth = videoWidth;
+    ctx->windowHeight = videoWidth;
+    ctx->window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ctx->windowWidth, ctx->windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN );
+    if(ctx->window == NULL){
+        fprintf(stderr, "Unable to create window");
+        return -1;
+    };
+    if(NULL != ctx->renderer){
+        fprintf(stderr, "ctx->renderer is not null\n");
+    }
+    ctx->renderer = SDL_CreateRenderer(ctx->window, -1, 0);
+    if(ctx->renderer == NULL ){
+        fprintf(stderr, "Unable to create renderer");
+        return -1;
+    }
+    return 0;
+
+}
+
+int setup_visualization_widget(DisplayWidgetContext *ctx){
+    puts("Creating visualization texture");
+    ctx->visualization.texture = SDL_CreateTexture(ctx->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, ctx->windowWidth, ctx->windowWidth);
+    if(NULL == ctx->visualization.texture){
+        SDL_DestroyRenderer(ctx->renderer);
+        SDL_DestroyWindow(ctx->window);
+        return -1;
+    }
+    ctx->visualization.width = ctx->windowWidth;
+    ctx->visualization.height = ctx->windowWidth/2;
+    ctx->visualization.x = 0;
+    ctx->visualization.y = ctx->windowHeight/2;
+    puts("Creating video texture");
+    ctx->video.texture = SDL_CreateTexture(ctx->renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING, ctx->windowWidth, ctx->windowWidth);
+
+
+    return 0;
+}
+int setup_video_widget(DisplayWidgetContext *ctx){
+
+    if(NULL == ctx->video.texture){
+        SDL_DestroyTexture(ctx->visualization.texture);
+        SDL_DestroyRenderer(ctx->renderer);
+        SDL_DestroyWindow(ctx->window);
+        return -1;
+    }
+    ctx->video.width = ctx->windowWidth;
+    ctx->video.height = ctx->windowHeight / 2;
+    ctx->video.x = 0;
+    ctx->video.y = 0;
+    return 0;
+}
+int vidVis_ctx_init2(DisplayWidgetContext *ctx, const DecoderContext *decoderCtx) {
+//    int videoWidth;
+    int return_code = 0;
+    vidVis_ctx_init(ctx);
+    if((return_code = setup_window(ctx, decoderCtx, "DUMMY") != 0)){
+        return return_code;
+    }
+
+    if((return_code = setup_visualization_widget(ctx) != 0)){
+        return return_code;
+    }
+    if((return_code = setup_video_widget(ctx) != 0)){
+        return return_code;
+    }
+    return 0;
+}
+
+int vidVis_open_window(DisplayWidgetContext *ctx) {
+    SDL_ShowWindow(ctx->window);
+    return 0;
+}
+
+
+int update_visualization_widget(DisplayWidgetContext *ctx, visImageRGB *texture, float scaleY, float scaleX) {
     SDL_Rect visualizationOrig;
     SDL_Rect visualizationWidget;
+    visualizationOrig.x = ctx->visualization.x;
+    visualizationOrig.y = ctx->visualization.y;
+    visualizationOrig.w = ctx->visualization.width;
+    visualizationOrig.h = ctx->visualization.height;
+
+    // Calculate how large the visualization should be when scaled based on the window
+    visualizationWidget.x = (int)(visualizationOrig.x * scaleX);
+    visualizationWidget.y = (int)(ctx->windowHeight * scaleY)/2;
+    visualizationWidget.h = (int)round(((float)ctx->windowHeight * scaleY)/2);
+    visualizationWidget.w = (int)(ctx->windowWidth * scaleX);
+    SDL_UpdateTexture(ctx->visualization.texture, &visualizationOrig , texture->plane, texture->pitch);
+    // Draw the visualization
+    SDL_RenderCopy(ctx->renderer, ctx->visualization.texture, &visualizationOrig, &visualizationWidget);
+    return 0;
+}
+int update_video_widget(DisplayWidgetContext *ctx, AVFrame *pFrame, float scaleY, float scaleX) {
+    SDL_Rect videoOrig;
+    SDL_Rect videoWidget;
+
+    videoOrig.x = ctx->video.x;
+    videoOrig.y = ctx->video.y;
+    videoOrig.w = pFrame->width;
+    videoOrig.h = pFrame->height;
+    // Calculate how large the video player should be when scaled based on the window
+
+    videoWidget.x = 0;
+    videoWidget.y = 0;
+    videoWidget.h = (int)round(((float)ctx->windowHeight * scaleY)/2);
+    videoWidget.w = (int)((float)ctx->windowWidth * scaleX);
+    int res = 0;
+    if((res = SDL_UpdateYUVTexture(ctx->video.texture, &videoOrig,
+                                   pFrame->data[0], pFrame->linesize[0],
+                                   pFrame->data[1], pFrame->linesize[1],
+                                   pFrame->data[2], pFrame->linesize[2])) != 0){
+        fprintf(stderr, "%s\n", SDL_GetError());
+        return res;
+    }
+    // Draw the video
+    SDL_RenderCopy(ctx->renderer, ctx->video.texture, &videoOrig, &videoWidget);
+    return res;
+}
+
+int vidVis_refresh(DisplayWidgetContext *ctx, AVFrame *pFrame, visImageRGB *texture) {
+    int res = 0;
     int rendX = 0;
     int rendY = 0;
 
@@ -419,55 +520,23 @@ int vidVis_refresh(VidVisContext *ctx, AVFrame *pFrame, visImageRGB *texture) {
     float scaleY = 0;
 
     SDL_GetRendererOutputSize(ctx->renderer, &rendX, &rendY);
-
-    videoOrig.x = ctx->video.x;
-    videoOrig.y = ctx->video.y;
-    videoOrig.w = ctx->video.width;
-    videoOrig.h = ctx->video.height;
-
-    visualizationOrig.x = ctx->visualization.x;
-    visualizationOrig.y = ctx->visualization.y;
-    visualizationOrig.w = ctx->visualization.width;
-    visualizationOrig.h = ctx->visualization.height;
-
-
-    // FIXME: Scaling will break if window width or height changes
-    scaleX = (float)rendX/ctx->windowWidth;
-    scaleY = (float)rendY/(ctx->windowHeight);
-
-    // Calculate how large the video player should be when scaled based on the window
-    videoWidget.x = 0;
-    videoWidget.y = 0;
-    videoWidget.h = (int)(videoOrig.h * scaleY);
-    videoWidget.w = (int)(videoOrig.w * scaleX);
-
-    // Calculate how large the visualization should be when scaled based on the window
-    visualizationWidget.x = (int)(visualizationOrig.x * scaleX);
-    visualizationWidget.y = (int)(visualizationOrig.y * scaleY);
-    visualizationWidget.h = (int)(visualizationOrig.h * scaleY);
-    visualizationWidget.w = (int)(visualizationOrig.w * scaleX);
-
+    SDL_GetWindowSize(ctx->window, &ctx->windowWidth, &ctx->windowHeight);
+    scaleX = (float)rendX/(float)ctx->windowWidth;
+    scaleY = (float)rendY/(float)ctx->windowHeight;
+    SDL_SetRenderDrawColor(ctx->renderer, 200, 200, 0, 227);
     SDL_RenderClear(ctx->renderer);
 
-    // Update SDL texture for the video frame
-    if((res = SDL_UpdateYUVTexture(ctx->video.texture, &videoOrig,
-                                   pFrame->data[0], pFrame->linesize[0],
-                                   pFrame->data[1], pFrame->linesize[1],
-                                   pFrame->data[2], pFrame->linesize[2])) != 0){
-        fprintf(stderr, "%s\n", SDL_GetError());
+    // Update SDL texture for the visualization
+    if((res = update_visualization_widget(ctx, texture, scaleY, scaleX) !=0)){
+        fprintf(stderr,"Updating visualization failed\n");
+        return res;
+    }
+    if((res = update_video_widget(ctx, pFrame, scaleY, scaleX) !=0)){
+        fprintf(stderr,"Updating video failed\n");
         return res;
     };
 
-    // Update SDL texture for the visualization
-    SDL_UpdateTexture(ctx->visualization.texture, NULL, texture->plane, texture->pitch);
-
-    // Draw the visualization
-    SDL_RenderCopy(ctx->renderer, ctx->visualization.texture, NULL, &visualizationWidget);
-
-    // Draw the video
-    SDL_RenderCopy(ctx->renderer, ctx->video.texture, &videoOrig, &videoWidget);
-
     // Display to screen
     SDL_RenderPresent(ctx->renderer);
-    return 0;
+    return res;
 }

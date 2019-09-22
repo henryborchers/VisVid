@@ -9,50 +9,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame){
+int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame, PixelValue *sliceBuf){
     int frameHeight = -1;
     int frameWidth = -1;
     int rc = 0;
-
 
 
     rc = VisYUVFrame_GetSize(frame, &frameWidth, &frameHeight);
     if(rc != 0){
         return rc;
     }
-    PixelValue *slice = malloc(sizeof(int) * frameWidth);
-//    PixelValue slice[frameWidth];
     for(int x = 0; x < frameWidth; x++){
         PixelValue brightest = 0;
         for(int y = 0; y < frameHeight; y++){
-            PixelYUV pix;
-            rc = VisYUVFrame_getPixelYUV(&pix, frame, x, y);
-            if(pix.Y > brightest){
-                brightest = pix.Y;
+            PixelValue resY;
+            rc = VisYUVFrame_getPixelY(frame, x, y, &resY);
+            if(resY > brightest){
+                brightest = resY;
             }
             if(rc != 0){
-                free(slice);
                 return rc;
             }
 
         }
-        slice[x] = brightest;
+        sliceBuf[x] = brightest;
     }
-    rc = VisVisualResult_SetData(result, slice, (size_t) frameWidth);
+    rc = VisVisualResult_SetData(result, sliceBuf, (size_t) frameWidth);
     if(rc != 0){
         return rc;
-    };
-    free(slice);
+    }
     return 0;
 }
 
-int visVisProcess(visVisualResult *pRes, const VisYUVFrame *pFrame, const visProcessContext *processContext) {
+int visVisProcess(visVisualResult *pRes, const VisYUVFrame *pFrame, const visProcessContext *processContext, PixelValue *sliceBuffer) {
     int res;
     if(pRes == NULL || pFrame == NULL || processContext == NULL || processContext->processCb == NULL){
         return EFAULT;
     }
 
-    if((res = processContext->processCb(pRes, pFrame)) != 0){
+    if((res = processContext->processCb(pRes, pFrame, sliceBuffer)) != 0){
         return res;
     }
     return 0;

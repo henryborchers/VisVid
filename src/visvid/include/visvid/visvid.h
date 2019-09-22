@@ -42,7 +42,7 @@ struct visVisualResult{
 typedef struct visVisualResult visVisualResult;
 
 struct visProcessContext{
-    int(*processCb)(visVisualResult *result, const VisYUVFrame *frame);
+    int(*processCb)(visVisualResult *result, const VisYUVFrame *frame, PixelValue *sliceBuf);
 };
 struct visProcessContext;
 typedef struct visProcessContext visProcessContext;
@@ -195,7 +195,7 @@ int visViewRGB_GenerateRGBA(visImageRGB *out, const visView *pView,
  * Callback for generating a color heatmap.
  * @ingroup visView
  */
-int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
+int visViewRGBA_value2color1(const PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
 
 /**
  * @defgroup visVisualResult visVisualResult
@@ -247,10 +247,10 @@ int VisVisualResult_Init(visVisualResult *newResult);
  * @return
  * @ingroup visVisualResult
  */
-int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame);
+int visVisResult_CaculateBrightestOverWidth(visVisualResult *result, const VisYUVFrame *frame, PixelValue *sliceBuf);
 // TODO: Create a creater for visProcessContext.
 
-int visVisProcess(visVisualResult *pRes, const VisYUVFrame *pFrame, const visProcessContext *processContext);
+int visVisProcess(visVisualResult *pRes, const VisYUVFrame *pFrame, const visProcessContext *processContext, PixelValue *sliceBuffer);
 
 
 /**

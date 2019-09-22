@@ -163,6 +163,24 @@ int VisYUVFrame_getPixelYUV(PixelYUV *result, const VisYUVFrame *frame, int x, i
     result->V = pix->V;
     return 0;
 }
+int VisYUVFrame_getPixelYUV2(const VisYUVFrame *frame, int x, int y, PixelValue* cy, PixelValue* cu, PixelValue* cv) {
+    if(x > frame->width || y > frame->height){
+        return EFAULT;
+    }
+    PixelYUV *pix = &frame->data[x + frame->width * y];
+    *cy = pix->Y;
+    *cu = pix->U;
+    *cv = pix->V;
+    return 0;
+}
+
+int VisYUVFrame_getPixelY(const VisYUVFrame *frame, int x, int y, PixelValue* cy){
+    if(x > frame->width || y > frame->height){
+        return EFAULT;
+    }
+    *cy = frame->data[x + frame->width * y].Y;
+    return 0;
+}
 
 int YUVPixel_Draw(VisYUVFrame *frame, visBrush *brush, int x, int y) {
     if(x > frame->width || y > frame->height){

@@ -267,7 +267,7 @@ float minimum(float d, float d1) {
     return (d < d1) ? d : d1;;
 }
 
-int visViewRGBA_value2color1(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
+int visViewRGBA_value2color1(const PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
     // FIXME: REPLACE WITH ORIGINAL FUNCTION
     // This is temp code that was modified from a web tutorial. Replace this with an original callback function.
     float i = (float) value / (float) 255;

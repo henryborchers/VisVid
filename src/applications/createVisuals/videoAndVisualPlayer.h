@@ -11,6 +11,9 @@
 //#include "libavutil/frame.h"
 #include <SDL_render.h>
 #include <SDL_video.h>
+#include <visvid/visvid.h>
+#include "videoDecoder.h"
+
 typedef struct {
     SDL_Texture *texture;
     int         width;
@@ -26,13 +29,17 @@ typedef struct {
     SDL_Renderer    *renderer;
     VidVisWidget    visualization;
     VidVisWidget    video;
-}VidVisContext;
+    visImageRGB     buffer;
+}DisplayWidgetContext;
+void vidVis_ctx_init(DisplayWidgetContext *ctx);
+int vidVis_ctx_init2(DisplayWidgetContext *ctx, const DecoderContext* decoderCtx);
 
-
-
-
-int playVideoVis(const char *filename);
-
+int playVideoVisInit();
+int vidVis_build_window(DisplayWidgetContext *ctx, int videoWidth, int videoHeight);
+int vidVis_open_window(DisplayWidgetContext *ctx);
+void vidVis_cleanup();
+int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx);
+void vidVis_destroy_window(DisplayWidgetContext *ctx);
 
 
 #endif //LIBVISVID_VIDEOANDVISUALPLAYER_H
