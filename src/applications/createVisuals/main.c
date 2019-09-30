@@ -9,6 +9,8 @@
 
 static const char *get_file(int argc, char *argv[]);
 
+void vidVis_destroy_widgets(VidVisWidget *visualizationWidget, VidVisWidget *videoWidget);
+
 #ifdef NOC_FILE_DIALOG_IMPLEMENTATION
 
 const char *get_file(int argc, char *argv[]) {
@@ -70,22 +72,27 @@ int main(int argc, char *argv[]) {
     } else{
         puts("Video Opened");
     }
-
-    DisplayWidgetContext       visualizationCtx;
+    VidVisWidget visualizationWidget;
+    VidVisWidget videoWidget;
+    DisplayWidgetContext       visualizationWindowCtx;
 
     puts("Initializing context");
-    vidVis_ctx_init2(&visualizationCtx, decoderCtx);
-    if((ret = vidVis_open_window(&visualizationCtx)) != 0){
+    vidVis_ctx_init(&visualizationWindowCtx, &visualizationWidget, &videoWidget, decoderCtx);
+
+//    //////////////////////////
+    if((ret = vidVis_open_window(&visualizationWindowCtx)) != 0){
         fprintf(stderr, "Building Window failed with error code %d\n ", ret);
     }
-    
+
     if(ret == 0){
-        if ((ret = playVideoVis(decoderCtx, &visualizationCtx)) != 0) {
+        if ((ret = playVideoVis(decoderCtx, &visualizationWindowCtx,&visualizationWidget,&videoWidget)) != 0) {
             fprintf(stderr, "%s exited with error code: %d.\n", argv[0], ret);
         };
     }
     puts("Destroying Window");
-    vidVis_destroy_window(&visualizationCtx);
+
+    vidVis_destroy_widgets(&visualizationWidget, &videoWidget);
+    vidVis_destroy_window(&visualizationWindowCtx);
 
     puts("Destroying decoder Context");
     decoderContext_Destroy(&decoderCtx);
@@ -93,4 +100,23 @@ int main(int argc, char *argv[]) {
     vidVis_cleanup();
     return ret;
 
+}
+
+void vidVis_destroy_widgets(VidVisWidget *visualizationWidget, VidVisWidget *videoWidget) {
+    puts("Destroying widgets");
+    if(NULL != videoWidget->texture){
+        SDL_DestroyTexture(videoWidget->texture);
+    }
+    videoWidget->height = -1;
+    videoWidget->width = -1;
+    videoWidget->x = -1;
+    videoWidget->y = -1;
+
+    if(NULL != visualizationWidget->texture) {
+        SDL_DestroyTexture(visualizationWidget->texture);
+    }
+    visualizationWidget->height = -1;
+    visualizationWidget->width = -1;
+    visualizationWidget->x = -1;
+    visualizationWidget->y = -1;
 }

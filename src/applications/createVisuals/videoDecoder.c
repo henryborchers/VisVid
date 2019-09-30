@@ -166,6 +166,7 @@ void decoderContext_Destroy(DecoderContext **pDecoderContext) {
     avcodec_close((*pDecoderContext)->codecContext);
     avcodec_free_context(&(*pDecoderContext)->codecContext);
     avformat_close_input(&(*pDecoderContext)->formatContext);
+    avformat_free_context((*pDecoderContext)->formatContext);
     free((*pDecoderContext)->filename);
     (*pDecoderContext)->video_stream_idx = -1;
     free(*pDecoderContext);

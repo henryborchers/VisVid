@@ -27,18 +27,15 @@ typedef struct {
     int             windowHeight;
     SDL_Window      *window;
     SDL_Renderer    *renderer;
-    VidVisWidget    visualization;
-    VidVisWidget    video;
     visImageRGB     buffer;
 }DisplayWidgetContext;
-void vidVis_ctx_init(DisplayWidgetContext *ctx);
-int vidVis_ctx_init2(DisplayWidgetContext *ctx, const DecoderContext* decoderCtx);
 
+
+int vidVis_ctx_init(DisplayWidgetContext *windowCtx, VidVisWidget *visWidget, VidVisWidget *videoWidget, const DecoderContext* decoderCtx);
 int playVideoVisInit();
-int vidVis_build_window(DisplayWidgetContext *ctx, int videoWidth, int videoHeight);
 int vidVis_open_window(DisplayWidgetContext *ctx);
 void vidVis_cleanup();
-int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx);
+int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWidget *visWidget, VidVisWidget *videoWidget);
 void vidVis_destroy_window(DisplayWidgetContext *ctx);
 
 
