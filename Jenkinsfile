@@ -22,7 +22,7 @@ pipeline {
       parallel{
         stage("Create Release Build with Conan"){
             steps{
-                sh "conan install . --install-folder build"
+                sh "conan install . --install-folder build/conan"
                 cmakeBuild(
                     buildDir: 'build/conan',
                     buildType: 'Release',
