@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y build-essential \
     libvdpau-dev:amd64 \
     libva-dev:amd64 \
     libxcb-shm0-dev:amd64 \
+    libcap-dev \
   && rm -rf /var/lib/apt/lists/*
 
 ENV CONAN_NON_INTERACTIVE=1
@@ -50,5 +51,5 @@ ENV CONAN_DEFAULT_PROFILE_PATH=/home/user/.conan/profiles/x64
 
 
 ADD conanfile.py /tmp/
-RUN conan install /tmp/ --no-imports && conan remove --locks -f
+RUN conan install /tmp/ --no-imports --build sdl2 --build ffmpeg && conan remove --locks -f
 RUN chown -R user:user /home/user/.conan/
