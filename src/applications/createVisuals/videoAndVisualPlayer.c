@@ -376,8 +376,11 @@ int vidVis_ctx_init(DisplayWidgetContext *windowCtx, VidVisWidget *visWidget, Vi
 }
 
 int vidVis_open_window(DisplayWidgetContext *ctx) {
+    SDL_SetWindowSize(ctx->window, ctx->windowWidth, ctx->windowHeight);
     SDL_ShowWindow(ctx->window);
-    return 0;
+    int w, h;
+    SDL_GetWindowSize(ctx->window, &w, &h);
+    return w == ctx->windowWidth && h == ctx->windowHeight ? 0 : 1;
 }
 
 
