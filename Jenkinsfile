@@ -32,7 +32,6 @@ pipeline {
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${WORKSPACE}/build/conan/conan_paths.cmake \
     -DCMAKE_C_FLAGS=\"-Wall -Wextra\"",
                     installation: 'InSearchPath',
-                    sourceDir: 'scm',
                     steps: [[withCmake: true]]
                   )
             }
@@ -48,7 +47,6 @@ pipeline {
 -DVISVID_BUILDDOCS:BOOL=ON \
 -DCMAKE_C_FLAGS="-Wall -Wextra"',
                 installation: 'InSearchPath',
-                sourceDir: 'scm',
                 steps: [[withCmake: true]]
               )
             }
@@ -115,12 +113,10 @@ pipeline {
         }
         stage("Building Python Extension"){
             steps{
-                dir("scm"){
-                    sh(
-                        label: "Running Python setup script to build extension inplace",
-                        script: "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
-                    )
-                }
+                sh(
+                    label: "Running Python setup script to build extension inplace",
+                    script: "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
+                )
             }
             post{
                 success{
@@ -136,7 +132,6 @@ pipeline {
                   cleanBuild: true,
                   cmakeArgs: '',
                   installation: 'InSearchPath',
-                  sourceDir: 'scm',
                   steps: [[args: '--target documentation', withCmake: true]]
                 )
               }
