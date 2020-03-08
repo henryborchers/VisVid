@@ -172,7 +172,7 @@ pipeline {
           steps{
             sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
             tee('logs/clang-tidy_debug.log') {
-              sh  "python run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/debug/"
+              sh  "python3 run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/debug/"
             }
           }
           post{
