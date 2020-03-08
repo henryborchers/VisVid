@@ -52,6 +52,7 @@ RUN apt-get update && apt-get install -y build-essential \
     libclang-common-7-dev \
     gcovr \
     valgrind \
+    ffmpeg \
   && rm -rf /var/lib/apt/lists/*
 
 ENV CONAN_NON_INTERACTIVE=1
