@@ -75,7 +75,6 @@ pipeline {
 -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
 -Dlibvisvid_TESTS:BOOL=ON \
 -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-                sourceDir: 'scm',
                 steps: [
                   [args: '--target test-visvid', withCmake: true],
                   [args: '--target test-visvid-internal', withCmake: true],
@@ -199,7 +198,7 @@ pipeline {
                 timeout(5)
               }
               steps{
-                  cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ../scm', installation: 'InSearchPath', workingDir: 'build'
+                  cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ..', installation: 'InSearchPath', workingDir: 'build'
                   sh(
                     label: "Running Cppcheck",
                     script: 'mkdir -p logs && cppcheck --project=build/compile_commands.json --enable=all  -ibuild/_deps --xml 2>logs/cppcheck_debug.xml'
@@ -248,14 +247,12 @@ python -m pip install pip --upgrade
                       script: """. ./venv/bin/activate
 pip install pytest "tox<3.10" mypy coverage lxml"""
                     )
-                    dir("scm"){
-                      sh(
+                    sh(
                           label: "Installing Current Python Package to Virtual Environment in Development Mode",
                           script: """. ${WORKSPACE}/venv/bin/activate
   python setup.py build
   pip install -e ."""
-                      )
-                    }
+                     )
                   }
                   post{
                       failure{
@@ -310,7 +307,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 
                               sh(
                                 label: "Generating coverage report in Coberatura xml file format",
-                                script: "gcovr -r ./scm --xml -o reports/coverage/coverage.xml build/debug"
+                                script: "gcovr -r ./ --xml -o reports/coverage/coverage.xml build/debug"
 
                               )
                               archiveArtifacts 'reports/coverage/coverage.xml'
@@ -321,7 +318,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                 )
                               sh(
                                   label: "Generating coverage report in html file format",
-                                  script: "gcovr -r ./scm --html --html-details -o reports/coverage/coverage.html build/debug"
+                                  script: "gcovr -r ./ --html --html-details -o reports/coverage/coverage.html build/debug"
                                )
 
 
@@ -355,13 +352,11 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
                     stage("Running Pytest"){
                       steps{
-                        dir("scm"){
-                            catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
-                                sh(
-                                    label: "Running pytest",
-                                    script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
-                                )
-                            }
+                        catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
+                            sh(
+                                label: "Running pytest",
+                                script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
+                            )
                         }
                       }
                       post{
@@ -372,16 +367,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
                     stage("Run MyPy Static Analysis") {
                       steps{
-                          dir("scm"){
-                              catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-                                  tee("${WORKSPACE}/logs/mypy.log"){
-                                      sh(
-                                        label: "Running MyPy",
-                                        script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
-                                        )
-                                    }
-                              }
-
+                          catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+                              tee("${WORKSPACE}/logs/mypy.log"){
+                                  sh(
+                                    label: "Running MyPy",
+                                    script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
+                                    )
+                                }
                           }
                       }
                       post {
@@ -393,17 +385,14 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                   }
                     stage("Run Flake8 Static Analysis") {
                       steps{
-                          dir("scm"){
-                              catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
+                          catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
 
-                                  sh(
-                                      label: "Running Flake8",
-                                      script: """. ${WORKSPACE}/venv/bin/activate
+                              sh(
+                                  label: "Running Flake8",
+                                  script: """. ${WORKSPACE}/venv/bin/activate
     tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
     """
-
-                                  )
-                              }
+                              )
                           }
                       }
                       post {
@@ -424,7 +413,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                             catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
                                 sh(
                                     label: "Running Tox",
-                                    script: ". ${WORKSPACE}/venv/bin/activate && cd scm && tox --workdir ${WORKSPACE}/tox -vv -e py"
+                                    script: ". ${WORKSPACE}/venv/bin/activate && tox --workdir ${WORKSPACE}/tox -vv -e py"
                                 )
                             }
                         }
@@ -436,17 +425,15 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
         post{
             always{
                 archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
-                dir("scm"){
-                    sh(
-                        label: "Combining coverage data",
-                        script: """
+                sh(
+                    label: "Combining coverage data",
+                    script: """
     . ${WORKSPACE}/venv/bin/activate
     coverage combine
     coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
     coverage html -d ${WORKSPACE}/reports/python/coverage
     """
-                    )
-                }
+                )
                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
                 publishCoverage(
                     adapters: [
@@ -484,13 +471,11 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
               stages{
                     stage("Building Python Packages"){
                         steps{
-                            sh "mkdir -p scm && ls pyvisvid/build"
-                            dir("scm"){
-                                sh(
-                                    label: "Running Python setup script to build wheel and sdist",
-                                    script: "python3 setup.py build --build-temp=../pyvisvid/build/ bdist_wheel --dist-dir=${WORKSPACE}/pyvisvid/dist sdist --dist-dir=${WORKSPACE}/pyvisvid/dist"
-                                )
-                            }
+                            sh "ls pyvisvid/build"
+                            sh(
+                                label: "Running Python setup script to build wheel and sdist",
+                                script: "python3 setup.py build --build-temp=pyvisvid/build/ bdist_wheel --dist-dir=pyvisvid/dist sdist --dist-dir=pyvisvid/dist"
+                            )
                         }
                     }
                     stage("Testing Python Packages"){
@@ -501,7 +486,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                     sh(
                                         label: "Running Tox with ${it}",
                                         script: """. ${WORKSPACE}/venv/bin/activate
-cd scm && tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py"""
+tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py"""
                                     )
                                 }
                             }
@@ -525,7 +510,6 @@ cd scm && tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py
             [pattern: 'build', type: 'INCLUDE'],
             [pattern: 'dist', type: 'INCLUDE'],
             [pattern: 'generatedJUnitFiles', type: 'INCLUDE'],
-            [pattern: 'scm', type: 'INCLUDE'],
             [pattern: 'reports', type: 'INCLUDE'],
             [pattern: 'logs', type: 'INCLUDE'],
             [pattern: 'tox', type: 'INCLUDE'],
