@@ -2,13 +2,12 @@ from conans import ConanFile, CMake
 
 class VisvidConan(ConanFile):
     requires = [
-        "ffmpeg/4.2@bincrafters/stable",
+        "ffmpeg/4.2.1@bincrafters/stable",
         "sdl2/2.0.10@bincrafters/stable"
     ]
     generators = ["cmake_paths"]
     default_options = {
         "ffmpeg:shared": True,
-        "sdl2:shared": True,
     }
 
     def imports(self):
