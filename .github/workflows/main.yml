@@ -46,14 +46,16 @@ jobs:
                           libswresample-dev \
                           libswscale-dev \
                           doxygen
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
       - name: Get sonarscanner
         run: |
           wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip build-wrapper-linux-x86.zip
           export PATH=${PWD}/build-wrapper-linux-x86:$PATH
+          which build-wrapper-linux-x86-64
 
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+
 
       - name: Run CMake
         run: |
