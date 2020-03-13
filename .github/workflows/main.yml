@@ -57,14 +57,13 @@ jobs:
           export PATH=${PWD}/build-wrapper-linux-x86:$PATH
           which build-wrapper-linux-x86-64
 
-
-
       - name: Run SonarScanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra" -D CMAKE_CXX_FLAGS="-Wall -Wextra" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug
+          cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON
           export PATH=${PWD}/build-wrapper-linux-x86:$PATH
-          (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all test-visvid test-visvid-internal)
-          sonar-scanner -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all test)
+          (cd build && mdkir coverage && for i in `find .. -name "*.gcno"` ; do gcov "$i" done)
+          sonar-scanner -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory -Dsonar.cfamily.gcov.reportsPath=build/coverage -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 # TODO: cacche sonar /home/runner/.sonar/cache
