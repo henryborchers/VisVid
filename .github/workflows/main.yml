@@ -64,5 +64,6 @@ jobs:
           cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra" -D CMAKE_CXX_FLAGS="-Wall -Wextra" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug
           export PATH=${PWD}/build-wrapper-linux-x86:$PATH
           cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all test-visvid test-visvid-internal
+          pwd
           sonar-scanner -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
