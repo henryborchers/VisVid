@@ -28,3 +28,5 @@ jobs:
       run: |
         cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra" -D CMAKE_CXX_FLAGS="-Wall -Wextra" -D libvisvid_TESTS:BOOL=ON
         cmake --build ./build
+    - name: Run CTest
+      run: cd build && ctest
