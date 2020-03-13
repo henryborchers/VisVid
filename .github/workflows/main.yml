@@ -20,7 +20,15 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt install libsdl2-dev
+        sudo apt install libsdl2-dev \
+                         libavcodec-dev \
+                        libavdevice-dev \
+                        libavfilter-dev \
+                        libavformat-dev \
+                        libavresample-dev \
+                        libavutil-dev \
+                        libswresample-dev \
+                        libswscale-dev
     # Runs a single command using the runners shell
     - name: Run CMake
       run: |
