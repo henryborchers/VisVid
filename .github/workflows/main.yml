@@ -34,6 +34,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install dependencies
+          run: |
+            sudo apt install libsdl2-dev \
+                             libavcodec-dev \
+                            libavdevice-dev \
+                            libavfilter-dev \
+                            libavformat-dev \
+                            libavresample-dev \
+                            libavutil-dev \
+                            libswresample-dev \
+                            libswscale-dev \
+                            doxygen
       - name: Get sonarscanner
         run: |
           wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
