@@ -27,6 +27,6 @@ jobs:
     - name: Run CMake
       run: |
         cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra" -D CMAKE_CXX_FLAGS="-Wall -Wextra" -D libvisvid_TESTS:BOOL=ON
-        cmake --build ./build --target all
+        cmake --build ./build --target all --target test-visvid --target test-visvid-internal
     - name: Run CTest
       run: cd build && ctest
