@@ -26,5 +26,5 @@ jobs:
                         doxygen
     - name: Run CMake
       run: |
-        cmake -B ./build -S ./ -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_CXX_FLAGS="-Wall -Wextra"
+        cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra" -D CMAKE_CXX_FLAGS="-Wall -Wextra" -D libvisvid_TESTS:BOOL=ON
         cmake --build ./build
