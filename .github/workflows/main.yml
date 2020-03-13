@@ -35,17 +35,17 @@ jobs:
 
     steps:
       - name: Install dependencies
-          run: |
-            sudo apt install libsdl2-dev \
-                             libavcodec-dev \
-                            libavdevice-dev \
-                            libavfilter-dev \
-                            libavformat-dev \
-                            libavresample-dev \
-                            libavutil-dev \
-                            libswresample-dev \
-                            libswscale-dev \
-                            doxygen
+        run: |
+          sudo apt install libsdl2-dev \
+                           libavcodec-dev \
+                          libavdevice-dev \
+                          libavfilter-dev \
+                          libavformat-dev \
+                          libavresample-dev \
+                          libavutil-dev \
+                          libswresample-dev \
+                          libswscale-dev \
+                          doxygen
       - name: Get sonarscanner
         run: |
           wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
@@ -54,3 +54,9 @@ jobs:
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+
+      - name: Run CMake
+        run: |
+          cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra" -D CMAKE_CXX_FLAGS="-Wall -Wextra" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug
+          cmake --build ./build --target all --target test-visvid --target test-visvid-internal
+
