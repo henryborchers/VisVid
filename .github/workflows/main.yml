@@ -30,3 +30,15 @@ jobs:
         cmake --build ./build --target all --target test-visvid --target test-visvid-internal
     - name: Run CTest
       run: cd build && ctest
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get sonarscanner
+        run: |
+          wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip build-wrapper-linux-x86.zip
+          export PATH=${PWD}/wrapper-linux-x86:$PATH
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
