@@ -45,7 +45,9 @@ jobs:
                           libavutil-dev \
                           libswresample-dev \
                           libswscale-dev \
-                          doxygen
+                          doxygen \
+                          npm
+          sudo npm install -g sonarqube-scanner
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - name: Get sonarscanner
