@@ -60,6 +60,8 @@ jobs:
 
 
       - name: Run SonarScanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra" -D CMAKE_CXX_FLAGS="-Wall -Wextra" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug
           export PATH=${PWD}/build-wrapper-linux-x86:$PATH
