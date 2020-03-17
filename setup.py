@@ -72,7 +72,8 @@ class PackageVisvid(Command):
             cmake_path,
             "-S", self.visvis_source,
             "-B", config_path,
-            "-DCPACK_SOURCE_PACKAGE_FILE_NAME=visvis_source"
+            "-DCPACK_SOURCE_PACKAGE_FILE_NAME=visvis_source",
+            "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=false"
         ]
 
         self.spawn(cmake_config_command)
@@ -224,8 +225,9 @@ class DarwinExtras(PlatformSpecificRequirements):
 class LinuxExtras(PlatformSpecificRequirements):
 
     def extra_compile_args(self):
-        print("Adding fPIC to extra_compile_args")
-        pyvisvid_extension.extra_compile_args.append("-fPIC")
+        pass
+        # print("Adding fPIC to extra_compile_args")
+        # pyvisvid_extension.extra_compile_args.append("-fPIC")
 
 
 EXTRA_COMPILER_SETTINGS = {
