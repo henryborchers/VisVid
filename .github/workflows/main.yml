@@ -30,6 +30,21 @@ jobs:
         cmake --build ./build --target all --target test-visvid --target test-visvid-internal
     - name: Run CTest
       run: cd build && ctest
+
+  python:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.8' # Semantic version range syntax or exact version of a Python version
+          architecture: 'x64' # Optional - x64 or x86, defaults to x64
+      # You can test your matrix by printing the current Python version
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
   sonarcloud:
     runs-on: ubuntu-latest
 
@@ -57,7 +72,6 @@ jobs:
           wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip build-wrapper-linux-x86.zip
           export PATH=${PWD}/build-wrapper-linux-x86:$PATH
-          which build-wrapper-linux-x86-64
       - name: Cache Sonarqube-files
         uses: actions/cache@v1
         env:
