@@ -30,3 +30,56 @@ jobs:
         cmake --build ./build --target all --target test-visvid --target test-visvid-internal
     - name: Run CTest
       run: cd build && ctest
+
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt install libsdl2-dev \
+                           libavcodec-dev \
+                          libavdevice-dev \
+                          libavfilter-dev \
+                          libavformat-dev \
+                          libavresample-dev \
+                          libavutil-dev \
+                          libswresample-dev \
+                          libswscale-dev \
+                          doxygen \
+                          npm
+          sudo npm install -g sonarqube-scanner
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Get sonarscanner
+        run: |
+          wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip build-wrapper-linux-x86.zip
+          export PATH=${PWD}/build-wrapper-linux-x86:$PATH
+      - name: Cache Sonarqube-files
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-sonarqube-files
+        with:
+          path: /home/runner/.sonar/cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: |
+              ${{ runner.os }}-build-${{ env.cache-name }}-
+              ${{ runner.os }}-build-
+              ${{ runner.os }}-
+
+      - name: Run SonarScanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch
+          cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON
+          export PATH=${PWD}/build-wrapper-linux-x86:$PATH
+          (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
+          mkdir -p reports/unit
+          build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+          build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
+          (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \; )
+          sonar-scanner -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.gcov.reportsPath=build/coverage -Dsonar.testExecutionReportPaths=reports/unit/test-visvid.xml,reports/unit/test-visvid-internal.xml -Dsonar.login=${{ secrets.SONAR_TOKEN }}
