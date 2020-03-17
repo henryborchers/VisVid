@@ -49,14 +49,17 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Install dependencies
         run: |
-            sudo apt update && sudo apt install libavcodec-dev \
-                                            libavdevice-dev \
-                                            libavfilter-dev \
-                                            libavformat-dev \
-                                            libavresample-dev \
-                                            libavutil-dev \
-                                            libswresample-dev \
-                                            libswscale-dev
+            sudo apt update && sudo apt install \
+                build-essential \
+                libavcodec-dev \
+                libavdevice-dev \
+                libavfilter-dev \
+                libavformat-dev \
+                libavresample-dev \
+                libavutil-dev \
+                libswresample-dev \
+                libswscale-dev \
+                git
             python -m pip install --upgrade pip
             pip install -r requirements-dev.txt
       - name: Building Python package
