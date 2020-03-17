@@ -31,44 +31,6 @@ jobs:
     - name: Run CTest
       run: cd build && ctest
 
-  python:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.x
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.7'
-      - uses: actions/cache@v1
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Install dependencies
-        run: |
-            sudo apt update && sudo apt install \
-                build-essential \
-                libavcodec-dev \
-                libavdevice-dev \
-                libavfilter-dev \
-                libavformat-dev \
-                libavresample-dev \
-                libavutil-dev \
-                libswresample-dev \
-                libswscale-dev \
-                git
-            python -m pip install --upgrade pip
-            pip install -r requirements-dev.txt
-      - name: Building Python package
-        run: |
-          cmake --version
-          python -c "import sys; print(sys.version)"
-          python setup.py build_clib build_ext --inplace
-
-
   sonarcloud:
     runs-on: ubuntu-latest
 
