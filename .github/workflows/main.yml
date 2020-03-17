@@ -61,6 +61,7 @@ jobs:
             pip install -r requirements-dev.txt
       - name: Building Python package
         run: |
+          cmake --version
           python setup.py build_clib build_ext --inplace
 
 
