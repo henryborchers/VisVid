@@ -224,7 +224,8 @@ class DarwinExtras(PlatformSpecificRequirements):
 class LinuxExtras(PlatformSpecificRequirements):
 
     def extra_compile_args(self):
-        pyvisvid_extension.extra_link_args.append("-fPIC")
+        print("Adding fPIC to extra_compile_args")
+        pyvisvid_extension.extra_compile_args.append("-fPIC")
 
 
 EXTRA_COMPILER_SETTINGS = {
