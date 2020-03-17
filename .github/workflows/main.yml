@@ -61,7 +61,7 @@ jobs:
             pip install -r requirements-dev.txt
       - name: Building Python package
         run: |
-          python setup.py build_ext --inplace
+          python setup.py build_clib build_ext --inplace
 
 
   sonarcloud:
