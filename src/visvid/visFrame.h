@@ -61,7 +61,7 @@ int PixelYUV_getValue(const PixelYUV *pixel, PixelValue *y, PixelValue *u, Pixel
 int VisYUVFrame_SetPos(VisYUVFrame *frame, int64_t *result);
 
 
-int visYUVFrame_Fill(VisYUVFrame *frame, struct visBrush *brush);
+int visYUVFrame_Fill(VisYUVFrame *frame, const visBrush *brush);
 
 
 #endif //VISVID_VISFRAME_H_H

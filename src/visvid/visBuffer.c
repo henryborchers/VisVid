@@ -189,7 +189,7 @@ visVisualResult *visBuffer_PopShiftResult(visBuffer *buffer) {
 
 }
 
-int visBuffer_ShiftLeft(visBuffer *pBuffer) {
+int visBuffer_ShiftLeft(const visBuffer *pBuffer) {
     visBufferNode *next = NULL;
     visVisualResult *first_result = pBuffer->first->result;
 
@@ -300,7 +300,7 @@ visBufferNode *_BufferNode_get(const visBuffer *buffer, size_t index) {
     return NULL;
 }
 
-int _nodePosition(visBufferNode *node) {
+int _nodePosition(const visBufferNode *node) {
     if (NULL == node) {
         return -1;
     }

@@ -65,7 +65,7 @@ void VisBufferNode_Destroy(visBufferNode **node);
 
 visBufferNode * _BufferNode_get(const visBuffer *buffer, size_t index);
 
-int _nodePosition(visBufferNode *node);
+int _nodePosition(const visBufferNode *node);
 /**
  *
  * @param pRes
@@ -75,5 +75,5 @@ int _nodePosition(visBufferNode *node);
  */
 int visBuffer_getResult(PixelValue *pRes, const visBuffer *buffer, size_t index);
 
-int visBuffer_ShiftLeft(visBuffer *pBuffer);
+int visBuffer_ShiftLeft(const visBuffer *pBuffer);
 #endif //VISVID_VISBUFFER_H

@@ -24,7 +24,7 @@ struct visBrush{
 /**
  * @internal Do not use
  */
-int YUVPixel_Draw(VisYUVFrame *frame, struct visBrush *brush, int x, int y);
+int YUVPixel_Draw(VisYUVFrame *frame, const visBrush *brush, int x, int y);
 
 /**
  * @internal Do not use
