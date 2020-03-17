@@ -224,7 +224,7 @@ class DarwinExtras(PlatformSpecificRequirements):
 class LinuxExtras(PlatformSpecificRequirements):
 
     def extra_compile_args(self):
-        pyvisvid_extension.extra_compile_args.append("-fPIC")
+        pyvisvid_extension.extra_link_args.append("-fPIC")
 
 
 EXTRA_COMPILER_SETTINGS = {
@@ -238,7 +238,6 @@ if extra_step_setter is not None:
     extra.add_include_dirs()
     extra.add_library_dirs()
     extra.extra_compile_args()
-
 # On a mac, search homebrew directories for ffmpeg
 # if platform.system() == "Darwin":
 #     pyvisvid_extension.include_dirs.append("/usr/local/include")
