@@ -1,3 +1,5 @@
+import abc
+
 import os
 import platform
 import shutil
@@ -195,13 +197,52 @@ pyvisvid_extension = Extension(
         "examples",
     ],
     libraries=["Visvid", "avformat", "avcodec"],
-    language='c++'
+    language='c++',
     )
 
+
+class PlatformSpecificRequirements(abc.ABC):
+    def add_include_dirs(self):
+        """Extra includes"""
+
+    def add_library_dirs(self):
+        """Add extra library dirs"""
+
+    def extra_compile_args(self):
+        """Add exta Compiler flags"""
+
+
+class DarwinExtras(PlatformSpecificRequirements):
+
+    def add_include_dirs(self):
+        pyvisvid_extension.include_dirs.append("/usr/local/include")
+
+    def add_library_dirs(self):
+        pyvisvid_extension.library_dirs.append("/usr/local/lib")
+
+
+class LinuxExtras(PlatformSpecificRequirements):
+
+    def extra_compile_args(self):
+        pyvisvid_extension.extra_compile_args.append("-fPIC")
+
+
+EXTRA_COMPILER_SETTINGS = {
+    "Darwin": DarwinExtras,
+    "Linux": LinuxExtras
+}
+
+extra_step_setter = EXTRA_COMPILER_SETTINGS.get(platform.system())
+if extra_step_setter is not None:
+    extra = extra_step_setter()
+    extra.add_include_dirs()
+    extra.add_library_dirs()
+    extra.extra_compile_args()
+
 # On a mac, search homebrew directories for ffmpeg
-if platform.system() == "Darwin":
-    pyvisvid_extension.include_dirs.append("/usr/local/include")
-    pyvisvid_extension.library_dirs.append("/usr/local/lib")
+# if platform.system() == "Darwin":
+#     pyvisvid_extension.include_dirs.append("/usr/local/include")
+#     pyvisvid_extension.library_dirs.append("/usr/local/lib")
 
 libvisvid = \
     ("Visvid", {
