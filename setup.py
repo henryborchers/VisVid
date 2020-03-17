@@ -72,8 +72,7 @@ class PackageVisvid(Command):
             cmake_path,
             "-S", self.visvis_source,
             "-B", config_path,
-            "-DCPACK_SOURCE_PACKAGE_FILE_NAME=visvis_source",
-            "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=false"
+            "-DCPACK_SOURCE_PACKAGE_FILE_NAME=visvis_source"
         ]
 
         self.spawn(cmake_config_command)
@@ -216,23 +215,15 @@ class PlatformSpecificRequirements(abc.ABC):
 class DarwinExtras(PlatformSpecificRequirements):
 
     def add_include_dirs(self):
+        # On a mac, search homebrew directories for ffmpeg
         pyvisvid_extension.include_dirs.append("/usr/local/include")
 
     def add_library_dirs(self):
         pyvisvid_extension.library_dirs.append("/usr/local/lib")
 
 
-class LinuxExtras(PlatformSpecificRequirements):
-
-    def extra_compile_args(self):
-        pass
-        # print("Adding fPIC to extra_compile_args")
-        # pyvisvid_extension.extra_compile_args.append("-fPIC")
-
-
 EXTRA_COMPILER_SETTINGS = {
     "Darwin": DarwinExtras,
-    "Linux": LinuxExtras
 }
 
 extra_step_setter = EXTRA_COMPILER_SETTINGS.get(platform.system())
@@ -241,10 +232,6 @@ if extra_step_setter is not None:
     extra.add_include_dirs()
     extra.add_library_dirs()
     extra.extra_compile_args()
-# On a mac, search homebrew directories for ffmpeg
-# if platform.system() == "Darwin":
-#     pyvisvid_extension.include_dirs.append("/usr/local/include")
-#     pyvisvid_extension.library_dirs.append("/usr/local/lib")
 
 libvisvid = \
     ("Visvid", {
