@@ -135,7 +135,7 @@ int VisYUVFrame_SetPos(VisYUVFrame *frame, int64_t *result) {
     return 0;
 }
 
-int visYUVFrame_Fill(VisYUVFrame *frame, visBrush *brush) {
+int visYUVFrame_Fill(VisYUVFrame *frame, const visBrush *brush) {
     int x;
     int y;
     if(frame == NULL){
@@ -182,7 +182,7 @@ int VisYUVFrame_getPixelY(const VisYUVFrame *frame, int x, int y, PixelValue* cy
     return 0;
 }
 
-int YUVPixel_Draw(VisYUVFrame *frame, visBrush *brush, int x, int y) {
+int YUVPixel_Draw(VisYUVFrame *frame, const visBrush *brush, int x, int y) {
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }
