@@ -262,7 +262,7 @@ int visViewRGBA_value2BW(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, u
     return 0;
 }
 
-float minimum(float d, float d1) {
+static float minimum(float d, float d1) {
 
     return (d < d1) ? d : d1;
 }

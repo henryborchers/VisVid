@@ -15,7 +15,7 @@ const int GREEN_OFFSET = sizeof(uint8_t) * 2;
 const int RED_OFFSET = sizeof(uint8_t) * 3;
 static int calculate_padding(int offset, int align);
 
-int calculate_padding(int offset, int align) {
+static int calculate_padding(int offset, int align) {
 //    return (align - (offset & (align - 1))) & (align - 1);
      return (-offset) & (align - 1);
 }
