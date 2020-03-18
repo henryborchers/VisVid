@@ -167,7 +167,16 @@ class BuildCMakeClib(build_clib):
     def build_libraries(self, libraries):
         for lib_name, lib in libraries:
             if len(lib['sources']) > 0:
-                classic_library = (lib_name, lib)
+                new_lib = lib.copy()
+                classic_library = (lib_name, new_lib)
+                build_ext_cmd = self.get_finalized_command("build_ext")
+
+                # Add the same include directories used by pyvisvid.visvid
+                include_dirs = lib.get('include_dirs', [])
+                for include_dir in build_ext_cmd.include_dirs:
+                    include_dirs.append(include_dir)
+                lib['include_dirs'] = include_dirs
+
                 super().build_libraries([classic_library])
             else:
                 build_path = os.path.abspath(os.path.join(self.build_temp,
@@ -222,6 +231,9 @@ class DarwinExtras(PlatformSpecificRequirements):
 
     def add_library_dirs(self):
         pyvisvid_extension.library_dirs.append("/usr/local/lib")
+
+    def extra_compile_args(self):
+        pyvisvid_extension.extra_compile_args.append("-std=c++11")
 
 
 EXTRA_COMPILER_SETTINGS = {
