@@ -47,11 +47,6 @@ int VisVisualResult_SetSize(visVisualResult *pRest, size_t size) {
         return EFAULT;
     }
 
-//    if(pRest->size > 0) {
-//        free(pRest->data);
-//    }
-
-//    pRest->data = NULL;
     size_t data_size = size * sizeof(unsigned char);
     pRest->data = realloc(pRest->data, data_size);
     if(pRest->data == NULL){

@@ -9,13 +9,8 @@
 #define VISVID_VISFRAME_H_H
 
 
-//#include <stdint.h>
 #include "visvid/visvid.h"
 #include "visvid/utils.h"
-//#include "visTypes.h"
-//struct PixelYUV;
-
-
 
 
 /**

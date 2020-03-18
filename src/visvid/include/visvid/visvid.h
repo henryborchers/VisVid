@@ -129,7 +129,7 @@ void VisBuffer_Destroy(visBuffer **buffer);
  * Pushes a visVisualResult to the end of the buffer.
  * @param buffer The Buffer to push a visVisualResult to the end of.
  * @param pRes The visVisualResult to push to the end of a visBuffer.
- * @return Returns 0 on success;
+ * @return Returns 0 on success
  * @ingroup visBuffer
  */
 int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes);

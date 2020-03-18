@@ -108,7 +108,6 @@ int visView_Update4(visView *pView, const visBuffer *buffer) {
         return -1;
     }
     PixelValue *currentSlice = malloc(sizeof(int) * pView->width);
-//    size_t length = visBuffer_getLength(buffer);
     for (int y = 0; y < pView->height; ++y) {
             int res = visBuffer_getResult(currentSlice, buffer, buffer->bufferLen - 1 - y);
             if(res != 0 ){
@@ -124,48 +123,9 @@ int visView_Update4(visView *pView, const visBuffer *buffer) {
 
 
 int index_lookup(int x, int y, int view_width){
-//    int index = (view_width * (y-1)) + (view_width - x);
     int index = (view_width * y) + x;
     return index;
 }
-
-//int visView_Update4(visView *pView, visBuffer *buffer) {
-//    int x;
-//    int y;
-//    int res = 0;
-//
-//    PixelValue currentSlice[pView->width];
-//
-//
-//    for (x = 0; x < pView->width; x++) {
-//        size_t length = visBuffer_getLength(buffer);
-//        res = visBuffer_getResult(currentSlice, buffer, length - x - 1);
-//        if (res == 0) {
-//
-//            for (y = 0; y < pView->height; ++y) {
-//                int index = index_lookup(x, y, pView->width);
-////                int index = ((pView->width * y) + (pView->width - x - 1)) - 1;
-////                int index = (pView->width * (y-1)) + (pView->width - x);
-//                PixelValue value = currentSlice[y];
-////                int index = (pView->width - x) + pView->width * y;
-//                pView->data[index] = value;
-//
-//            }
-//        } else {
-//            for (y = 0; y < pView->height; ++y) {
-//                int index = index_lookup(x, y, pView->width);
-////                int index = (pView->width * (y-1)) + (pView->width - x);
-////                int index = (pView->width * y) + (pView->width - x - 1);
-//                pView->data[index] = 0;
-//
-//            }
-//        }
-//
-//
-//    }
-//    return 0;
-//}
-
 
 // FIXME visView_Update is broken
 // depricated
@@ -173,23 +133,16 @@ int visView_Update(visView *pView, visBuffer *buffer) {
     int y;
     int valid_result = 0;
     size_t buffersize = visBuffer_getLength(buffer);
-//    int starting = buffersize - pView->width;
-//    if(starting < 0){
-//        starting = 0;
-//    }
-//    int ending = starting + pView->width;
     PixelValue *currentSlice = malloc(sizeof(int) * pView->width);
     PixelValue *lastSlice = malloc(sizeof(int) * pView->height);
 
     for (size_t x = 0; x < buffersize; x++) {
         // If the result is null the result code will be 0
         valid_result = visBuffer_getResult(currentSlice, buffer, x);
-//        printf("value of x is %d\n", x);
         if (valid_result < 0) {
 //            FIXME: can't use stderr to invalid results because Python cannot link to it because the extension is
 //                compile with -fPIC
 
-//            fprintf(stderr, "Invalid result\n");
             free(lastSlice);
             free(currentSlice);
             return valid_result;
@@ -199,7 +152,6 @@ int visView_Update(visView *pView, visBuffer *buffer) {
             if (valid_result == 1) {
                 pView->data[x + pView->width * y] = currentSlice[y];
             } else {
-//                fprintf(stderr, "Invalid data\n");
                 // If the result isn't a true result (for example: there is no data calculated yet), do one of the following.
                 // If it's the first one, render it out as black.
                 if (x == 0) {
