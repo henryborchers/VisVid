@@ -79,15 +79,15 @@ void VisBuffer_Destroy(visBuffer **buffer) {
     }
 }
 
-visBufferNode *visBufferFront(const visBuffer *buffer) {
+static visBufferNode *visBufferFront(const visBuffer *buffer) {
     return buffer->first;
 }
 
-visBufferNode *visBufferNextNode(const visBufferNode *node) {
+static visBufferNode *visBufferNextNode(const visBufferNode *node) {
     return node->next;
 }
 
-visBufferNode *visBufferPreviousNode(const visBufferNode *node) {
+static visBufferNode *visBufferPreviousNode(const visBufferNode *node) {
     return node->previous;
 }
 
@@ -129,7 +129,7 @@ int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes) {
 
 }
 
-int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode) {
+static int visBufferPushBack(visBuffer *buffer, visBufferNode *newNode) {
     newNode->next = NULL;
     newNode->position = buffer->bufferLen;
     if (visBuffer_isEmpty(buffer)) {
@@ -151,7 +151,7 @@ visVisualResult *visBuffer_PopResult(visBuffer *buffer) {
 }
 
 
-int renumber(visBuffer *pBuffer) {
+static int renumber(visBuffer *pBuffer) {
     visBufferNode *current = visBufferFront(pBuffer);
     if (NULL == current) {
         return 0;
@@ -209,7 +209,7 @@ int visBuffer_ShiftLeft(const visBuffer *pBuffer) {
     return 0;
 }
 
-visBufferNode *visBufferPop(visBuffer *buffer) {
+static visBufferNode *visBufferPop(visBuffer *buffer) {
     visBufferNode *rNode = NULL;
 
     if (visBuffer_isEmpty(buffer)) {
@@ -252,7 +252,7 @@ void VisBufferNode_Destroy(visBufferNode **node) {
     free(*node);
 }
 
-visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
+static visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
 
     visBufferNode *node = malloc(sizeof(visBufferNode));
     int length = 0;
@@ -276,7 +276,7 @@ visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
     return node;
 }
 
-visVisualResult *visBufferNodeResult(visBufferNode *pNode) {
+static visVisualResult *visBufferNodeResult(visBufferNode *pNode) {
     return pNode->result;
 }
 
@@ -357,7 +357,7 @@ visBuffer *VisBuffer_Create2(size_t width, size_t bufferSize) {
     return buffer;
 }
 
-bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize) {
+static bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize) {
     bool failed = false;//    Automatically resize
     for (unsigned int i = 0; i < bufferSize; i++) {
         visVisualResult *res = VisVisualResult_Create();
@@ -383,7 +383,7 @@ bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize) {
     return failed;
 }
 
-int visBuffer_setResult(visBuffer *buffer, size_t index, const visVisualResult *pRes) {
+static int visBuffer_setResult(visBuffer *buffer, size_t index, const visVisualResult *pRes) {
     visBufferNode *node = buffer->first;
 
 //    Find the node

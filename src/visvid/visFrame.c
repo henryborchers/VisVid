@@ -6,14 +6,6 @@
 #include "visFrame.h"
 #include <errno.h>
 #include <stdlib.h>
-//#include <stdint.h>
-
-//
-//enum PIXELCOLORSPACE {
-//    PIXELCOLORSPACE_YUV = 0,
-//    PIXELCOLORSPACE_Y = 1
-//};
-
 
 
 /**
@@ -80,7 +72,6 @@ VisYUVFrame *VisYUVFrame_Create() {
 }
 
 void VisYUVFrame_Destroy(VisYUVFrame **frame) {
-//    FreeFrameData(frame);
     (*frame)->pos = -1;
     (*frame)->height = -1;
     (*frame)->width = -1;
