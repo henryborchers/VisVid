@@ -196,7 +196,6 @@ int visBuffer_ShiftLeft(const visBuffer *pBuffer) {
     const visBufferNode *front = visBufferFront(pBuffer);
     visBufferNode *current = visBufferFront(pBuffer);
     while (current) {
-//        current->position--;
         if (!current->next) {
             current->result = front->result;
             break;
@@ -225,7 +224,6 @@ static visBufferNode *visBufferPop(visBuffer *buffer) {
 
         buffer->first = visBufferNextNode(buffer->first);
     }
-//    buffer->first = rNode->next;
     if (buffer->first) {
 
         buffer->first->previous = NULL;
@@ -377,8 +375,6 @@ static bool VisBuffer_Resize(visBuffer *buffer, size_t width, size_t bufferSize)
             break;
         }
         VisVisualResult_Destroy(&res);
-//        VisVisualResult_Cleanup(res);
-
     }
     return failed;
 }

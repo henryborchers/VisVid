@@ -16,18 +16,10 @@ const int RED_OFFSET = sizeof(uint8_t) * 3;
 static int calculate_padding(int offset, int align);
 
 static int calculate_padding(int offset, int align) {
-//    return (align - (offset & (align - 1))) & (align - 1);
      return (-offset) & (align - 1);
 }
 
 int visImageRGB_Alloc(visImageRGB *t, int width, int height) {
-//    pitch * size of the the pixel + padding
-//    size_t pitch = (width * (sizeof(uint8_t) * 4));
-
-//    int align = 4;
-//    int offset = width;
-//    t->plane = calloc(pitch, height );
-
     int padding = calculate_padding(width * sizeof(uint8_t) * 4, 4);
 
     size_t pitch = (width + (size_t)padding) * sizeof(uint8_t) * 4;
