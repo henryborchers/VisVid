@@ -95,14 +95,11 @@ int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes) {
     int ret = -1;
 //    TODO: CHECK IF buffer is unlimited or not. If unlimited, just add, otherwise, shift it left and replace the right most
     // check result size first if it's not null
-    if (pRes != NULL) {
-        // check the size only if there is valid data to check
-        if (VisVisualResult_IsReady(pRes)) {
-            signed int resultSize = -1;
-            VisVisualResult_GetSize(&resultSize, pRes);
-            if (buffer->bufferWidth != (unsigned int)resultSize) {
-                return -1;
-            }
+    if (pRes != NULL && VisVisualResult_IsReady(pRes)) {
+        signed int resultSize = -1;
+        VisVisualResult_GetSize(&resultSize, pRes);
+        if (buffer->bufferWidth != (unsigned int)resultSize) {
+            return -1;
         }
     }
     // if the buffer is smaller than the max or the buffersize is unlimited, create a new node.
