@@ -166,22 +166,26 @@ class BuildCMakeClib(build_clib):
 
     def build_libraries(self, libraries):
         for lib_name, lib in libraries:
-            build_path = os.path.abspath(os.path.join(self.build_temp,
-                                                      "build",
-                                                      lib_name))
+            if len(lib['sources']) > 0:
+                classic_library = (lib_name, lib)
+                super().build_libraries([classic_library])
+            else:
+                build_path = os.path.abspath(os.path.join(self.build_temp,
+                                                          "build",
+                                                          lib_name))
 
-            if not os.path.exists(os.path.join(build_path, "CMakeCache.txt")):
-                install_prefix = os.path.abspath(self.build_clib)
-                source_dir = lib['CMAKE_SOURCE_DIR']
+                if not os.path.exists(os.path.join(build_path, "CMakeCache.txt")):
+                    install_prefix = os.path.abspath(self.build_clib)
+                    source_dir = lib['CMAKE_SOURCE_DIR']
+                    self.compiler.spawn([
+                        self.cmake_path,
+                        "-S", os.path.abspath(source_dir),
+                        "-B", build_path,
+                        f"-DCMAKE_INSTALL_PREFIX:PATH={install_prefix}"
+                        ]
+                    )
                 self.compiler.spawn([
-                    self.cmake_path,
-                    "-S", os.path.abspath(source_dir),
-                    "-B", build_path,
-                    f"-DCMAKE_INSTALL_PREFIX:PATH={install_prefix}"
-                    ]
-                )
-            self.compiler.spawn([
-                self.cmake_path, "--build", build_path, "--target", "install"])
+                    self.cmake_path, "--build", build_path, "--target", "install"])
 
 
 pyvisvid_extension = Extension(
@@ -189,14 +193,12 @@ pyvisvid_extension = Extension(
     sources=[
         'src/applications/pyvisvid/pyvisvid/visvid_extension.cpp',
         'src/applications/pyvisvid/pyvisvid/Visualizer.cpp',
-        'examples/shared/decode.c',
-        'examples/shared/pgm.c',
          ],
     include_dirs=[
         "src/applications/pyvisvid/pyvisvid",
         "examples",
     ],
-    libraries=["Visvid", "avformat", "avcodec"],
+    libraries=['Visvid', "avformat", "avcodec", "shared_data"],
     language='c++',
     )
 
@@ -240,6 +242,16 @@ libvisvid = \
     }
      )
 
+share_data = (
+    'shared_data',
+    {
+        'sources': [
+            'examples/shared/decode.c',
+            'examples/shared/pgm.c',
+        ],
+        'include_dirs': ["./src/visvid/include"],
+    }
+)
 
 setup(
     name="pyvisvid",
@@ -256,7 +268,7 @@ setup(
         'build_ext': BuildExt,
         "build_clib": BuildCMakeClib,
     },
-    libraries=[libvisvid],
+    libraries=[libvisvid, share_data],
     ext_modules=[pyvisvid_extension],
     zip_safe=False,
 )
