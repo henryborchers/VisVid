@@ -84,7 +84,10 @@ static visBufferNode *visBufferFront(const visBuffer *buffer) {
 }
 
 static visBufferNode *visBufferNextNode(const visBufferNode *node) {
-    return node->next;
+    if(node != NULL){
+        return node->next;
+    }
+    return NULL;
 }
 
 static visBufferNode *visBufferPreviousNode(const visBufferNode *node) {
