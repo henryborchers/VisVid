@@ -132,7 +132,7 @@ void VisBuffer_Destroy(visBuffer **buffer);
  * @return Returns 0 on success;
  * @ingroup visBuffer
  */
-int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
+int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes);
 
 
 /**

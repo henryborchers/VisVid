@@ -91,7 +91,7 @@ visBufferNode *visBufferPreviousNode(const visBufferNode *node) {
     return node->previous;
 }
 
-int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes) {
+int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes) {
     int ret = -1;
 //    TODO: CHECK IF buffer is unlimited or not. If unlimited, just add, otherwise, shift it left and replace the right most
     // check result size first if it's not null
