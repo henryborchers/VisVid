@@ -157,7 +157,7 @@ int VisYUVFrame_getPixelYUV(PixelYUV *result, const VisYUVFrame *frame, int x, i
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }
-    PixelYUV *pix = &frame->data[x + frame->width * y];
+    const PixelYUV *pix = &frame->data[x + frame->width * y];
     result->U = pix->U;
     result->Y = pix->Y;
     result->V = pix->V;
@@ -167,7 +167,7 @@ int VisYUVFrame_getPixelYUV2(const VisYUVFrame *frame, int x, int y, PixelValue*
     if(x > frame->width || y > frame->height){
         return EFAULT;
     }
-    PixelYUV *pix = &frame->data[x + frame->width * y];
+    const PixelYUV *pix = &frame->data[x + frame->width * y];
     *cy = pix->Y;
     *cu = pix->U;
     *cv = pix->V;

@@ -132,7 +132,7 @@ void VisBuffer_Destroy(visBuffer **buffer);
  * @return Returns 0 on success;
  * @ingroup visBuffer
  */
-int visBuffer_PushBackResult(visBuffer *buffer, visVisualResult *pRes);
+int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes);
 
 
 /**
@@ -147,7 +147,7 @@ int visImageRGB_Alloc(visImageRGB *t, int width, int height);
 
 int visImage_Alloc(visImage *t, int width, int height, int components_per_pixel);
 void visImage_FreeData(visImage *pImage);
-int visView_GenerateBW(const visImage *pImage, visView *pView);
+int visView_GenerateBW(visImage *pImage, const visView *pView);
 /**
  * Frees up the data being used by a VisImageRGB object
  * @param t VisImageRGB to write pixel data to

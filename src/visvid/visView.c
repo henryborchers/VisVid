@@ -306,7 +306,7 @@ size_t calculateImageBWOffset(int x, int y, int width, int num_pix_components){
     return source_line_offset + pixel_offset;
 }
 
-int visView_GenerateBW(const visImage *pImage, visView *pView) {
+int visView_GenerateBW(visImage *pImage, const visView *pView) {
 //    FIGURE OUT the line offset of the view
     for (int y = 0; y < pImage->height; ++y) {
         for (int x = 0; x < pImage->width; ++x) {
