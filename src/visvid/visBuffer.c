@@ -269,10 +269,8 @@ visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
     }
 
     // Only copy the pRes results if they are real and not null
-    if (pRes) {
-        if (VisVisualResult_copy(node->result, pRes) != 0) {
-            return NULL;
-        }
+    if (pRes && VisVisualResult_copy(node->result, pRes) != 0) {
+        return NULL;
     }
     node->position = 0;
     return node;
