@@ -11,7 +11,7 @@ from distutils.cmd import Command
 from urllib import request
 import tarfile
 
-PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v2.2.3.tar.gz"
+PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v2.4.3.tar.gz"
 
 
 class PackageSharedSource(Command):
