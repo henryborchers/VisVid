@@ -123,7 +123,7 @@ int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes) {
     // use the last one
     if ((ret = visBuffer_setResult(buffer, buffer->bufferLen - 1, pRes)) != 0) {
         return ret;
-    };
+    }
     return 0;
 
 
@@ -272,7 +272,7 @@ visBufferNode *CreateVisBufferNode(const visVisualResult *pRes) {
     if (pRes) {
         if (VisVisualResult_copy(node->result, pRes) != 0) {
             return NULL;
-        };
+        }
     }
     node->position = 0;
     return node;
@@ -325,7 +325,7 @@ int visBuffer_getResult(PixelValue *pRes, const visBuffer *buffer, size_t index)
         PixelValue value;
         if (VisVisualResult_GetValue(&value, node->result, x) != 0) {
             return -1;
-        };
+        }
         pRes[x] = value;
 
 
