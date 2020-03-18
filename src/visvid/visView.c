@@ -193,7 +193,7 @@ int visView_Update(visView *pView, visBuffer *buffer) {
             free(lastSlice);
             free(currentSlice);
             return valid_result;
-        };
+        }
         for (y = 0; y < pView->width; y++) {
             // If the result is a true result, the memory can be copied
             if (valid_result == 1) {
@@ -264,7 +264,7 @@ int visViewRGBA_value2BW(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, u
 
 float minimum(float d, float d1) {
 
-    return (d < d1) ? d : d1;;
+    return (d < d1) ? d : d1;
 }
 
 int visViewRGBA_value2color1(const PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a) {
