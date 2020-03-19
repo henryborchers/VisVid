@@ -165,11 +165,11 @@ class BuildCMakeClib(build_clib):
         assert self.cmake_path, "CMake command is required to build visvid"
 
     def build_libraries(self, libraries):
+        build_ext_cmd = self.get_finalized_command("build_ext")
         for lib_name, lib in libraries:
             if len(lib['sources']) > 0:
                 new_lib = lib.copy()
                 classic_library = (lib_name, new_lib)
-                build_ext_cmd = self.get_finalized_command("build_ext")
 
                 # Add the same include directories used by pyvisvid.visvid
                 include_dirs = lib.get('include_dirs', [])
@@ -183,16 +183,38 @@ class BuildCMakeClib(build_clib):
                                                           "build",
                                                           lib_name))
 
-                if not os.path.exists(os.path.join(build_path, "CMakeCache.txt")):
+                if build_ext_cmd.force == 1 or not os.path.exists(os.path.join(build_path, "CMakeCache.txt")):
                     install_prefix = os.path.abspath(self.build_clib)
                     source_dir = lib['CMAKE_SOURCE_DIR']
-                    self.compiler.spawn([
+                    cmake_config_command =[
                         self.cmake_path,
                         "-S", os.path.abspath(source_dir),
                         "-B", build_path,
                         f"-DCMAKE_INSTALL_PREFIX:PATH={install_prefix}"
+                    ]
+
+                    compiler_flags = list()
+
+                    for flag in self.compiler.compiler:
+                        compiler_commands = [
+                            "clang",
+                            "gcc",
+                            "cc",
+                            "x86_64-linux-gnu-gcc",
+                            self.compiler.compiler[0],
+                            self.compiler.compiler_cxx[0]
                         ]
-                    )
+
+                        # remove the command for the compiler
+                        if flag in compiler_commands:
+                            continue
+
+                        compiler_flags.append(flag)
+
+                    CMAKE_SHARED_LINKER_FLAGS = " ".join(compiler_flags)
+                    cmake_config_command.append("-DCMAKE_C_FLAGS={}".format(CMAKE_SHARED_LINKER_FLAGS))
+                    self.compiler.spawn(cmake_config_command)
+
                 self.compiler.spawn([
                     self.cmake_path, "--build", build_path, "--target", "install"])
 
