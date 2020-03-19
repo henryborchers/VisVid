@@ -2,3 +2,4 @@ pytest
 pytest-runner
 tox
 flake8
+coverage
