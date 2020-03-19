@@ -196,6 +196,8 @@ class BuildCMakeClib(build_clib):
                     for flag in self.compiler.compiler:
                         if flag == "clang":
                             continue
+                        if flag == "cc":
+                            continue
                         compiler_flags.append(flag)
                     CMAKE_SHARED_LINKER_FLAGS = " ".join(compiler_flags)
                     cmake_config_command.append("-DCMAKE_C_FLAGS={}".format(CMAKE_SHARED_LINKER_FLAGS))
