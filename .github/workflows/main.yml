@@ -60,6 +60,16 @@ jobs:
           cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ --junitxml=../../../reports/test-report.xml
           coverage xml -o ../../../coverage-reports/pythoncoverage-pytest.xml
         continue-on-error: true
+      - name: Upload pytest report xunit results
+        uses: actions/upload-artifact@v1
+        with:
+          name: pytest-report
+          path: reports/test-report.xml
+      - name: Upload pytest coverage report
+        uses: actions/upload-artifact@v1
+        with:
+          name: pytest-coverage
+          path: coverage-reports/pythoncoverage-pytest.xml
 
 
   sonarcloud:
