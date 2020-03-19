@@ -194,7 +194,12 @@ class BuildCMakeClib(build_clib):
                     ]
                     compiler_flags = list()
                     # remove the command for the compiler
-                    compiler_commands = ["clang", "gcc", "cc"]
+                    compiler_commands = [
+                        "clang",
+                        "gcc",
+                        "cc",
+                        "x86_64-linux-gnu-gcc"
+                    ]
                     for flag in self.compiler.compiler:
                         if flag in compiler_commands:
                             continue
