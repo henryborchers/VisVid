@@ -30,7 +30,7 @@ jobs:
         cmake --build ./build --target all --target test-visvid --target test-visvid-internal
     - name: Run CTest
       run: cd build && ctest
-  python:
+  pytest:
     runs-on: ubuntu-latest
 
     steps:
@@ -74,6 +74,7 @@ jobs:
 
   sonarcloud:
     runs-on: ubuntu-latest
+    needs: [pytest]
 
     steps:
       - name: Install dependencies
@@ -110,7 +111,16 @@ jobs:
               ${{ runner.os }}-build-${{ env.cache-name }}-
               ${{ runner.os }}-build-
               ${{ runner.os }}-
-
+      - name: Get pytest report
+        uses: actions/download-artifact@v1
+        with:
+          name: pytest-report
+          path: reports
+      - name: Get pytest coverage report
+        uses: actions/download-artifact@v1
+        with:
+          name: pytest-coverage
+          path: coverage-reports
       - name: Run SonarScanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
