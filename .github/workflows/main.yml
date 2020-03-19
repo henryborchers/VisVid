@@ -51,7 +51,7 @@ jobs:
                         libswresample-dev \
                         libswscale-dev
       - name: Build extension
-        run: python setup.py build_clib
+        run: python setup.py build
   sonarcloud:
     runs-on: ubuntu-latest
 
