@@ -59,8 +59,8 @@ jobs:
         run: |
           (cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ --junitxml=../../../reports/test-report.xml)
           (cd src/applications/pyvisvid && coverage xml -o ../../../coverage-reports/pythoncoverage-pytest.xml )
-          sed -i 's/\/home\/runner\/work\/VisVid\/VisVid/\/github\/workspace/g' coverage-reports/pythoncoverage-pytest.xml
-          sed -i 's/\/home\/runner\/work\/VisVid\/VisVid/\/github\/workspace/g' reports/test-report.xml
+#          sed -i 's/\/home\/runner\/work\/VisVid\/VisVid/\/github\/workspace/g' coverage-reports/pythoncoverage-pytest.xml
+#          sed -i 's/\/home\/runner\/work\/VisVid\/VisVid/\/github\/workspace/g' reports/test-report.xml
         continue-on-error: true
       - name: Upload pytest report xunit results
         uses: actions/upload-artifact@v1
