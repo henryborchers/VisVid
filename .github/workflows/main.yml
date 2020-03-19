@@ -34,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
@@ -49,6 +50,8 @@ jobs:
                         libavutil-dev \
                         libswresample-dev \
                         libswscale-dev
+      - name: Build extension
+        run: python setup.py --version
   sonarcloud:
     runs-on: ubuntu-latest
 
