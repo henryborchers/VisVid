@@ -7,7 +7,7 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    name: Build and test core library
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -32,6 +32,7 @@ jobs:
       run: cd build && ctest
   pytest:
     runs-on: ubuntu-latest
+    name: Pytest unit tests
 
     steps:
       - uses: actions/checkout@v2
@@ -59,8 +60,6 @@ jobs:
         run: |
           (cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ --junitxml=../../../reports/test-report.xml)
           (cd src/applications/pyvisvid && coverage xml -o ../../../coverage-reports/pythoncoverage-pytest.xml )
-#          sed -i 's/\/home\/runner\/work\/VisVid\/VisVid/\/github\/workspace/g' coverage-reports/pythoncoverage-pytest.xml
-#          sed -i 's/\/home\/runner\/work\/VisVid\/VisVid/\/github\/workspace/g' reports/test-report.xml
         continue-on-error: true
       - name: Upload pytest report xunit results
         uses: actions/upload-artifact@v1
@@ -72,17 +71,59 @@ jobs:
         with:
           name: pytest-coverage
           path: coverage-reports/pythoncoverage-pytest.xml
-
+  pylint:
+    name: Pylint static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+      - name: Cache python dependendies
+        uses: actions/cache@v1
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: |
+            sudo apt install ffmpeg \
+                          libsdl2-dev \
+                          libavcodec-dev \
+                          libavdevice-dev \
+                          libavfilter-dev \
+                          libavformat-dev \
+                          libavresample-dev \
+                          libavutil-dev \
+                          libswresample-dev \
+                          libswscale-dev
+            python -m pip install --upgrade pip
+            pip install pylint -r requirements-dev.txt
+      - name: Run pylint
+        run: |
+          mkdir -p reports
+          (cd src/applications/pyvisvid && pylint pyvisvid  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}" | tee ../../../reports/pylint_issues.txt)
+        continue-on-error: true
+      - name: Upload pylint report
+        uses: actions/upload-artifact@v1
+        with:
+          name: pylint-report
+          path: reports/pylint_issues.txt
 
   sonarcloud:
     runs-on: ubuntu-latest
-    needs: [pytest]
+    needs: [pytest, pylint]
 
     steps:
       - name: Install dependencies
         run: |
-          sudo apt install libsdl2-dev \
-                           libavcodec-dev \
+          sudo apt install \
+                          libsdl2-dev \
+                          libavcodec-dev \
                           libavdevice-dev \
                           libavfilter-dev \
                           libavformat-dev \
@@ -123,6 +164,11 @@ jobs:
         with:
           name: pytest-coverage
           path: coverage-reports
+      - name: Get Pylint report
+        uses: actions/download-artifact@v1
+        with:
+          name: pylint-report
+          path: reports
       - name: Run SonarScanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
