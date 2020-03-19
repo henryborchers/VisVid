@@ -193,12 +193,14 @@ class BuildCMakeClib(build_clib):
                         f"-DCMAKE_INSTALL_PREFIX:PATH={install_prefix}"
                     ]
                     compiler_flags = list()
+                    # remove the command for the compiler
+                    compiler_commands = ["clang", "gcc", "cc"]
                     for flag in self.compiler.compiler:
-                        if flag == "clang":
+                        if flag in compiler_commands:
                             continue
-                        if flag == "gcc":
-                            continue
+
                         compiler_flags.append(flag)
+
                     CMAKE_SHARED_LINKER_FLAGS = " ".join(compiler_flags)
                     cmake_config_command.append("-DCMAKE_C_FLAGS={}".format(CMAKE_SHARED_LINKER_FLAGS))
                     self.compiler.spawn(cmake_config_command)
