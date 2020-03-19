@@ -41,7 +41,8 @@ jobs:
           python-version: '3.7'
       - name: Install dependencies
         run: |
-          sudo apt install libsdl2-dev \
+          sudo apt install ffmpeg \
+                        libsdl2-dev \
                         libavcodec-dev \
                         libavdevice-dev \
                         libavfilter-dev \
