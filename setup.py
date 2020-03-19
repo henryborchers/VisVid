@@ -186,13 +186,21 @@ class BuildCMakeClib(build_clib):
                 if not os.path.exists(os.path.join(build_path, "CMakeCache.txt")):
                     install_prefix = os.path.abspath(self.build_clib)
                     source_dir = lib['CMAKE_SOURCE_DIR']
-                    self.compiler.spawn([
+                    cmake_config_command =[
                         self.cmake_path,
                         "-S", os.path.abspath(source_dir),
                         "-B", build_path,
                         f"-DCMAKE_INSTALL_PREFIX:PATH={install_prefix}"
-                        ]
-                    )
+                    ]
+                    compiler_flags = list()
+                    for flag in self.compiler.compiler:
+                        if flag == "clang":
+                            continue
+                        compiler_flags.append(flag)
+                    CMAKE_SHARED_LINKER_FLAGS = " ".join(compiler_flags)
+                    cmake_config_command.append("-DCMAKE_C_FLAGS={}".format(CMAKE_SHARED_LINKER_FLAGS))
+                    self.compiler.spawn(cmake_config_command)
+
                 self.compiler.spawn([
                     self.cmake_path, "--build", build_path, "--target", "install"])
 
