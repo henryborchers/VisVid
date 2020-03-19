@@ -51,7 +51,10 @@ jobs:
                         libswresample-dev \
                         libswscale-dev
       - name: Build extension
-        run: python setup.py build
+        run: python setup.py build build_ext --inplace
+      - name: Run pytest
+        run: cd src/applications/pyvisvid && python -m pytest ../../../tests/pyvisvid/
+
   sonarcloud:
     runs-on: ubuntu-latest
 
