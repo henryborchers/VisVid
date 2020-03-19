@@ -52,11 +52,19 @@ jobs:
                         libswresample-dev \
                         libswscale-dev
           python -m pip install --upgrade pip
-          pip install pytest
+          pip install pytest -r requirements-dev.txt
       - name: Build extension
         run: python setup.py build build_ext --inplace
       - name: Run pytest
-        run: cd src/applications/pyvisvid && python -m pytest ../../../tests/pyvisvid/
+        run: |
+          cd src/applications/pyvisvid && python -m pytest ../../../tests/pyvisvid/
+#          coverage run --parallel-mode --branch --source=src/applications/pyvisvid -m pytest --junitxml=reports/test-report.xml
+#          coverage combine
+#          coverage xml -o coverage-reports/pythoncoverage-pytest.xml
+#          sed -i 's/\/home\/runner\/work\/tyko\/tyko/\/github\/workspace/g' coverage-reports/pythoncoverage-pytest.xml
+#          sed -i 's/\/home\/runner\/work\/tyko\/tyko/\/github\/workspace/g' reports/test-report.xml
+#        continue-on-error: true
+
 
   sonarcloud:
     runs-on: ubuntu-latest
