@@ -30,7 +30,25 @@ jobs:
         cmake --build ./build --target all --target test-visvid --target test-visvid-internal
     - name: Run CTest
       run: cd build && ctest
+  python:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+      - name: Install dependencies
+        run: |
+          sudo apt install libsdl2-dev \
+                        libavcodec-dev \
+                        libavdevice-dev \
+                        libavfilter-dev \
+                        libavformat-dev \
+                        libavresample-dev \
+                        libavutil-dev \
+                        libswresample-dev \
+                        libswscale-dev
   sonarcloud:
     runs-on: ubuntu-latest
 
