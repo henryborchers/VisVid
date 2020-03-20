@@ -22,13 +22,6 @@ static visBufferNode *visBufferFront(const visBuffer *buffer);
 static visBufferNode *visBufferNextNode(const visBufferNode *node);
 
 /**
- * Gets the previous node after the given one.
- * @param node The node which to find the previous node.
- * @return Returns a pointer to the previous node. Returns NULL if none exists.
- */
-static visBufferNode *visBufferPreviousNode(const visBufferNode *node);
-
-/**
  * Pushes a visBufferNode to the end of a visBuffer.
  * @param buffer The buffer to add the node to.
  * @param newNode The node to add to the buffer.
@@ -88,10 +81,6 @@ static visBufferNode *visBufferNextNode(const visBufferNode *node) {
         return node->next;
     }
     return NULL;
-}
-
-static visBufferNode *visBufferPreviousNode(const visBufferNode *node) {
-    return node->previous;
 }
 
 int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes) {
