@@ -52,6 +52,8 @@ static int update_video_widget(const DisplayWidgetContext *ctx,VidVisWidget *wid
 //static float enforce_range(float min, float max, float value);
 //static int generate_fakeresult(visVisualResult *pResult);
 
+static void toggle_fullscreen(SDL_Window *pWindow, VidVisWidget *visWidget, VidVisWidget *videoWidget);
+static int getCombinedWindowSize(int *w, int *h, VidVisWidget *visWidget, VidVisWidget *videoWidget);
 static uint8_t offset = 255;
 static float offset_color_midtones = 1;
 static float offset_color_highlights = 1;
@@ -87,7 +89,11 @@ int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWi
     int videoHeight;
     int videoWidth;
     decoderContext_GetSize(decoderCtx, &videoWidth, &videoHeight);
-
+    getCombinedWindowSize(&vidCtx->windowWidth, &vidCtx->windowHeight, visWidget, videoWidget);
+    if((rc = getCombinedWindowSize(&vidCtx->windowWidth, &vidCtx->windowHeight, visWidget, videoWidget)) != 0){
+        fprintf(stderr, "getCombinedWindowSize failed\n");
+        return rc;
+    }
     puts("Initializing visualization image");
     if((rc = visImageRGB_Alloc(&vidCtx->buffer, videoWidth, videoWidth)) != 0){
         fprintf(stderr, "visImageRGB_Alloc failed\n");
@@ -173,6 +179,11 @@ int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWi
                             goto stopmainloop;
                         default:break;
                     }
+                case SDL_MOUSEBUTTONDOWN:
+                    if(event.button.clicks == 2){
+                        toggle_fullscreen(vidCtx->window, visWidget, videoWidget);
+                    }
+                    break;
                 default:break;
             }
 
@@ -253,6 +264,28 @@ int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWi
     vidVis_cleanup();
     return returncode;
 }
+int getCombinedWindowSize(int *w, int *h, VidVisWidget *visWidget, VidVisWidget *videoWidget){
+    if(w == NULL || h == NULL || visWidget == NULL || videoWidget == NULL){
+        return -1;
+    }
+    *w = visWidget->width;
+    *h = videoWidget->height + visWidget->height;
+    return 0;
+}
+void toggle_fullscreen(SDL_Window *pWindow, VidVisWidget *visWidget, VidVisWidget *videoWidget) {
+    if( (Uint32)SDL_WINDOW_FULLSCREEN & SDL_GetWindowFlags(pWindow)){
+        SDL_SetWindowFullscreen(pWindow, 0);
+        int w;
+        int h;
+        if(getCombinedWindowSize(&w, &h, visWidget, videoWidget) != 0){
+            fputs("getCombinedWindowSize failed\n", stderr);
+            return;
+        }
+        SDL_SetWindowSize(pWindow, w, h);
+    } else{
+        SDL_SetWindowFullscreen(pWindow, SDL_WINDOW_FULLSCREEN);
+    }
+}
 
 void vidVis_cleanup() {
     SDL_Quit();
@@ -285,6 +318,7 @@ void vidVis_destroy_window(DisplayWidgetContext *ctx) {
 int setup_window(DisplayWidgetContext *windowCtx, const DecoderContext *decoderCtx, const char* title){
     int videoWidth;
     int videoHeight;
+
     decoderContext_GetSize(decoderCtx, &videoWidth, &videoHeight);
     windowCtx->windowWidth = videoWidth/2;
     windowCtx->windowHeight = (videoWidth + videoHeight)/2;
@@ -372,10 +406,12 @@ int vidVis_ctx_init(DisplayWidgetContext *windowCtx, VidVisWidget *visWidget, Vi
         SDL_DestroyWindow(windowCtx->window);
         return return_code;
     }
+
     return 0;
 }
 
 int vidVis_open_window(DisplayWidgetContext *ctx) {
+
     SDL_SetWindowSize(ctx->window, ctx->windowWidth, ctx->windowHeight);
     SDL_ShowWindow(ctx->window);
     int w, h;
