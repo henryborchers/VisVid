@@ -26,16 +26,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <visvid/visvid.h>
-//#include <visBuffer.h>
-//#include <visFrame.h>
-//#include <visView.h>
-//#include <visVisualization.h>
 #include "ffmpeg_converter.h"
 #include "videoAndVisualPlayer.h"
 #include "videoDecoder.h"
-//#include "visImageWriter.h"
-//#include "visResult.h"
-//#include "visTypes.h"
 #define NUM_COLORS 4
 
 static int vidVis_init();
@@ -43,20 +36,34 @@ static int vidVis_init();
 static int setup_visualization_widget(VidVisWidget *visCtx, const DisplayWidgetContext *ctx, const DecoderContext *decoderCtx);
 static int setup_video_widget(VidVisWidget *videoCtx, const DisplayWidgetContext *ctx, const DecoderContext *decoderCtx);
 static int setup_window(DisplayWidgetContext *windowCtx, const DecoderContext *decoderCtx, const char* title);
-static int vidVis_refresh(DisplayWidgetContext *ctx, VidVisWidget *visWidgetCtx,VidVisWidget *videoWidgetCtx, AVFrame *pFrame, visImageRGB *texture);
-static int update_video_widget(const DisplayWidgetContext *ctx,VidVisWidget *widget, AVFrame *pFrame);
-
-//static int variable_color(PixelValue value, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
-//static bool quitCalled(SDL_Event *pEvent);
-//static float min(float d, float d1);
-//static float enforce_range(float min, float max, float value);
-//static int generate_fakeresult(visVisualResult *pResult);
+//static int vidVis_refresh_widgets(DisplayWidgetContext *ctx, VidVisWidget *visWidgetCtx, VidVisWidget *videoWidgetCtx,
+//                                  const SDL_Rect *videoWidget, const SDL_Rect *visualizationWidget);
 
 static void toggle_fullscreen(SDL_Window *pWindow, VidVisWidget *visWidget, VidVisWidget *videoWidget);
 static int getCombinedWindowSize(int *w, int *h, VidVisWidget *visWidget, VidVisWidget *videoWidget);
+
+static int write_visualization_texture(VidVisWidget *widget, visImageRGB *texture);
+
+static int render_widget(SDL_Renderer *pRenderer, const VidVisWidget *widget, int w, int h, int x, int y);
+
+int write_video_texture(VidVisWidget *widget, const AVFrame *pFrame);
+
+static SDL_Rect getVideoCoordinateStretch(AVFrame *pFrame, int windowHeight, int windowWidth, int x, int y);
+
+static SDL_Rect getVisualizationCoordinateStretch(VidVisWidget *widget, const AVFrame *frame, int windowHeight, int windowWidth, int x, int y);
+
+
+
 static uint8_t offset = 255;
 static float offset_color_midtones = 1;
 static float offset_color_highlights = 1;
+typedef struct RenderQueueItem{
+    const VidVisWidget *widget;
+    const SDL_Rect *coordinates;
+
+} RenderQueueItem;
+
+static int render_widgets(SDL_Renderer *pRenderer, const struct RenderQueueItem *items, int count);
 
 int playVideoVisInit(){
     decoder_init();
@@ -241,9 +248,44 @@ int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWi
             }
         }
 
+        int windowWidth, windowHeight;
+        SDL_GetWindowSize(vidCtx->window, &windowWidth, &windowHeight);
 
-        vidVis_refresh(vidCtx, visWidget, videoWidget, frame, &vidCtx->buffer);
+        int res;
+//        Write textures for the widgets
+        if((res = write_visualization_texture(visWidget, &vidCtx->buffer) != 0)){
+            fprintf(stderr,"write_visualization_texture failed\n");
+            return res;
+        }
+
+        if((res = write_video_texture(videoWidget, frame))){
+            fprintf(stderr,"write_video_texture() failed\n");
+            return res;
+        }
+
+//        Draw widgets to the screen
+        const SDL_Rect video_coordinates = getVideoCoordinateStretch(frame, windowHeight, windowWidth, 0, 0);
+        const SDL_Rect visualization_coordinates = getVisualizationCoordinateStretch(videoWidget,
+                                                                                     frame,
+                                                                                     windowHeight,
+                                                                                     windowWidth,
+                                                                                     0,
+                                                                                     video_coordinates.h);
+        RenderQueueItem widgets[] ={
+                {visWidget, &visualization_coordinates},
+                {videoWidget, &video_coordinates},
+        };
+
+        if((res = render_widgets(
+                vidCtx->renderer, widgets,
+                sizeof(widgets) / sizeof(RenderQueueItem)))
+                ){
+            fprintf(stderr,"render_widgets() failed\n");
+            return res;
+        }
+        SDL_RenderPresent(vidCtx->renderer);
     }
+
     stopmainloop:
     free(slice);
     VisVisualResult_Cleanup(&result);
@@ -264,6 +306,32 @@ int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWi
     vidVis_cleanup();
     return returncode;
 }
+
+SDL_Rect
+getVisualizationCoordinateStretch(VidVisWidget *widget, const AVFrame *frame, int windowHeight, int windowWidth, int x,
+                                  int y) {
+    float scaleX = (float)windowWidth / (float)frame->width;
+    float scaleY = (float)windowHeight / (float)(frame->width + frame->height);
+    SDL_Rect result;
+    result.x = x;
+    result.y = y;
+    result.h = windowHeight - (int)round(((float)widget->height * scaleY));
+    result.w = (int)(widget->width * scaleX);
+
+    return result;
+}
+
+SDL_Rect getVideoCoordinateStretch(AVFrame *frame, int windowHeight, int windowWidth, int x, int y) {
+    float scaleX = (float)windowWidth / (float)frame->width;
+    float scaleY = (float)windowHeight / (float)(frame->width + frame->height);
+    SDL_Rect result;
+    result.w = (int)(((float)frame->width * scaleX));
+    result.h = (int)round(((float)frame->height) * scaleY);
+    result.x = x;
+    result.y = y;
+    return result;
+}
+
 int getCombinedWindowSize(int *w, int *h, VidVisWidget *visWidget, VidVisWidget *videoWidget){
     if(w == NULL || h == NULL || visWidget == NULL || videoWidget == NULL){
         return -1;
@@ -273,7 +341,7 @@ int getCombinedWindowSize(int *w, int *h, VidVisWidget *visWidget, VidVisWidget 
     return 0;
 }
 void toggle_fullscreen(SDL_Window *pWindow, VidVisWidget *visWidget, VidVisWidget *videoWidget) {
-    if( (Uint32)SDL_WINDOW_FULLSCREEN & SDL_GetWindowFlags(pWindow)){
+    if( (Uint32)SDL_WINDOW_FULLSCREEN_DESKTOP & SDL_GetWindowFlags(pWindow)){
         SDL_SetWindowFullscreen(pWindow, 0);
         int w;
         int h;
@@ -283,7 +351,7 @@ void toggle_fullscreen(SDL_Window *pWindow, VidVisWidget *visWidget, VidVisWidge
         }
         SDL_SetWindowSize(pWindow, w, h);
     } else{
-        SDL_SetWindowFullscreen(pWindow, SDL_WINDOW_FULLSCREEN);
+        SDL_SetWindowFullscreen(pWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
 }
 
@@ -419,6 +487,16 @@ int vidVis_open_window(DisplayWidgetContext *ctx) {
     return w == ctx->windowWidth && h == ctx->windowHeight ? 0 : 1;
 }
 
+int write_visualization_texture(VidVisWidget *widget, visImageRGB *texture) {
+    SDL_Rect visualizationOrig;
+    visualizationOrig.x = widget->x;
+    visualizationOrig.y = widget->y;
+    visualizationOrig.w = widget->width;
+    visualizationOrig.h = widget->height;
+    SDL_UpdateTexture(widget->texture, &visualizationOrig, texture->plane, texture->pitch);
+    return 0;
+
+}
 
 int update_visualization_widget(const DisplayWidgetContext *ctx, VidVisWidget *widget, visImageRGB *texture, float scaleY,
                                 float scaleX) {
@@ -436,36 +514,26 @@ int update_visualization_widget(const DisplayWidgetContext *ctx, VidVisWidget *w
 
     // Calculate how large the visualization should be when scaled based on the window
     visualizationWidget.x = (int)(visualizationOrig.x * scaleX);
+    visualizationWidget.h = windowHeight-(int)round(((float)visualizationOrig.h * scaleY));
     visualizationWidget.y = windowHeight - (widget->height* scaleY);
-    visualizationWidget.h = windowHeight-(int)round(((float)ctx->windowWidth * scaleY));
     visualizationWidget.w = (int)(widget->width * scaleX);
 
     SDL_UpdateTexture(widget->texture, &visualizationOrig , texture->plane, texture->pitch);
     // Draw the visualization
+
     SDL_RenderCopy(ctx->renderer, widget->texture, &visualizationOrig, &visualizationWidget);
     return 0;
 }
-int update_video_widget(const DisplayWidgetContext *ctx, VidVisWidget *widget, AVFrame *pFrame) {
-    int windowHeight;
-    int windowWidth;
-    SDL_GetWindowSize(ctx->window, &windowWidth, &windowHeight);
-    float scaleX = (float)windowWidth / (float)pFrame->width;
-    float scaleY = (float)windowHeight / (float)(pFrame->width + pFrame->height);
 
 
+int write_video_texture(VidVisWidget *widget, const AVFrame *pFrame) {
     SDL_Rect videoOrig;
-    SDL_Rect videoWidget;
 
     videoOrig.x = widget->x;
     videoOrig.y = widget->y;
     videoOrig.w = pFrame->width;
     videoOrig.h = pFrame->height;
-    // Calculate how large the video player should be when scaled based on the window
 
-    videoWidget.x = 0;
-    videoWidget.y = 0;
-    videoWidget.h = (int)round(((float)videoOrig.h) * scaleY);
-    videoWidget.w = (int)(((float)videoOrig.w * scaleX));
     int res = 0;
     if((res = SDL_UpdateYUVTexture(widget->texture, &videoOrig,
                                    pFrame->data[0], pFrame->linesize[0],
@@ -474,33 +542,69 @@ int update_video_widget(const DisplayWidgetContext *ctx, VidVisWidget *widget, A
         fprintf(stderr, "%s\n", SDL_GetError());
         return res;
     }
-    // Draw the video
-    SDL_RenderCopy(ctx->renderer, widget->texture, &videoOrig, &videoWidget);
-    return res;
-}
-
-int vidVis_refresh(DisplayWidgetContext *ctx, VidVisWidget *visWidgetCtx, VidVisWidget *videoWidgetCtx, AVFrame *pFrame, visImageRGB *texture) {
-    int res = 0;
-
-    float scaleX = 0;
-    float scaleY = 0;
-    SDL_GetWindowSize(ctx->window, &ctx->windowWidth, &ctx->windowHeight);
-    scaleX = (float)ctx->windowWidth / (float)pFrame->width;
-    scaleY = (float)ctx->windowHeight / (float)(pFrame->width + pFrame->height);
-//    scaleY = (float)rendY/(float)ctx->windowHeight/2;
-    SDL_RenderClear(ctx->renderer);
-
-    // Update SDL texture for the visualization
-    if((res = update_visualization_widget(ctx, visWidgetCtx, texture, scaleY, scaleX) != 0)){
-        fprintf(stderr,"Updating visualization failed\n");
-        return res;
-    }
-    if((res = update_video_widget(ctx, videoWidgetCtx, pFrame) !=0)){
-        fprintf(stderr,"Updating video failed\n");
-        return res;
-    };
-
-    // Display to screen
-    SDL_RenderPresent(ctx->renderer);
     return 0;
 }
+
+
+int render_widget(SDL_Renderer *pRenderer, const VidVisWidget *widget, int w, int h, int x, int y) {
+    SDL_Rect videoOrig;
+    videoOrig.x = widget->x;
+    videoOrig.y = widget->y;
+    videoOrig.h = widget->height;
+    videoOrig.w = widget->width;
+
+    SDL_Rect videoWidget;
+    videoWidget.x = x;
+    videoWidget.y = y;
+    videoWidget.h = h;
+    videoWidget.w = w;
+
+    SDL_RenderCopy(pRenderer, widget->texture, &videoOrig, &videoWidget);
+    return 0;
+}
+
+//int vidVis_refresh_widgets(DisplayWidgetContext *ctx, VidVisWidget *visWidgetCtx, VidVisWidget *videoWidgetCtx,
+//                           const SDL_Rect *videoWidget, const SDL_Rect *visualizationWidget) {
+//
+//    int res;
+//
+//    RenderQueueItem widgets[] ={
+//            {visWidgetCtx,visualizationWidget},
+//            {videoWidgetCtx,videoWidget},
+//
+//    };
+//    if((res = render_widgets(
+//            ctx->renderer, widgets,
+//            sizeof(widgets) / sizeof(RenderQueueItem)))
+//            ){
+//        fprintf(stderr,"render_widgets() failed\n");
+//        return res;
+//    }
+//    SDL_RenderPresent(ctx->renderer);
+//    return 0;
+//}
+
+int render_widgets(SDL_Renderer *pRenderer, const struct RenderQueueItem *items, int count) {
+        for (int i = 0; i < count; ++i) {
+            RenderQueueItem item = items[i];
+            if (item.widget == NULL || item.coordinates == NULL){
+                return -1;
+            }
+            int res;
+            if((res = render_widget(
+                    pRenderer,
+                    items[i].widget,
+                    items[i].coordinates->w,
+                    items[i].coordinates->h,
+                    items[i].coordinates->x,
+                    items[i].coordinates->y) != 0)){
+                return res;
+            }
+
+    }
+    return 0;
+}
+
+//int render_widgets(SDL_Renderer *pRenderer, struct RenderQueueItem widgets, int count) {
+//    return 0;
+//}
