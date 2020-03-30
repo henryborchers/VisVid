@@ -124,7 +124,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          sudo apt updat && \
+          sudo apt update && \
           sudo apt install \
                           libsdl2-dev \
                           libavcodec-dev \
