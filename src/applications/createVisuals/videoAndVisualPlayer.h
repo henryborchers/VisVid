@@ -23,8 +23,6 @@ typedef struct {
 } VidVisWidget;
 
 typedef struct {
-    int             windowWidth;
-    int             windowHeight;
     SDL_Window      *window;
     SDL_Renderer    *renderer;
     visImageRGB     buffer;
@@ -33,7 +31,6 @@ typedef struct {
 
 int vidVis_ctx_init(DisplayWidgetContext *windowCtx, VidVisWidget *visWidget, VidVisWidget *videoWidget, const DecoderContext* decoderCtx);
 int playVideoVisInit();
-int vidVis_open_window(DisplayWidgetContext *ctx);
 void vidVis_cleanup();
 int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWidget *visWidget, VidVisWidget *videoWidget);
 void vidVis_destroy_window(DisplayWidgetContext *ctx);

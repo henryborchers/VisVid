@@ -78,17 +78,11 @@ int main(int argc, char *argv[]) {
 
     puts("Initializing context");
     vidVis_ctx_init(&visualizationWindowCtx, &visualizationWidget, &videoWidget, decoderCtx);
+    SDL_ShowWindow(visualizationWindowCtx.window);
 
-//    //////////////////////////
-    if((ret = vidVis_open_window(&visualizationWindowCtx)) != 0){
-        fprintf(stderr, "Building Window failed with error code %d\n ", ret);
-    }
-
-    if(ret == 0){
-        if ((ret = playVideoVis(decoderCtx, &visualizationWindowCtx,&visualizationWidget,&videoWidget)) != 0) {
-            fprintf(stderr, "%s exited with error code: %d.\n", argv[0], ret);
-        };
-    }
+    if ((ret = playVideoVis(decoderCtx, &visualizationWindowCtx, &visualizationWidget, &videoWidget)) != 0) {
+        fprintf(stderr, "%s exited with error code: %d.\n", argv[0], ret);
+    };
     puts("Destroying Window");
 
     vidVis_destroy_widgets(&visualizationWidget, &videoWidget);
