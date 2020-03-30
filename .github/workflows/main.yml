@@ -14,6 +14,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt updat && \
         sudo apt install libsdl2-dev \
                          libavcodec-dev \
                         libavdevice-dev \
@@ -42,6 +43,7 @@ jobs:
           python-version: '3.7'
       - name: Install dependencies
         run: |
+          sudo apt updat && \
           sudo apt install ffmpeg \
                         libsdl2-dev \
                         libavcodec-dev \
@@ -91,6 +93,7 @@ jobs:
             ${{ runner.os }}-
       - name: Install dependencies
         run: |
+            sudo apt updat && \
             sudo apt install ffmpeg \
                           libsdl2-dev \
                           libavcodec-dev \
@@ -121,6 +124,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
+          sudo apt updat && \
           sudo apt install \
                           libsdl2-dev \
                           libavcodec-dev \
