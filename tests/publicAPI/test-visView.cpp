@@ -35,3 +35,14 @@ TEST_CASE("VisView_Destroy --> null", "[visView]"){
 }
 //
 
+TEST_CASE("visView_Update4 fails on empty buffer", "[visView]"){
+
+    visView *pvid = VisView_Create(640, 480);
+    visBuffer *buffer = VisBuffer_Create2(10, 2);
+    CHECK(visView_Update4(pvid, buffer) < 0);
+    VisBuffer_Destroy(&buffer);
+    VisView_Destroy(&pvid);
+
+}
+//
+
