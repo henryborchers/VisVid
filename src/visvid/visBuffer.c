@@ -196,7 +196,9 @@ static visBufferNode *visBufferPop(visBuffer *buffer) {
         buffer->first = NULL;
         buffer->last = NULL;
     } else {
-
+        if (buffer->first == NULL){
+            return NULL;
+        }
         buffer->first = buffer->first->next;
     }
     if (buffer->first) {
