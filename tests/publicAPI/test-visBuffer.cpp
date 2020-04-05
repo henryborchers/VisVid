@@ -6,6 +6,7 @@
 
 extern "C" {
 #include "visvid/visvid.h"
+#include "visBuffer.h"
 }
 
 
@@ -21,6 +22,14 @@ TEST_CASE("VisBuffer_Destroy --> null", "[visbuffer]") {
     visBuffer *buffer = VisBuffer_Create2(10, 2);
     CHECK(buffer != nullptr);
 
+    VisBuffer_Destroy(&buffer);
+    REQUIRE(buffer == nullptr);
+}
+
+
+TEST_CASE("visBuffer_ShiftLeft invalid --> null", "[visbuffer]") {
+    visBuffer *buffer = VisBuffer_Create2(10, 2);
+    visBuffer_ShiftLeft(buffer);
     VisBuffer_Destroy(&buffer);
     REQUIRE(buffer == nullptr);
 }
