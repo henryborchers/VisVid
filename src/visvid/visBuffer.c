@@ -15,13 +15,6 @@
 static visBufferNode *visBufferFront(const visBuffer *buffer);
 
 /**
- * Gets the next node after the given one.
- * @param node The node which to find the next node.
- * @return Returns a pointer to the next node. Returns NULL if none exists.
- */
-static visBufferNode *visBufferNextNode(const visBufferNode *node);
-
-/**
  * Pushes a visBufferNode to the end of a visBuffer.
  * @param buffer The buffer to add the node to.
  * @param newNode The node to add to the buffer.
@@ -74,10 +67,6 @@ void VisBuffer_Destroy(visBuffer **buffer) {
 
 static visBufferNode *visBufferFront(const visBuffer *buffer) {
     return buffer->first;
-}
-
-static visBufferNode *visBufferNextNode(const visBufferNode *node) {
-    return node->next;
 }
 
 int visBuffer_PushBackResult(visBuffer *buffer, const visVisualResult *pRes) {
@@ -186,7 +175,7 @@ int visBuffer_ShiftLeft(const visBuffer *pBuffer) {
             current->result = front->result;
             break;
         }
-        next = visBufferNextNode(current);
+        next = current->next;
         current->result = next->result;
         current = next;
     }
@@ -208,7 +197,7 @@ static visBufferNode *visBufferPop(visBuffer *buffer) {
         buffer->last = NULL;
     } else {
 
-        buffer->first = visBufferNextNode(buffer->first);
+        buffer->first = buffer->first->next;
     }
     if (buffer->first) {
 
@@ -274,7 +263,7 @@ visBufferNode *_BufferNode_get(const visBuffer *buffer, size_t index) {
         return NULL;
     }
     while (n->position < index) {
-        n = visBufferNextNode(n);
+        n = n->next;
     }
     if (n->position == index) {
         return n;
