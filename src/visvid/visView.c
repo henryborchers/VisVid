@@ -248,7 +248,7 @@ int visViewRGBA_value2color1(const PixelValue value, uint8_t *r, uint8_t *g, uin
     *r = (uint8_t) (value * minimum(1.0F, (color[idx2][0] - color[idx1][0]) * fractBetween + color[idx1][0]));
     *g = (uint8_t) (value * minimum(1.0F, (color[idx2][1] - color[idx1][1]) * fractBetween + color[idx1][1]));
     *b = (uint8_t) (value * minimum(1.0F, (color[idx2][2] - color[idx1][2]) * fractBetween + color[idx1][2]));
-    *a = value;
+    *a = 255;
     return 0;
 }
 

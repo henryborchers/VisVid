@@ -46,3 +46,14 @@ TEST_CASE("visView_Update4 fails on empty buffer", "[visView]"){
 }
 //
 
+TEST_CASE("visViewRGBA_value2color1", "[visView, visViewRGBA_value2color1]") {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
+    visViewRGBA_value2color1(0, &r, &g, &b, &a);
+    REQUIRE(r == 0);
+    REQUIRE(g == 0);
+    REQUIRE(b == 0);
+    REQUIRE(a == 255);
+}
