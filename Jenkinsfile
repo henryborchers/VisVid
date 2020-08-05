@@ -107,6 +107,11 @@ pipeline {
                                 ]
                             )
                         }
+                        post{
+                            always{
+                                recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
+                            }
+                        }
                     }
                 }
                 stage("Run ctests"){
