@@ -1,10 +1,14 @@
 pipeline {
     agent none
     parameters{
+        booleanParam(name: "RUN_CHECKS", defaultValue: false, description: "Run checks on code")
         booleanParam(name: "PACKAGE", defaultValue: true, description: "Create distribution packages")
     }
     stages {
         stage("Checks"){
+            when{
+                equals expected: true, actual: params.RUN_CHECKS
+            }
             stages{
                 stage("Static Analysis for C Code"){
                     parallel{
