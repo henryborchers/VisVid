@@ -247,6 +247,15 @@ pipeline {
                                     )
                             }
                         }
+                        stage("Running Checks"){
+                            parallel{
+                                stage("mypy"){
+                                    steps{
+                                        echo "Runnig mypy"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
