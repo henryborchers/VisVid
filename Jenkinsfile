@@ -408,10 +408,11 @@ pipeline {
                             stage("Testing Python on wheel package"){
                                 steps{
                                     script{
-                                        findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
+                                        findFiles(glob: "./dist/*.whl").each{
+//                                         findFiles(glob: "./dist/*.tar.gz,dist/*.zip").each{
                                             sh(
                                                 label:"Running ${it.path}",
-                                                script:"echo 'running test'"
+                                                script: "tox --installpkg=${it.path} -e py --recreate -v",
                                             )
                                         }
                                     }
