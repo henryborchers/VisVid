@@ -155,7 +155,6 @@ pipeline {
                                                   """
 
                                     )
-                                    archiveArtifacts 'reports/coverage/coverage.xml'
                                     publishCoverage(
                                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
                                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
