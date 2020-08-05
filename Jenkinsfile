@@ -249,7 +249,7 @@ pipeline {
 //                                 )
                                 sh(label: "Creating CPack sdist",
                                    script: '''cmake -B build/release
-                                              cpack --config build/release/CPackSourceConfig.cmake  -G ZIP
+                                              cpack --config build/release/CPackSourceConfig.cmake -B dist -G ZIP
                                     '''
                                    )
 //                                 cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
