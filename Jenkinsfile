@@ -2,7 +2,7 @@ pipeline {
     agent none
     parameters{
         booleanParam(name: "TEST_STATIC_ANALYSIS", defaultValue: true, description: "Run Static Analysis checks")
-        booleanParam(name: "TEST_CTEST", defaultValue: false, description: "Run ctest checks")
+        booleanParam(name: "TEST_CTEST", defaultValue: true, description: "Run ctest checks")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
