@@ -1,26 +1,17 @@
 pipeline {
-  agent {
-    dockerfile {
-      filename 'ci/dockerfiles/conan/dockerfile'
-      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-      label "linux"
-    }
-  }
-  options {
-    timeout(30)
-    buildDiscarder(
-        logRotator(
-            artifactDaysToKeepStr: '10',
-            artifactNumToKeepStr: '10',
-            daysToKeepStr: '20',
-            numToKeepStr: '20'
-        )
-    )
-  }
+    agent none
+
   stages {
     stage('Build') {
       parallel{
         stage("Create Release Build with Conan"){
+            agent {
+                dockerfile {
+                  filename 'ci/dockerfiles/conan/dockerfile'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                  label "linux"
+                }
+            }
             steps{
                 sh "conan install . --install-folder build/conan"
                 cmakeBuild(
@@ -35,12 +26,19 @@ pipeline {
             }
         }
         stage("Create Release Build"){
+            agent {
+                dockerfile {
+                  filename 'ci/dockerfiles/conan/dockerfile'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                  label "linux"
+                }
+            }
           steps {
             tee('logs/gcc_release.log') {
               cmakeBuild(
-                buildDir: 'build/release', 
-                buildType: 'Release', 
-                cleanBuild: true, 
+                buildDir: 'build/release',
+                buildType: 'Release',
+                cleanBuild: true,
                 cmakeArgs: '\
 -DVISVID_BUILDDOCS:BOOL=ON \
 -DCMAKE_C_FLAGS="-Wall -Wextra"',
@@ -60,6 +58,13 @@ pipeline {
           }
         }
         stage("Create Debug Build"){
+            agent {
+                dockerfile {
+                  filename 'ci/dockerfiles/conan/dockerfile'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                  label "linux"
+                }
+            }
           steps {
             tee('logs/gcc_debug.log') {
 
@@ -109,6 +114,13 @@ pipeline {
           }
         }
         stage("Building Python Extension"){
+            agent {
+                dockerfile {
+                  filename 'ci/dockerfiles/conan/dockerfile'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                  label "linux"
+                }
+            }
             steps{
                 sh(
                     label: "Running Python setup script to build extension inplace",
@@ -122,6 +134,13 @@ pipeline {
             }
         }
         stage('Documentation') {
+            agent {
+                dockerfile {
+                  filename 'ci/dockerfiles/conan/dockerfile'
+                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                  label "linux"
+                }
+            }
               steps {
                 cmakeBuild(
                   buildDir: 'build/docs',
@@ -160,14 +179,18 @@ pipeline {
                 }
               }
         }
-        
+
       }
     }
     stage("Static Analysis"){
       parallel{
         stage("Clang Tidy"){
-          options{
-            timeout(5)
+          agent{
+              dockerfile {
+                filename 'ci/dockerfiles/conan/dockerfile'
+                additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                label "linux"
+              }
           }
           steps{
             sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
@@ -194,9 +217,13 @@ pipeline {
           }
         }
         stage("Cppcheck"){
-              options{
-                timeout(5)
+            agent{
+              dockerfile {
+                filename 'ci/dockerfiles/conan/dockerfile'
+                additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                label "linux"
               }
+            }
               steps{
                   cmake arguments: '-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON ..', installation: 'InSearchPath', workingDir: 'build'
                   sh(
@@ -228,6 +255,13 @@ pipeline {
     stage('Test') {
         stages{
             stage("Setting Up Python Test Environment"){
+                agent{
+                    dockerfile {
+                      filename 'ci/dockerfiles/conan/dockerfile'
+                      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                      label "linux"
+                    }
+                }
                 steps{
                     unstash "PYTHON_BUILD_FILES"
                     sh(
@@ -263,6 +297,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
             stage("Run Tests"){
                 parallel{
                     stage("Run CTest"){
+                        agent{
+                            dockerfile {
+                              filename 'ci/dockerfiles/conan/dockerfile'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                              label "linux"
+                            }
+                        }
                         steps{
                             unstash "DEBUG_BUILD_FILES"
                             ctest(
@@ -296,6 +337,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                         }
                     }
                     stage("CTest: Coverage"){
+                        agent{
+                            dockerfile {
+                              filename 'ci/dockerfiles/conan/dockerfile'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                              label "linux"
+                            }
+                        }
                         steps{
                             ctest arguments: "-T coverage",
                               installation: 'InSearchPath',
@@ -328,6 +376,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       }
                     }
                     stage("CTest: MemCheck"){
+                        agent{
+                            dockerfile {
+                                  filename 'ci/dockerfiles/conan/dockerfile'
+                                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                  label "linux"
+                            }
+                        }
                       steps{
                         script{
 
@@ -351,6 +406,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       }
                   }
                     stage("Running Pytest"){
+                        agent{
+                            dockerfile {
+                              filename 'ci/dockerfiles/conan/dockerfile'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                              label "linux"
+                            }
+                        }
                       steps{
                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
                             sh(
@@ -366,6 +428,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       }
                   }
                     stage("Run MyPy Static Analysis") {
+                        agent{
+                            dockerfile {
+                              filename 'ci/dockerfiles/conan/dockerfile'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                              label "linux"
+                            }
+                        }
                       steps{
                           catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
                               tee("${WORKSPACE}/logs/mypy.log"){
@@ -384,6 +453,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       }
                   }
                     stage("Run Flake8 Static Analysis") {
+                        agent{
+                            dockerfile {
+                              filename 'ci/dockerfiles/conan/dockerfile'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                              label "linux"
+                            }
+                        }
                       steps{
                           catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
 
@@ -409,6 +485,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                       }
                   }
                     stage("Running Tox"){
+                        agent{
+                            dockerfile {
+                              filename 'ci/dockerfiles/conan/dockerfile'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                              label "linux"
+                            }
+                        }
                         steps{
                             catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
                                 sh(
@@ -459,6 +542,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
           stage("CPack Packages"){
               stages{
                 stage("CPack Source Package"){
+                    agent{
+                        dockerfile {
+                          filename 'ci/dockerfiles/conan/dockerfile'
+                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                          label "linux"
+                        }
+                    }
                   steps {
                     cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
                     archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
@@ -470,6 +560,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
           stage("Python Packages"){
               stages{
                     stage("Building Python Packages"){
+                        agent{
+                                dockerfile {
+                                  filename 'ci/dockerfiles/conan/dockerfile'
+                                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                  label "linux"
+                                }
+                        }
                         steps{
                             sh "ls pyvisvid/build"
                             sh(
@@ -479,6 +576,13 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                         }
                     }
                     stage("Testing Python Packages"){
+                        agent{
+                            dockerfile {
+                              filename 'ci/dockerfiles/conan/dockerfile'
+                              additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                              label "linux"
+                            }
+                        }
                         steps{
                             script{
                                 def python_packages = findFiles glob: "pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz"
