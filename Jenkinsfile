@@ -1,7 +1,7 @@
 pipeline {
     agent none
     parameters{
-        booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
+        booleanParam(name: "PACKAGE", defaultValue: true, description: "Create distribution packages")
     }
     stages {
         stage("Checks"){
@@ -366,6 +366,18 @@ pipeline {
                 equals expected: true, actual: params.PACKAGE
             }
             stages{
+                stage("Python Packages"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/python/linux/Dockerfile'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            label "linux"
+                        }
+                    }
+                    steps{
+                        echo "Building packages"
+                    }
+                }
                 stage('Package Source and Linux binary Packages') {
                     agent{
                         dockerfile {
