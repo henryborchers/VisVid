@@ -91,12 +91,12 @@ pipeline {
                                 cleanBuild: true,
                                 installation: 'InSearchPath',
                                 cmakeArgs: '\
-                -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-                -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-                -DCMAKE_C_FLAGS="-Wall -Wextra" \
-                -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-                -Dlibvisvid_TESTS:BOOL=ON \
-                -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
+                                    -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+                                    -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+                                    -DCMAKE_C_FLAGS="-Wall -Wextra" \
+                                    -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+                                    -Dlibvisvid_TESTS:BOOL=ON \
+                                    -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
                                 steps: [
                                   [args: '--target test-visvid', withCmake: true],
                                   [args: '--target test-visvid-internal', withCmake: true],
@@ -216,12 +216,12 @@ pipeline {
                             cleanBuild: true,
                             installation: 'InSearchPath',
                             cmakeArgs: '\
-            -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-            -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-            -DCMAKE_C_FLAGS="-Wall -Wextra" \
-            -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-            -Dlibvisvid_TESTS:BOOL=ON \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
+                                -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+                                -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+                                -DCMAKE_C_FLAGS="-Wall -Wextra" \
+                                -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+                                -Dlibvisvid_TESTS:BOOL=ON \
+                                -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
                             steps: [
                               [args: '--target test-visvid', withCmake: true],
                               [args: '--target test-visvid-internal', withCmake: true],
@@ -240,114 +240,6 @@ pipeline {
                     }
                   }
               }
-                stage("Running Pytest"){
-                    agent{
-                        dockerfile {
-                          filename 'ci/dockerfiles/conan/dockerfile'
-                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                          label "linux"
-                        }
-                    }
-                    options {
-                      warnError('Unstable')
-                    }
-                  steps{
-                    catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
-                        sh(
-                            label: "Running pytest",
-                            script: ". ${WORKSPACE}/venv/bin/activate && coverage run --parallel-mode --branch --source=src/applications/pyvisvid/pyvisvid -m pytest --junitxml=${WORKSPACE}/reports/pytest/junit-pytest.xml"
-                        )
-                    }
-                  }
-                  post{
-                    always{
-                        junit "reports/pytest/junit-pytest.xml"
-                    }
-                  }
-              }
-                stage("Run MyPy Static Analysis") {
-                    agent{
-                        dockerfile {
-                          filename 'ci/dockerfiles/conan/dockerfile'
-                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                          label "linux"
-                        }
-                    }
-                    options {
-                      warnError('Unstable')
-                    }
-                  steps{
-                      catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-                          tee("${WORKSPACE}/logs/mypy.log"){
-                              sh(
-                                label: "Running MyPy",
-                                script: ". ${WORKSPACE}/venv/bin/activate && tox -e mypy -- --html-report ${WORKSPACE}/reports/mypy/html"
-                                )
-                            }
-                      }
-                  }
-                  post {
-                      always {
-                          recordIssues(tools: [myPy(name: 'MyPy', pattern: 'logs/mypy.log')])
-                          publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/mypy/html/", reportFiles: 'index.html', reportName: 'MyPy HTML Report', reportTitles: ''])
-                      }
-                  }
-              }
-                stage("Run Flake8 Static Analysis") {
-                    agent{
-                        dockerfile {
-                          filename 'ci/dockerfiles/conan/dockerfile'
-                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                          label "linux"
-                        }
-                    }
-                    options {
-                      warnError('Unstable')
-                    }
-                  steps{
-                      catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
-
-                          sh(
-                              label: "Running Flake8",
-                              script: """. ${WORKSPACE}/venv/bin/activate
-                                            tox -e flake8 -- --tee --output-file=${WORKSPACE}/logs/flake8.log
-                                            """
-                          )
-                      }
-                  }
-                  post {
-                      always {
-                          archiveArtifacts 'logs/flake8.log'
-                          recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
-                      }
-                      unstable{
-                        echo "I'm unstable"
-                      }
-                      cleanup{
-                          cleanWs(patterns: [[pattern: 'logs/flake8.log', type: 'INCLUDE']])
-                      }
-                  }
-              }
-                stage("Running Tox"){
-                    agent{
-                        dockerfile {
-                          filename 'ci/dockerfiles/conan/dockerfile'
-                          additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                          label "linux"
-                        }
-                    }
-                    options {
-                      warnError('Unstable')
-                    }
-                    steps{
-                        catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
-                            sh(
-                                label: "Running Tox",
-                                script: ". ${WORKSPACE}/venv/bin/activate && tox --workdir ${WORKSPACE}/tox -vv -e py"
-                            )
-                        }
-                    }
-                }
             }
         }
         stage('Package') {
