@@ -180,7 +180,21 @@ pipeline {
                             }
                             post{
                                 always{
-                                    publishValgrind(pattern: 'build/debug/tests/**/*.memcheck')
+                                    publishValgrind(
+                                        failBuildOnInvalidReports: false,
+                                        failBuildOnMissingReports: false,
+                                        failThresholdDefinitelyLost: '',
+                                        failThresholdInvalidReadWrite: '',
+                                        failThresholdTotal: '',
+                                        pattern: 'build/debug/tests/**/*.memcheck',
+                                        publishResultsForAbortedBuilds: false,
+                                        publishResultsForFailedBuilds: false,
+                                        sourceSubstitutionPaths: '',
+                                        unstableThresholdDefinitelyLost: '',
+                                        unstableThresholdInvalidReadWrite: '',
+                                        unstableThresholdTotal: ''
+
+                                    )
                                     archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
                                 }
                             }
