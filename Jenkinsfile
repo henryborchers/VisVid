@@ -251,7 +251,19 @@ pipeline {
                             parallel{
                                 stage("mypy"){
                                     steps{
-                                        echo "Runnig mypy"
+                                        catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+                                            tee("logs/mypy.log"){
+                                                sh(
+                                                    label: "Running MyPy",
+                                                    script: "mypy -p pyvisvid --html-report reports/mypy/html"
+                                                )
+                                            }
+                                        }
+                                    }
+                                    post{
+                                        always {
+                                            recordIssues(tools: [myPy(pattern: "logs/mypy.log")])
+                                        }
                                     }
                                 }
                             }
