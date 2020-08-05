@@ -406,10 +406,27 @@ pipeline {
                                 }
                             }
                             stage("Testing Python on wheel package"){
+                                options {
+                                    warnError('Python whl test failed')
+                                }
                                 steps{
                                     script{
                                         findFiles(glob: "dist/*.whl").each{
-//                                         findFiles(glob: "./dist/*.tar.gz,dist/*.zip").each{
+                                            sh(
+                                                label:"Running ${it.path}",
+                                                script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            stage("Testing Python on sdist package"){
+                                options {
+                                    warnError('Python sdist test failed')
+                                }
+                                steps{
+                                    script{
+                                        findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
                                             sh(
                                                 label:"Running ${it.path}",
                                                 script: "tox --installpkg=${it.path} -e py --recreate -v",
