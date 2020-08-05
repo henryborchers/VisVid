@@ -4,38 +4,6 @@ pipeline {
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
-        stage('Build Documentation') {
-            agent{
-                dockerfile {
-                    filename 'ci/dockerfiles/conan/dockerfile'
-                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                    label "linux"
-                }
-            }
-            steps{
-                sh(label: "Building Doxygen documentation",
-                   script:'''cmake -B ./build/docs/
-                             cmake --build ./build/docs/ --target documentation
-                             '''
-                )
-            }
-            post{
-                success{
-                    publishHTML(
-                        [
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: false,
-                            keepAll: false,
-                            reportDir: 'build/docs/docs/html/',
-                            reportFiles: 'index.html',
-                            reportName: 'Documentation',
-                            reportTitles: '',
-                            includes: '**/*',
-                        ]
-                  )
-                }
-            }
-        }
         stage("Checks"){
             stages{
                 stage("Static Analysis for C Code"){
@@ -358,6 +326,38 @@ pipeline {
                             )
                         }
                     }
+                }
+            }
+        }
+        stage('Build Documentation') {
+            agent{
+                dockerfile {
+                    filename 'ci/dockerfiles/conan/dockerfile'
+                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    label "linux"
+                }
+            }
+            steps{
+                sh(label: "Building Doxygen documentation",
+                   script:'''cmake -B ./build/docs/
+                             cmake --build ./build/docs/ --target documentation
+                             '''
+                )
+            }
+            post{
+                success{
+                    publishHTML(
+                        [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: false,
+                            reportDir: 'build/docs/docs/html/',
+                            reportFiles: 'index.html',
+                            reportName: 'Documentation',
+                            reportTitles: '',
+                            includes: '**/*',
+                        ]
+                  )
                 }
             }
         }
