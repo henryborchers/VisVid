@@ -701,22 +701,4 @@ tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py"""
       }
     }
   }
-  post {
-    cleanup{
-        cleanWs(
-            deleteDirs: true,
-            patterns: [
-            [pattern: 'build', type: 'INCLUDE'],
-            [pattern: 'dist', type: 'INCLUDE'],
-            [pattern: 'generatedJUnitFiles', type: 'INCLUDE'],
-            [pattern: 'reports', type: 'INCLUDE'],
-            [pattern: 'logs', type: 'INCLUDE'],
-            [pattern: 'tox', type: 'INCLUDE'],
-            [pattern: 'pyvisvid', type: 'INCLUDE'],
-            [pattern: '*tmp', type: 'INCLUDE'],
-            [pattern: 'venv', type: 'INCLUDE'],
-            [pattern: 'testresults', type: 'INCLUDE']
-            ])
-    }
-  }
 }
