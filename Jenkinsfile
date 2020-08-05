@@ -2,6 +2,7 @@ pipeline {
     agent none
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: false, description: "Run checks on code")
+        booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: false, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: true, description: "Create distribution packages")
     }
     stages {
@@ -340,6 +341,10 @@ pipeline {
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
                 }
+            }
+            when{
+                equals expected: true, actual: params.BUILD_DOCUMENTATION
+                beforeAgent true
             }
             steps{
                 sh(label: "Building Doxygen documentation",
