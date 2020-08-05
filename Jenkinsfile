@@ -139,10 +139,8 @@ pipeline {
                 always{
                     stash includes: "pyvisvid/build/**", name: 'PYTHON_BUILD_FILES'
                 }
-                post{
-                    cleanup{
-                        cleanWs(patterns: [[pattern: ".git", type: 'EXCLUDE']])
-                    }
+                cleanup{
+                    cleanWs(patterns: [[pattern: ".git", type: 'EXCLUDE']])
                 }
             }
         }
