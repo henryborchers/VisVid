@@ -371,20 +371,35 @@ pipeline {
             }
             stages{
                 stage("Python Packages"){
-                    agent{
-                        dockerfile {
-                            filename 'ci/dockerfiles/python/linux/Dockerfile'
-                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                            label "linux"
+                    matrix{
+                        axes{
+                            axis {
+                                name "PYTHON_VERSION"
+                                values(
+                                    "3.7",
+                                    "3.8"
+                                )
+                            }
                         }
-                    }
-                    steps{
-                        sh(
-                            label: "Building packages",
-                            script: '''python setup.py build bdist_wheel --dist-dir=./dist sdist --dist-dir=./dist
-                                       ls -laR ./dist/
-                            '''
-                        )
+                        agent{
+                            dockerfile {
+                                filename 'ci/dockerfiles/python/linux/Dockerfile'
+                                additionalBuildArgs "--build-arg USER_ID=\$(id -u) --build-arg GROUP_ID=\$(id -g) --build-arg PYTHON_VERSION=${PYTHON_VERSION}"
+                                label "linux"
+                            }
+                        }
+                        stages{
+                            stage("Build Python package"){
+                                steps{
+                                    sh(
+                                        label: "Building packages",
+                                        script: '''python setup.py build bdist_wheel --dist-dir=./dist sdist --dist-dir=./dist
+                                                   ls -laR ./dist/
+                                        '''
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
                 stage('Package Source and Linux binary Packages') {
