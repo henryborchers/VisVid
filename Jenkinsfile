@@ -1,17 +1,12 @@
 pipeline {
     agent none
     parameters{
-        booleanParam(name: "TEST_STATIC_ANALYSIS", defaultValue: false, description: "Run Static Analysis checks")
-        booleanParam(name: "TEST_CTEST", defaultValue: false, description: "Run ctest checks")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
         stage("Checks"){
             stages{
                 stage("Static Analysis"){
-                    when{
-                        equals expected: true, actual: params.TEST_STATIC_ANALYSIS
-                    }
                     parallel{
                         stage("Clang Tidy"){
                             agent{
@@ -88,10 +83,6 @@ pipeline {
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
-                    }
-                    when{
-                        equals expected: true, actual: params.TEST_CTEST
-                        beforeAgent true
                     }
                     stages{
                         stage("Build Debug Version for Testing"){
