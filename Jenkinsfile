@@ -48,7 +48,7 @@ pipeline {
                 stage("Cppcheck"){
                     agent{
                       dockerfile {
-                        filename 'ci/dockerfiles/conan/dockerfile'
+                        filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
                         additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                         label "linux"
                       }
