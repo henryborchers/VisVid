@@ -111,7 +111,11 @@ pipeline {
                     parallel{
                         stage("Run CTest"){
                             steps{
-                                echo "Run CTest"
+                                ctest(
+                                    arguments: "--output-on-failure --no-compress-output -T Test",
+                                    installation: 'InSearchPath',
+                                    workingDir: "build/debug"
+                                )
                             }
                         }
                         stage("CTest: Coverage"){
