@@ -287,7 +287,7 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           (cd src/applica tions/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ --junitxml=../../../reports/pytest-junit.xml)
+                                                           (cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ --junitxml=../../../reports/pytest-junit.xml)
                                                            (cd src/applications/pyvisvid && coverage xml -o ../../../coverage-reports/pythoncoverage-pytest.xml )
                                                            '''
                                             )
