@@ -623,6 +623,23 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                         }
                     }
                   steps {
+                      cmakeBuild(
+                              buildDir: 'build/debug',
+                              buildType: 'Debug',
+                              cleanBuild: true,
+                              installation: 'InSearchPath',
+                              cmakeArgs: '\
+              -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+              -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+              -DCMAKE_C_FLAGS="-Wall -Wextra" \
+              -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+              -Dlibvisvid_TESTS:BOOL=ON \
+              -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
+                              steps: [
+                                [args: '--target test-visvid', withCmake: true],
+                                [args: '--target test-visvid-internal', withCmake: true],
+                              ]
+                            )
                     cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
                     archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
 
