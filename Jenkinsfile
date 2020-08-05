@@ -45,7 +45,7 @@ pipeline {
                         }
                     }
                 }
-                stage("Cppcheck"){
+                stage("cppcheck"){
                     agent{
                       dockerfile {
                         filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
@@ -54,13 +54,15 @@ pipeline {
                       }
                     }
                     steps{
-                        sh(
-                            label: "Running cppcheck",
-                            script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
-                                       mkdir -p logs
-                                       cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
-                                       '''
-                        )
+                        catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
+                            sh(
+                                label: "Running cppcheck",
+                                script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
+                                           mkdir -p logs
+                                           cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
+                                           '''
+                            )
+                        }
                     }
                     post{
                         always {
