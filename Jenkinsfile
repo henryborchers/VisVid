@@ -54,11 +54,11 @@ pipeline {
                       }
                     }
                     steps{
-                        sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON'''
                         sh(
-                            label: "Running Cppcheck",
-                            script: '''mkdir -p logs
-                                       cppcheck --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
+                            label: "Running cppcheck",
+                            script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
+                                       mkdir -p logs
+                                       cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
                                        '''
                         )
                     }
