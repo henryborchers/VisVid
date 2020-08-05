@@ -124,7 +124,7 @@ pipeline {
             steps{
                 sh(
                     label: "Running Python setup script to build extension inplace",
-                    script: "python3 setup.py build --build-temp=${WORKSPACE}/pyvisvid/build  build_ext --inplace"
+                    script: "python3 setup.py build --build-temp=./pyvisvid/build  build_ext --inplace"
                 )
             }
             post{
