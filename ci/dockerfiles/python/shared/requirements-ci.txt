@@ -1,3 +1,4 @@
+cmake
 coverage
 flake8
 pytest

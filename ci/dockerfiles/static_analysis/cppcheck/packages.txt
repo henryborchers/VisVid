@@ -1,0 +1,5 @@
+build-essential
+cmake
+cppcheck
+libavutil-dev
+libsdl2-dev
