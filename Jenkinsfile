@@ -30,16 +30,13 @@ pipeline {
                     }
                     post{
                         always {
-                            archiveArtifacts(
-                                allowEmptyArchive: true,
-                                artifacts: 'logs/clang-tidy_debug.log'
-                            )
                             recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
                         }
                         cleanup{
                             cleanWs(
+                                deleteDirs: true,
                                 patterns: [
-                                    [pattern: 'logs/clang-tidy_debug.log', type: 'INCLUDE'],
+                                    [pattern: 'logs/', type: 'INCLUDE'],
                                 ]
                             )
                         }
@@ -66,18 +63,14 @@ pipeline {
                     }
                     post{
                         always {
-                            sh "ls -la logs"
-                            archiveArtifacts(
-                              allowEmptyArchive: true,
-                              artifacts: 'logs/cppcheck_debug.xml'
-                            )
                             recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
                         }
                         cleanup{
                             cleanWs(
-                              patterns: [
-                                [pattern: 'logs/cppcheck_debug.xml', type: 'INCLUDE'],
-                              ]
+                                deleteDirs: true,
+                                patterns: [
+                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                ]
                             )
                         }
                     }
