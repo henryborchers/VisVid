@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage("Checks"){
             stages{
-                stage("Static Analysis"){
+                stage("Static Analysis for C Code"){
                     parallel{
                         stage("Clang Tidy"){
                             agent{
@@ -76,7 +76,7 @@ pipeline {
                         }
                     }
                 }
-                stage("Run Tests"){
+                stage("Run Tests on C code"){
                     agent{
                         dockerfile {
                             filename 'ci/dockerfiles/conan/dockerfile'
@@ -238,7 +238,7 @@ pipeline {
                                     )
                             }
                         }
-                        stage("Running Checks"){
+                        stage("Running Checks on Python Code"){
                             parallel{
                                 stage("mypy"){
                                     steps{
