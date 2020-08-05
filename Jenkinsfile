@@ -240,17 +240,17 @@ pipeline {
                                 }
                             }
                             steps {
-                                cmakeBuild(
-                                    buildDir: 'build/release',
-                                    buildType: 'Release',
-                                    cleanBuild: true,
-                                    installation: 'InSearchPath',
-                                    steps: []
-                                )
-//                                 sh(label: "Creating CPack sdist",
-//                                    script: '''ls
-//                                     '''
-//                                    )
+//                                 cmakeBuild(
+//                                     buildDir: 'build/release',
+//                                     buildType: 'Release',
+//                                     cleanBuild: true,
+//                                     installation: 'InSearchPath',
+//                                     steps: []
+//                                 )
+                                sh(label: "Creating CPack sdist",
+                                   script: '''cmake -B build/release
+                                    '''
+                                   )
                                 cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
                             }
                         }
