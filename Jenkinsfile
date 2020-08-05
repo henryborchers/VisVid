@@ -307,6 +307,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               label "linux"
                             }
                         }
+                        options {
+                          warnError('Unstable')
+                        }
                         steps{
                             cmakeBuild(
                                     buildDir: 'build/debug',
@@ -362,6 +365,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                               label "linux"
                             }
+                        }
+                        options {
+                          warnError('Unstable')
                         }
                         steps{
                             cmakeBuild(
@@ -419,6 +425,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                   label "linux"
                             }
                         }
+                        options {
+                          warnError('Unstable')
+                        }
                       steps{
                         script{
 
@@ -465,6 +474,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               label "linux"
                             }
                         }
+                        options {
+                          warnError('Unstable')
+                        }
                       steps{
                         catchError(buildResult: 'UNSTABLE', message: 'Did not pass all Pytest tests', stageResult: 'UNSTABLE') {
                             sh(
@@ -486,6 +498,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                               label "linux"
                             }
+                        }
+                        options {
+                          warnError('Unstable')
                         }
                       steps{
                           catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
@@ -511,6 +526,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                               label "linux"
                             }
+                        }
+                        options {
+                          warnError('Unstable')
                         }
                       steps{
                           catchError(buildResult: 'SUCCESS', message: 'Flake8 found issues', stageResult: 'UNSTABLE') {
@@ -543,6 +561,9 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                               label "linux"
                             }
+                        }
+                        options {
+                          warnError('Unstable')
                         }
                         steps{
                             catchError(buildResult: 'UNSTABLE', message: 'Tox failed') {
