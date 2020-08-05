@@ -229,31 +229,23 @@ pipeline {
         }
         stage('Package') {
             parallel{
-                stage("CPack Packages"){
+                stage("CPack linux Packages"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/conan/dockerfile'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            label "linux"
+                        }
+                    }
                     stages{
                         stage("CPack Source Package"){
-                            agent{
-                                dockerfile {
-                                    filename 'ci/dockerfiles/conan/dockerfile'
-                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                                    label "linux"
-                                }
-                            }
                             steps {
-//                                 cmakeBuild(
-//                                     buildDir: 'build/release',
-//                                     buildType: 'Release',
-//                                     cleanBuild: true,
-//                                     installation: 'InSearchPath',
-//                                     steps: []
-//                                 )
                                 sh(label: "Creating CPack sdist",
                                    script: '''cmake -B build/release
                                               mkdir -p dist
                                               cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
                                               '''
                                    )
-//                                 cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
                             }
                         }
                     }
