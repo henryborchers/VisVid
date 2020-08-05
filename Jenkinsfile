@@ -357,7 +357,7 @@ pipeline {
                             reportTitles: '',
                             includes: '**/*',
                         ]
-                  )
+                    )
                 }
             }
         }
