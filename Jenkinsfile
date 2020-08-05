@@ -381,7 +381,9 @@ pipeline {
                     steps{
                         sh(
                             label: "Building packages",
-                            script: "python setup.py build bdist_wheel --dist-dir=./dist sdist --dist-dir=./dist"
+                            script: '''python setup.py build bdist_wheel --dist-dir=./dist sdist --dist-dir=./dist
+                                       ls -laR ./dist/
+                            '''
                         )
                     }
                 }
