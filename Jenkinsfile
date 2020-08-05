@@ -407,9 +407,8 @@ pipeline {
                             }
                             stage("Testing Python on wheel package"){
                                 steps{
-                                    sh "ls -laR ./dist/"
                                     script{
-                                        findFiles(glob: "./dist/*.whl").each{
+                                        findFiles(glob: "dist/*.whl").each{
 //                                         findFiles(glob: "./dist/*.tar.gz,dist/*.zip").each{
                                             sh(
                                                 label:"Running ${it.path}",
