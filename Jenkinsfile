@@ -3,6 +3,7 @@ pipeline {
     parameters{
         booleanParam(name: "TEST_STATIC_ANALYSIS", defaultValue: false, description: "Run Static Analysis checks")
         booleanParam(name: "TEST_CTEST", defaultValue: false, description: "Run ctest checks")
+        booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
         stage("Static Analysis"){
@@ -227,13 +228,17 @@ pipeline {
                 }
             }
         }
-        stage('Package') {
+        stage('Package Source and Linux binary Packages') {
             agent{
                 dockerfile {
                     filename 'ci/dockerfiles/conan/dockerfile'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
                 }
+            }
+            when{
+                equals expected: true, actual: params.PACKAGE
+                beforeAgent true
             }
             stages{
                 stage("Config and create a release build"){
