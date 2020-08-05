@@ -255,7 +255,7 @@ pipeline {
                                             tee("logs/mypy.log"){
                                                 sh(
                                                     label: "Running MyPy",
-                                                    script: "mypy -p pyvisvid --html-report reports/mypy/html"
+                                                    script: "cd src/applications/pyvisvid && mypy -p pyvisvid"
                                                 )
                                             }
                                         }
