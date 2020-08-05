@@ -268,58 +268,58 @@ pipeline {
                             }
                         }
                         cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
-                        archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
+//                         archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
 
                       }
                     }
                   }
               }
-              stage("Python Packages"){
-                  stages{
-                        stage("Building Python Packages"){
-                            agent{
-                                    dockerfile {
-                                      filename 'ci/dockerfiles/conan/dockerfile'
-                                      additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                                      label "linux"
-                                    }
-                            }
-                            steps{
-                                sh(
-                                    label: "Running Python setup script to build wheel and sdist",
-                                    script: "python3 setup.py build --build-temp=pyvisvid/build/ bdist_wheel --dist-dir=pyvisvid/dist sdist --dist-dir=pyvisvid/dist"
-                                )
-                            }
-                        }
-                        stage("Testing Python Packages"){
-                            agent{
-                                dockerfile {
-                                  filename 'ci/dockerfiles/conan/dockerfile'
-                                  additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                                  label "linux"
-                                }
-                            }
-                            steps{
-                                script{
-                                    def python_packages = findFiles glob: "pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz"
-                                    python_packages.each{
-                                        sh(
-                                            label: "Running Tox with ${it}",
-                                            script: """. ${WORKSPACE}/venv/bin/activate
-                                                       tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py
-                                                       """
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    post{
-                        success{
-                          archiveArtifacts(artifacts: 'pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz', fingerprint: true, onlyIfSuccessful: true)
-                        }
-                    }
-                }
+//               stage("Python Packages"){
+//                   stages{
+//                         stage("Building Python Packages"){
+//                             agent{
+//                                     dockerfile {
+//                                       filename 'ci/dockerfiles/conan/dockerfile'
+//                                       additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                                       label "linux"
+//                                     }
+//                             }
+//                             steps{
+//                                 sh(
+//                                     label: "Running Python setup script to build wheel and sdist",
+//                                     script: "python3 setup.py build --build-temp=pyvisvid/build/ bdist_wheel --dist-dir=pyvisvid/dist sdist --dist-dir=pyvisvid/dist"
+//                                 )
+//                             }
+//                         }
+//                         stage("Testing Python Packages"){
+//                             agent{
+//                                 dockerfile {
+//                                   filename 'ci/dockerfiles/conan/dockerfile'
+//                                   additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                                   label "linux"
+//                                 }
+//                             }
+//                             steps{
+//                                 script{
+//                                     def python_packages = findFiles glob: "pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz"
+//                                     python_packages.each{
+//                                         sh(
+//                                             label: "Running Tox with ${it}",
+//                                             script: """. ${WORKSPACE}/venv/bin/activate
+//                                                        tox --workdir ${WORKSPACE}/tox --installpkg $WORKSPACE/${it} -vv -e py
+//                                                        """
+//                                         )
+//                                     }
+//                                 }
+//                             }
+//                         }
+//                     }
+//                     post{
+//                         success{
+//                           archiveArtifacts(artifacts: 'pyvisvid/dist/*.zip,pyvisvid/dist/*.whl,pyvisvid/dist/*.tar.gz', fingerprint: true, onlyIfSuccessful: true)
+//                         }
+//                     }
+//                 }
           }
         }
     }
