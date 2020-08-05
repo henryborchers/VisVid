@@ -36,6 +36,7 @@ pipeline {
                             cleanWs(
                                 deleteDirs: true,
                                 patterns: [
+                                    [pattern: 'build/', type: 'INCLUDE'],
                                     [pattern: 'logs/', type: 'INCLUDE'],
                                 ]
                             )
@@ -69,6 +70,7 @@ pipeline {
                             cleanWs(
                                 deleteDirs: true,
                                 patterns: [
+                                    [pattern: 'build/', type: 'INCLUDE'],
                                     [pattern: 'logs/', type: 'INCLUDE'],
                                 ]
                             )
