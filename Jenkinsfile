@@ -640,6 +640,11 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                 [args: '--target test-visvid-internal', withCmake: true],
                               ]
                             )
+                    script{
+                        findFiles glob: '**/CPackSourceConfig.cmake'.each{
+                            echo "found ${it.path}"
+                        }
+                    }
                     cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
                     archiveArtifacts(artifacts: 'dist/*Source.zip', fingerprint: true, onlyIfSuccessful: true)
 
