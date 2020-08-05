@@ -299,6 +299,17 @@ pipeline {
                                     }
                                 }
                             }
+                            post{
+                                always{
+                                    sh "cd src/applications/pyvisvid && coverage combine && coverage xml -o ../../../reports/coverage.xml"
+                                    publishCoverage(
+                                        adapters: [
+                                                coberturaAdapter('reports/coverage.xml')
+                                            ],
+                                        sourceFileResolver: sourceFiles('STORE_ALL_BUILD')
+                                    )
+                                }
+                            }
                         }
                     }
                 }
