@@ -641,7 +641,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                               ]
                             )
                     script{
-                        findFiles glob: '**/CPackSourceConfig.cmake'.each{
+                        findFiles(glob: '**/CPackSourceConfig.cmake').each{
                             echo "found ${it.path}"
                         }
                     }
