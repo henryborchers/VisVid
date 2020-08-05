@@ -578,37 +578,37 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
 
             }
         }
-        post{
-            always{
-                archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
-                sh(
-                    label: "Combining coverage data",
-                    script: """
-    . ${WORKSPACE}/venv/bin/activate
-    coverage combine
-    coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
-    coverage html -d ${WORKSPACE}/reports/python/coverage
-    """
-                )
-                publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
-                publishCoverage(
-                    adapters: [
-                        coberturaAdapter('reports/python/coverage.xml')
-                        ],
-                    sourceFileResolver: sourceFiles('STORE_ALL_BUILD'),
-                    tag: "AllCoverage"
-
-                )
-            }
-            cleanup{
-                cleanWs(
-                    deleteDirs: true,
-                    patterns: [
-                        [pattern: 'reports/ctest', type: 'INCLUDE']
-                        ]
-                )
-            }
-        }
+//         post{
+//             always{
+//                 archiveArtifacts allowEmptyArchive: true, artifacts:"reports/ctest/*.*"
+//                 sh(
+//                     label: "Combining coverage data",
+//                     script: """
+//     . ${WORKSPACE}/venv/bin/activate
+//     coverage combine
+//     coverage xml -o ${WORKSPACE}/reports/python/coverage.xml
+//     coverage html -d ${WORKSPACE}/reports/python/coverage
+//     """
+//                 )
+//                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: "reports/python/coverage", reportFiles: 'index.html', reportName: 'Python Coverage', reportTitles: ''])
+//                 publishCoverage(
+//                     adapters: [
+//                         coberturaAdapter('reports/python/coverage.xml')
+//                         ],
+//                     sourceFileResolver: sourceFiles('STORE_ALL_BUILD'),
+//                     tag: "AllCoverage"
+//
+//                 )
+//             }
+//             cleanup{
+//                 cleanWs(
+//                     deleteDirs: true,
+//                     patterns: [
+//                         [pattern: 'reports/ctest', type: 'INCLUDE']
+//                         ]
+//                 )
+//             }
+//         }
     }
     stage('Package') {
       parallel{
