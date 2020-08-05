@@ -407,7 +407,14 @@ pipeline {
                             }
                             stage("Testing Python on wheel package"){
                                 steps{
-                                    echo "running test"
+                                    script{
+                                        findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
+                                            sh(
+                                                label:"Running ${it.path}",
+                                                script:"echo 'running test'"
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
