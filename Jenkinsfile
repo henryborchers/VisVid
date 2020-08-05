@@ -2,6 +2,7 @@ pipeline {
     agent none
     parameters{
         booleanParam(name: "TEST_STATIC_ANALYSIS", defaultValue: false, description: "Run Static Analysis checks")
+        booleanParam(name: "TEST_CTEST", defaultValue: false, description: "Run ctest checks")
     }
     stages {
         stage("Static Analysis"){
@@ -84,6 +85,10 @@ pipeline {
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
                 }
+            }
+            when{
+                equals expected: true, actual: params.TEST_CTEST
+                beforeAgent true
             }
             stages{
                 stage("Build Debug Version for Testing"){
@@ -242,6 +247,10 @@ pipeline {
                                     installation: 'InSearchPath',
                                     steps: []
                                 )
+//                                 sh(label: "Creating CPack sdist",
+//                                    script: '''ls
+//                                     '''
+//                                    )
                                 cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
                             }
                         }
