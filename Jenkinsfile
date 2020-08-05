@@ -91,6 +91,25 @@ pipeline {
                         echo "Building a test"
                     }
                 }
+                stage("Run ctests"){
+                    parallel{
+                        stage("Run CTest"){
+                            steps{
+                                echo "Run CTest"
+                            }
+                        }
+                        stage("CTest: Coverage"){
+                            steps{
+                                echo "CTest: Coverage"
+                            }
+                        }
+                        stage("CTest: MemCheck"){
+                            steps{
+                                echo "CTest: MemCheck"
+                            }
+                        }
+                    }
+                }
             }
 //             parallel{
 //                 stage("Run CTest"){
