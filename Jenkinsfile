@@ -405,6 +405,11 @@ pipeline {
                                     )
                                 }
                             }
+                            stage("Testing Python on wheel package"){
+                                steps{
+                                    echo "running test"
+                                }
+                            }
                         }
                     }
                 }
