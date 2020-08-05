@@ -281,6 +281,22 @@ pipeline {
                                         }
                                     }
                                 }
+                                stage("Run PyTest Unit Tests"){
+                                    steps{
+                                        catchError(buildResult: "UNSTABLE", message: 'Did not pass all pytest tests', stageResult: "UNSTABLE") {
+                                            sh(
+                                                script: '''mkdir -p logs
+                                                           cd src/applications/pyvisvid && coverage run --parallel-mode --source=pyvisvid -m pytest  ../../../tests --junitxml=./reports/tests/pytest/pytest-junit.xml
+                                                           '''
+                                            )
+                                        }
+                                    }
+                                    post {
+                                        always {
+                                            junit "reports/tests/pytest/pytest-junit.xml"
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
