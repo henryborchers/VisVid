@@ -141,7 +141,40 @@ pipeline {
                         }
                         stage("CTest: Coverage"){
                             steps{
-                                echo "CTest: Coverage"
+                                ctest(
+                                    arguments: "-T coverage",
+                                    installation: 'InSearchPath',
+                                    workingDir: 'build/debug'
+                                )
+                            }
+                            post{
+                                always{
+                                    sh(label: "Generating coverage report in Coberatura xml file format",
+                                       script: """mkdir -p reports/coverage
+                                                  gcovr -r ./ --xml -o reports/coverage/coverage.xml build/debug
+                                                  """
+
+                                    )
+                                    archiveArtifacts 'reports/coverage/coverage.xml'
+                                    publishCoverage(
+                                        adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                                        tag: "AllCoverage"
+                                    )
+                                    sh(label: "Generating coverage report in html file format",
+                                       script: "gcovr -r ./ --html --html-details -o reports/coverage/coverage.html build/debug"
+                                    )
+                                    publishHTML([
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: false,
+                                        keepAll:
+                                        false,
+                                        reportDir: 'reports/coverage',
+                                        reportFiles: 'coverage.html',
+                                        reportName: 'Coverage HTML Report',
+                                        reportTitles: ''
+                                    ])
+                                }
                             }
                         }
                         stage("CTest: MemCheck"){
