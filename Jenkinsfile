@@ -658,7 +658,6 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                 }
                         }
                         steps{
-                            sh "ls pyvisvid/build"
                             sh(
                                 label: "Running Python setup script to build wheel and sdist",
                                 script: "python3 setup.py build --build-temp=pyvisvid/build/ bdist_wheel --dist-dir=pyvisvid/dist sdist --dist-dir=pyvisvid/dist"
