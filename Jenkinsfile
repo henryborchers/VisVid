@@ -266,6 +266,21 @@ pipeline {
                                         }
                                     }
                                 }
+                                stage("Flake8") {
+                                    steps{
+                                        catchError(buildResult: "SUCCESS", message: 'Flake8 found issues', stageResult: "UNSTABLE") {
+                                            sh script: '''mkdir -p logs
+                                                          flake8 src/applications/pyvisvid --tee --output-file=logs/flake8.log
+                                                          '''
+                                        }
+                                    }
+                                    post {
+                                        always {
+                                              stash includes: 'logs/flake8.log', name: "FLAKE8_REPORT"
+                                              recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
