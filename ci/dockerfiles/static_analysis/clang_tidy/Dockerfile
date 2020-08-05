@@ -11,3 +11,5 @@ RUN apt-get update && \
     apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main' && \
     apt-get update
 RUN apt-get install -y build-essential clang-tidy cmake
+RUN apt install -y libavutil-dev
+RUN rm -rf /var/lib/apt/lists/*
