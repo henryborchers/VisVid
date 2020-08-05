@@ -19,15 +19,13 @@ pipeline {
                             label "linux"
                         }
                     }
-                    options {
-                      warnError('Clang Tidy found issues')
-                    }
                     steps{
-//                         sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
                         tee('logs/clang-tidy_debug.log') {
-                            sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
-                                   run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
-                                   '''
+                            catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
+                                sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
+                                       run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
+                                       '''
+                            }
                         }
                     }
                     post{
