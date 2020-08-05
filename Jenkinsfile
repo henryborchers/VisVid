@@ -19,6 +19,22 @@ pipeline {
                              '''
                 )
             }
+            post{
+                success{
+                    publishHTML(
+                        [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: false,
+                            reportDir: 'build/docs/docs/html/',
+                            reportFiles: 'index.html',
+                            reportName: 'Documentation',
+                            reportTitles: '',
+                            includes: '**/*',
+                        ]
+                  )
+                }
+            }
         }
         stage("Checks"){
             stages{
