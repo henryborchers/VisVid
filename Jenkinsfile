@@ -4,6 +4,22 @@ pipeline {
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
+        stage('Build Documentation') {
+            agent{
+                dockerfile {
+                    filename 'ci/dockerfiles/conan/dockerfile'
+                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    label "linux"
+                }
+            }
+            steps{
+                sh(label: "Building Doxygen documentation",
+                   script:'''cmake -B ./build/docs/
+                             cmake --build ./build/docs/ --target documentation
+                             '''
+                )
+            }
+        }
         stage("Checks"){
             stages{
                 stage("Static Analysis for C Code"){
@@ -15,6 +31,7 @@ pipeline {
                                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                                     label "linux"
                                 }
+
                             }
                             steps{
                                 tee('logs/clang-tidy_debug.log') {
@@ -328,6 +345,7 @@ pipeline {
                 }
             }
         }
+
         stage('Package Source and Linux binary Packages') {
             agent{
                 dockerfile {
