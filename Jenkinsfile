@@ -361,52 +361,54 @@ pipeline {
                 }
             }
         }
-
-        stage('Package Source and Linux binary Packages') {
-            agent{
-                dockerfile {
-                    filename 'ci/dockerfiles/conan/dockerfile'
-                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                    label "linux"
-                }
-            }
+        stage("Packaging"){
             when{
                 equals expected: true, actual: params.PACKAGE
-                beforeAgent true
             }
             stages{
-                stage("Config and create a release build"){
-                    steps{
-                        sh(label: "Creating release build",
-                            script: '''cmake -B build/release
-                                       cmake --build build/release
-                            '''
-                        )
+                stage('Package Source and Linux binary Packages') {
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/conan/dockerfile'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            label "linux"
+                        }
                     }
-                }
-                stage("Packaging"){
-                    parallel{
-                        stage("Creating CPack sdist"){
+                    stages{
+                        stage("Config and create a release build"){
                             steps{
-                                sh(label: "Creating CPack sdist",
-                                   script: '''mkdir -p dist
-                                              cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
-                                              '''
+                                sh(label: "Creating release build",
+                                    script: '''cmake -B build/release
+                                               cmake --build build/release
+                                    '''
                                 )
                             }
                         }
+                        stage("Packaging"){
+                            parallel{
+                                stage("Creating CPack sdist"){
+                                    steps{
+                                        sh(label: "Creating CPack sdist",
+                                           script: '''mkdir -p dist
+                                                      cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
+                                                      '''
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
-            }
-            post{
-                cleanup{
-                    cleanWs(
-                        deleteDirs: true,
-                        patterns: [
-                            [pattern: 'build/', type: 'INCLUDE'],
-                            [pattern: 'dist/', type: 'INCLUDE'],
-                        ]
-                    )
+                    post{
+                        cleanup{
+                            cleanWs(
+                                deleteDirs: true,
+                                patterns: [
+                                    [pattern: 'build/', type: 'INCLUDE'],
+                                    [pattern: 'dist/', type: 'INCLUDE'],
+                                ]
+                            )
+                        }
+                    }
                 }
             }
         }
