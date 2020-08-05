@@ -379,7 +379,10 @@ pipeline {
                         }
                     }
                     steps{
-                        echo "Building packages"
+                        sh(
+                            label: "Building packages",
+                            script: "python setup.py build bdist_wheel --dist-dir./dist sdist --dist-dir=./dist"
+                        )
                     }
                 }
                 stage('Package Source and Linux binary Packages') {
