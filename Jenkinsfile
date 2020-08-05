@@ -259,19 +259,17 @@ pipeline {
                     }
                 }
             }
-//                         stage("CPack Source Package"){
-//                             steps {
-//                                 sh(label: "Creating CPack sdist",
-//                                    script: '''cmake -B build/release
-//                                               mkdir -p dist
-//                                               cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
-//                                               '''
-//                                    )
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
+            post{
+                cleanup{
+                    cleanWs(
+                        deleteDirs: true,
+                        patterns: [
+                            [pattern: 'build/', type: 'INCLUDE'],
+                            [pattern: 'dist/', type: 'INCLUDE'],
+                        ]
+                    )
+                }
+            }
         }
     }
 }
