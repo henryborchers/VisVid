@@ -128,7 +128,7 @@ pipeline {
                 )
             }
             post{
-                success{
+                always{
                     stash includes: "pyvisvid/build/**", name: 'PYTHON_BUILD_FILES'
                 }
             }
