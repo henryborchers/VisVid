@@ -180,7 +180,7 @@ pipeline {
                             }
                             post{
                                 always{
-//                                     publishValgrind(pattern: )
+                                    publishValgrind(pattern: 'build/debug/tests/**/*.memcheck')
                                     archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
                                 }
                             }
