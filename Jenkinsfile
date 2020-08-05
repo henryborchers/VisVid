@@ -317,7 +317,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                     cleanBuild: true,
                                     installation: 'InSearchPath',
                                     cmakeArgs: '\
-                    -DCMAKE_C_FLAGS_DEB,UG="-fprofile-arcs -ftest-coverage" \
+                    -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
                     -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
                     -DCMAKE_C_FLAGS="-Wall -Wextra" \
                     -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
@@ -442,7 +442,7 @@ pip install pytest "tox<3.10" mypy coverage lxml"""
                                 cleanBuild: true,
                                 installation: 'InSearchPath',
                                 cmakeArgs: '\
-                -DCMAKE_C_FLAGS_DEB,UG="-fprofile-arcs -ftest-coverage" \
+                -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
                 -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
                 -DCMAKE_C_FLAGS="-Wall -Wextra" \
                 -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
