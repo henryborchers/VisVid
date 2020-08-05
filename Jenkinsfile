@@ -243,7 +243,7 @@ pipeline {
                             steps{
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: "python setup.py build_ext --inplace"
+                                    script: "python setup.py build build_ext --inplace"
                                     )
                             }
                         }
