@@ -81,7 +81,7 @@ pipeline {
                         }
                     }
                 }
-                stage("Run Rests"){
+                stage("Run Tests"){
                     agent{
                         dockerfile {
                             filename 'ci/dockerfiles/conan/dockerfile'
