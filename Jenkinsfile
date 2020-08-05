@@ -24,6 +24,11 @@ pipeline {
                     steps: [[withCmake: true]]
                   )
             }
+            post{
+                cleanup{
+                    cleanWs(patterns: [[pattern: ".git", type: 'EXCLUDE']])
+                }
+            }
         }
         stage("Create Release Build"){
             agent {
@@ -54,6 +59,9 @@ pipeline {
           post{
             success{
                 stash includes: "build/release/", name: 'RELEASE_BUILD_FILES'
+            }
+            cleanup{
+                cleanWs(patterns: [[pattern: ".git", type: 'EXCLUDE']])
             }
           }
         }
@@ -130,6 +138,11 @@ pipeline {
             post{
                 always{
                     stash includes: "pyvisvid/build/**", name: 'PYTHON_BUILD_FILES'
+                }
+                post{
+                    cleanup{
+                        cleanWs(patterns: [[pattern: ".git", type: 'EXCLUDE']])
+                    }
                 }
             }
         }
