@@ -55,14 +55,12 @@ pipeline {
                     }
                     steps{
                         sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON'''
-                        tee('logs/cppcheck_debug.log') {
-                            sh(
-                                label: "Running Cppcheck",
-                                script: '''mkdir -p logs
-                                           cppcheck --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml 2>logs/cppcheck_debug.xml
-                                           '''
-                            )
-                        }
+                        sh(
+                            label: "Running Cppcheck",
+                            script: '''mkdir -p logs
+                                       cppcheck --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file logs/cppcheck_debug.xml
+                                       '''
+                        )
                     }
                     post{
                         always {
