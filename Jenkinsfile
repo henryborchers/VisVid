@@ -180,6 +180,7 @@ pipeline {
                             }
                             post{
                                 always{
+//                                     publishValgrind(pattern: )
                                     archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
                                 }
                             }
@@ -363,32 +364,32 @@ pipeline {
 //                 }
 //             }
         }
-        stage('Package') {
-            parallel{
-                stage("CPack Packages"){
-                    stages{
-                        stage("CPack Source Package"){
-                            agent{
-                                dockerfile {
-                                    filename 'ci/dockerfiles/conan/dockerfile'
-                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                                    label "linux"
-                                }
-                            }
-                            steps {
-                                cmakeBuild(
-                                    buildDir: 'build/release',
-                                    buildType: 'Release',
-                                    cleanBuild: true,
-                                    installation: 'InSearchPath',
-                                    steps: []
-                                )
-                                cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//         stage('Package') {
+//             parallel{
+//                 stage("CPack Packages"){
+//                     stages{
+//                         stage("CPack Source Package"){
+//                             agent{
+//                                 dockerfile {
+//                                     filename 'ci/dockerfiles/conan/dockerfile'
+//                                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+//                                     label "linux"
+//                                 }
+//                             }
+//                             steps {
+//                                 cmakeBuild(
+//                                     buildDir: 'build/release',
+//                                     buildType: 'Release',
+//                                     cleanBuild: true,
+//                                     installation: 'InSearchPath',
+//                                     steps: []
+//                                 )
+//                                 cpack arguments: "--config ${WORKSPACE}/build/release/CPackSourceConfig.cmake  -G ZIP", installation: 'InSearchPath', workingDir: 'dist'
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
     }
 }
