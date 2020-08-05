@@ -208,181 +208,19 @@ pipeline {
                     }
                 }
             }
-//             parallel{
-//                 stage("Run CTest"){
-//                     agent{
-//                         dockerfile {
-//                           filename 'ci/dockerfiles/conan/dockerfile'
-//                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                           label "linux"
-//                         }
-//                     }
-//                     options {
-//                       warnError('Unstable')
-//                     }
-//                     steps{
-//                         cmakeBuild(
-//                             buildDir: 'build/debug',
-//                             buildType: 'Debug',
-//                             cleanBuild: true,
-//                             installation: 'InSearchPath',
-//                             cmakeArgs: '\
-//                                     -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-//                                     -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-//                                     -DCMAKE_C_FLAGS="-Wall -Wextra" \
-//                                     -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-//                                     -Dlibvisvid_TESTS:BOOL=ON \
-//                                     -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-//                             steps: [
-//                                 [args: '--target test-visvid', withCmake: true],
-//                                 [args: '--target test-visvid-internal', withCmake: true],
-//                             ]
-//                         )
-//                         ctest(
-//                             arguments: "--output-on-failure --no-compress-output -T Test",
-//                             installation: 'InSearchPath',
-//                             workingDir: "build/debug"
-//                         )
-//                     }
-//                     post{
-//                         always{
-//                             archiveArtifacts "build/debug/Testing/**/Test.xml"
-//                             xunit(
-//                                 testTimeMargin: '3000',
-//                                 thresholdMode: 1,
-//                                 thresholds: [
-//                                   failed(),
-//                                   skipped()
-//                                   ],
-//                                 tools: [
-//                                   CTest(
-//                                     deleteOutputFiles: true,
-//                                     failIfNotNew: true,
-//                                     pattern: "build/debug/Testing/**/*.xml",
-//                                     skipNoTestFiles: true,
-//                                     stopProcessingIfError: true
-//                                     )
-//                                   ]
-//                             )
-//                         }
-//                     }
-//                 }
-//                 stage("CTest: Coverage"){
-//                     agent{
-//                         dockerfile {
-//                           filename 'ci/dockerfiles/conan/dockerfile'
-//                           additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                           label "linux"
-//                         }
-//                     }
-//                     options {
-//                       warnError('Unstable')
-//                     }
-//                     steps{
-//                         cmakeBuild(
-//                             buildDir: 'build/debug',
-//                             buildType: 'Debug',
-//                             cleanBuild: true,
-//                             installation: 'InSearchPath',
-//                             cmakeArgs: '\
-//                                 -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-//                                 -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-//                                 -DCMAKE_C_FLAGS="-Wall -Wextra" \
-//                                 -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-//                                 -Dlibvisvid_TESTS:BOOL=ON \
-//                                 -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-//                             steps: [
-//                                 [args: '--target test-visvid', withCmake: true],
-//                                 [args: '--target test-visvid-internal', withCmake: true],
-//                             ]
-//                         )
-//                         ctest(
-//                             arguments: "-T coverage",
-//                             installation: 'InSearchPath',
-//                             workingDir: 'build/debug'
-//                         )
-//                     }
-//                     post{
-//                         always{
-//                             sh "mkdir -p reports/coverage"
-//                             sh(
-//                                 label: "Generating coverage report in Coberatura xml file format",
-//                                 script: "gcovr -r ./ --xml -o reports/coverage/coverage.xml build/debug"
-//
-//                             )
-//                             archiveArtifacts 'reports/coverage/coverage.xml'
-//                             publishCoverage(
-//                                 adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-//                                 sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-//                                 tag: "AllCoverage"
-//                             )
-//                             sh(
-//                                 label: "Generating coverage report in html file format",
-//                                 script: "gcovr -r ./ --html --html-details -o reports/coverage/coverage.html build/debug"
-//                             )
-//                             publishHTML([
-//                                 allowMissing: true,
-//                                 alwaysLinkToLastBuild: false,
-//                                 keepAll:
-//                                 false,
-//                                 reportDir: 'reports/coverage',
-//                                 reportFiles: 'coverage.html',
-//                                 reportName: 'Coverage HTML Report',
-//                                 reportTitles: ''
-//                             ])
-//                         }
-//                     }
-//                 }
-//                 stage("CTest: MemCheck"){
-//                     agent{
-//                         dockerfile {
-//                               filename 'ci/dockerfiles/conan/dockerfile'
-//                               additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                               label "linux"
-//                         }
-//                     }
-//                     options {
-//                       warnError('Unstable')
-//                     }
-//                     steps{
-//                         script{
-//                             def cores = sh(
-//                                 label: 'looking up number of cores',
-//                                 returnStdout: true,
-//                                 script: 'grep -c ^processor /proc/cpuinfo'
-//                                 ).trim()
-//
-//                             cmakeBuild(
-//                                 buildDir: 'build/debug',
-//                                 buildType: 'Debug',
-//                                 cleanBuild: true,
-//                                 installation: 'InSearchPath',
-//                                 cmakeArgs: '\
-//                                     -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-//                                     -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-//                                     -DCMAKE_C_FLAGS="-Wall -Wextra" \
-//                                     -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-//                                     -Dlibvisvid_TESTS:BOOL=ON \
-//                                     -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-//                                 steps: [
-//                                     [args: '--target test-visvid', withCmake: true],
-//                                     [args: '--target test-visvid-internal', withCmake: true],
-//                                 ]
-//                             )
-//                             ctest(
-//                                 arguments: "-T memcheck -j${cores}",
-//                                 installation: 'InSearchPath',
-//                                 workingDir: 'build/debug'
-//                             )
-//                         }
-//                     }
-//                     post{
-//                         always{
-//                             archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
-//                         }
-//                     }
-//                 }
-//             }
+            post{
+                cleanup{
+                    cleanWs(
+                        deleteDirs: true,
+                        patterns: [
+                            [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
+                            [pattern: 'build/', type: 'INCLUDE'],
+                            [pattern: 'reports/', type: 'INCLUDE'],
+                            [pattern: 'logs/', type: 'INCLUDE']
+                        ]
+                    )
+                }
+            }
         }
 //         stage('Package') {
 //             parallel{
