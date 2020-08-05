@@ -287,27 +287,37 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           cd src/applications/pyvisvid && coverage run --parallel-mode --source=pyvisvid -m pytest  ../../../tests --junitxml=../../../reports/tests/pytest/pytest-junit.xml
+                                                           (cd src/applica tions/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ --junitxml=../../../reports/pytest-junit.xml)
+                                                           (cd src/applications/pyvisvid && coverage xml -o ../../../coverage-reports/pythoncoverage-pytest.xml )
                                                            '''
                                             )
                                         }
                                     }
                                     post {
                                         always {
-                                            junit "reports/tests/pytest/pytest-junit.xml"
+                                            junit "reports/pytest-junit.xml"
                                         }
                                     }
                                 }
-                            }
-                            post{
-                                always{
-                                    sh "cd src/applications/pyvisvid && coverage combine && coverage xml -o ../../../reports/coverage.xml"
-                                    publishCoverage(
-                                        adapters: [
-                                                coberturaAdapter('reports/coverage.xml')
-                                            ],
-                                        sourceFileResolver: sourceFiles('STORE_ALL_BUILD')
-                                    )
+                                stage("Pylint") {
+                                    steps{
+                                        tee("reports/pylint.txt"){
+                                            catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
+                                                sh(
+                                                    script: '''mkdir -p reports
+                                                               (cd src/applications/pyvisvid && pylint pyvisvid  -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}")
+                                                               ''',
+                                                    label: "Running pylint"
+                                                )
+                                            }
+                                        }
+                                    }
+                                    post{
+                                        always{
+                                            stash includes: "reports/pylint_issues.txt,reports/pylint.txt", name: 'PYLINT_REPORT'
+                                            recordIssues(tools: [pyLint(pattern: 'reports/pylint.txt')])
+                                        }
+                                    }
                                 }
                             }
                         }
