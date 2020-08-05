@@ -14,16 +14,16 @@ pipeline {
                 stage("Clang Tidy"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/dockerfile'
+                            filename 'ci/dockerfiles/static_analysis/clang_tidy/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
                     }
                     steps{
-                        sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
+//                         sh "wget -nc https://raw.githubusercontent.com/llvm-mirror/clang-tools-extra/master/clang-tidy/tool/run-clang-tidy.py"
                         tee('logs/clang-tidy_debug.log') {
                             sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
-                                   python3 run-clang-tidy.py -clang-tidy-binary clang-tidy -p ./build/debug/
+                                   run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
                                    '''
                         }
                     }
