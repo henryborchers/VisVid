@@ -117,6 +117,27 @@ pipeline {
                                     workingDir: "build/debug"
                                 )
                             }
+                            post{
+                                always{
+                                    xunit(
+                                        testTimeMargin: '3000',
+                                        thresholdMode: 1,
+                                        thresholds: [
+                                          failed(),
+                                          skipped()
+                                          ],
+                                        tools: [
+                                          CTest(
+                                            deleteOutputFiles: true,
+                                            failIfNotNew: true,
+                                            pattern: "build/debug/Testing/**/*.xml",
+                                            skipNoTestFiles: true,
+                                            stopProcessingIfError: true
+                                            )
+                                          ]
+                                    )
+                                }
+                            }
                         }
                         stage("CTest: Coverage"){
                             steps{
