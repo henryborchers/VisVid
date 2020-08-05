@@ -193,7 +193,6 @@ pipeline {
                                         unstableThresholdDefinitelyLost: '',
                                         unstableThresholdInvalidReadWrite: '',
                                         unstableThresholdTotal: ''
-
                                     )
                                     archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
                                 }
