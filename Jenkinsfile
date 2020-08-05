@@ -123,18 +123,18 @@ pipeline {
                                         testTimeMargin: '3000',
                                         thresholdMode: 1,
                                         thresholds: [
-                                          failed(),
-                                          skipped()
-                                          ],
+                                            failed(),
+                                            skipped()
+                                        ],
                                         tools: [
-                                          CTest(
-                                            deleteOutputFiles: true,
-                                            failIfNotNew: true,
-                                            pattern: "build/debug/Testing/**/*.xml",
-                                            skipNoTestFiles: true,
-                                            stopProcessingIfError: true
+                                            CTest(
+                                                deleteOutputFiles: true,
+                                                failIfNotNew: true,
+                                                pattern: "build/debug/Testing/**/*.xml",
+                                                skipNoTestFiles: true,
+                                                stopProcessingIfError: true
                                             )
-                                          ]
+                                        ]
                                     )
                                 }
                             }
