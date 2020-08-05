@@ -1,8 +1,8 @@
 pipeline {
     agent none
     parameters{
-        booleanParam(name: "TEST_STATIC_ANALYSIS", defaultValue: true, description: "Run Static Analysis checks")
-        booleanParam(name: "TEST_CTEST", defaultValue: true, description: "Run ctest checks")
+        booleanParam(name: "TEST_STATIC_ANALYSIS", defaultValue: false, description: "Run Static Analysis checks")
+        booleanParam(name: "TEST_CTEST", defaultValue: false, description: "Run ctest checks")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
@@ -227,6 +227,22 @@ pipeline {
                                     [pattern: 'logs/', type: 'INCLUDE']
                                 ]
                             )
+                        }
+                    }
+                }
+                stage("Python Analysis"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/python/linux/Dockerfile'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            label "linux"
+                        }
+                    }
+                    stages{
+                        stage("Build Python extension for Testing"){
+                            steps{
+                                echo "gre"
+                            }
                         }
                     }
                 }
