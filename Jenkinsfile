@@ -165,7 +165,23 @@ pipeline {
                         }
                         stage("CTest: MemCheck"){
                             steps{
-                                echo "CTest: MemCheck"
+                                script{
+                                    def cores = sh(
+                                        label: 'looking up number of cores',
+                                        returnStdout: true,
+                                        script: 'grep -c ^processor /proc/cpuinfo'
+                                        ).trim()
+                                    ctest(
+                                        arguments: "-T memcheck -j${cores}",
+                                        installation: 'InSearchPath',
+                                        workingDir: 'build/debug'
+                                    )
+                                }
+                            }
+                            post{
+                                always{
+                                    archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                }
                             }
                         }
                     }
