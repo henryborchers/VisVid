@@ -239,9 +239,12 @@ pipeline {
                         }
                     }
                     stages{
-                        stage("Build Python extension for Testing"){
+                        stage("Build Python Extension for Testing"){
                             steps{
-                                echo "gre"
+                                sh(
+                                    label: "Running Python setup script to build wheel and sdist",
+                                    script: "python setup.py build_ext --inplace"
+                                    )
                             }
                         }
                     }
