@@ -107,10 +107,10 @@ pipeline {
                                 ]
                             )
                         }
-                        post{
-                            always{
-                                recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
-                            }
+                    }
+                    post{
+                        always{
+                            recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
                         }
                     }
                 }
