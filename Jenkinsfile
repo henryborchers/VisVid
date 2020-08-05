@@ -286,6 +286,7 @@ pipeline {
                                         catchError(buildResult: "UNSTABLE", message: 'Did not pass all pytest tests', stageResult: "UNSTABLE") {
                                             sh(
                                                 script: '''mkdir -p logs
+                                                           mkdir -p reports/tests/pytest
                                                            cd src/applications/pyvisvid && coverage run --parallel-mode --source=pyvisvid -m pytest  ../../../tests --junitxml=  ../../../reports/tests/pytest/pytest-junit.xml
                                                            '''
                                             )
