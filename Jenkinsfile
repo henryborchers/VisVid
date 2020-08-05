@@ -78,6 +78,13 @@ pipeline {
             }
         }
         stage("Checks"){
+            agent{
+                dockerfile {
+                    filename 'ci/dockerfiles/conan/dockerfile'
+                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                    label "linux"
+                }
+            }
             stages{
                 stage("Build debug version for testing"){
                     steps{
