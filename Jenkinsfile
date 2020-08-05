@@ -58,7 +58,7 @@ pipeline {
                         sh(
                             label: "Running Cppcheck",
                             script: '''mkdir -p logs
-                                       cppcheck --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file logs/cppcheck_debug.xml
+                                       cppcheck --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
                                        '''
                         )
                     }
