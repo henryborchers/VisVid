@@ -309,6 +309,13 @@ pipeline {
                                                 )
                                             }
                                         }
+                                        tee("reports/pylint_issues.txt"){
+                                             sh(
+                                                label: "Running pylint for sonarqube",
+                                                script: '''(cd src/applications/pyvisvid && pylint pyvisvid  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}")''',
+                                                returnStatus: true
+                                             )
+                                        }
                                     }
                                     post{
                                         always{
@@ -346,7 +353,7 @@ pipeline {
                         beforeOptions true
                     }
                     steps{
-                        sh "ls -la"
+                        unstash "PYLINT_REPORT"
                         script{
                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
                                 if (env.CHANGE_ID){
