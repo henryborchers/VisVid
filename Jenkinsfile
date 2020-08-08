@@ -346,7 +346,7 @@ pipeline {
                         beforeOptions true
                     }
                     steps{
-                        sh "la -la"
+                        sh "ls -la"
 //                        script{
 //                            withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
 //                                unstash "DIST-INFO"
