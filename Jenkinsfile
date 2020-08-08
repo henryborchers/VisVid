@@ -376,7 +376,7 @@ pipeline {
                                 } else {
                                     sh(
                                         label: "Running Sonar Scanner",
-                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=1 -X"
+                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=1"
                                         )
                                 }
                             }
@@ -390,6 +390,17 @@ pipeline {
                             }
                         }
 
+                    }
+                    post{
+                        always{
+                            script{
+                                if(fileExists('reports/sonar-report.json')){
+                                    stash includes: "reports/sonar-report.json", name: 'SONAR_REPORT'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/sonar-report.json'
+                                    recordIssues(tools: [sonarQube(pattern: 'reports/sonar-report.json')])
+                                }
+                            }
+                        }
                     }
                 }
             }
