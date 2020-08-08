@@ -364,7 +364,7 @@ pipeline {
                                 } else {
                                     sh(
                                         label: "Running Sonar Scanner",
-                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME}"
+                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -X"
                                         )
                                 }
                             }
