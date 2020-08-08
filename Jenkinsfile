@@ -332,6 +332,17 @@ pipeline {
                         }
                     }
                 }
+                stage("Submit results to SonarCloud"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/sonar-scanner/Dockerfile'
+                            label "linux"
+                        }
+                    }
+                    steps{
+                        echo "submitting to sonarcloud"
+                    }
+                }
             }
         }
         stage('Build Documentation') {
