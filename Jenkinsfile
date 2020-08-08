@@ -4,6 +4,7 @@ pipeline {
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
         booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: false, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
+        booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
     }
     stages {
         stage("Checks"){
@@ -338,6 +339,11 @@ pipeline {
                             filename 'ci/dockerfiles/sonar-scanner/Dockerfile'
                             label "linux"
                         }
+                    }
+                    when{
+                        equals expected: true, actual: params.USE_SONARQUBE
+                        beforeAgent true
+                        beforeOptions true
                     }
                     steps{
                         echo "submitting to sonarcloud"
