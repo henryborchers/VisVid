@@ -2,9 +2,9 @@ pipeline {
     agent none
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
+        booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
         booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: false, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
-        booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
     }
     stages {
         stage("Checks"){
