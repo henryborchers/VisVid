@@ -359,12 +359,12 @@ pipeline {
                                 if (env.CHANGE_ID){
                                     sh(
                                         label: "Running Sonar Scanner",
-                                        script:"sonar-scanner  -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET}"
+                                        script:"sonar-scanner  -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false "
                                         )
                                 } else {
                                     sh(
                                         label: "Running Sonar Scanner",
-                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -X"
+                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false -X"
                                         )
                                 }
                             }
