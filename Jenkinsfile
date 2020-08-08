@@ -1,3 +1,15 @@
+def get_sonarqube_unresolved_issues(report_task_file){
+    script{
+        if (! fileExists(report_task_file)){
+            error "File not found ${report_task_file}"
+        }
+        def props = readProperties  file: report_task_file
+        def response = httpRequest url : props['serverUrl'] + "/api/issues/search?componentKeys=" + props['projectKey'] + "&resolved=no"
+        def outstandingIssues = readJSON text: response.content
+        return outstandingIssues
+    }
+}
+
 pipeline {
     agent none
     parameters{
