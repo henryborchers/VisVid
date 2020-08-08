@@ -346,7 +346,31 @@ pipeline {
                         beforeOptions true
                     }
                     steps{
-                        echo "submitting to sonarcloud"
+                        script{
+                            withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
+                                unstash "DIST-INFO"
+                                if (env.CHANGE_ID){
+                                    sh(
+                                        label: "Running Sonar Scanner",
+                                        script:"sonar-scanner  -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET}"
+                                        )
+                                } else {
+                                    sh(
+                                        label: "Running Sonar Scanner",
+                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME}"
+                                        )
+                                }
+                            }
+                            timeout(time: 1, unit: 'HOURS') {
+                                def sonarqube_result = waitForQualityGate(abortPipeline: false)
+                                if (sonarqube_result.status != 'OK') {
+                                    unstable "SonarQube quality gate: ${sonarqube_result.status}"
+                                }
+                                def outstandingIssues = get_sonarqube_unresolved_issues(".scannerwork/report-task.txt")
+                                writeJSON file: 'reports/sonar-report.json', json: outstandingIssues
+                            }
+                        }
+
                     }
                 }
             }
