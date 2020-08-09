@@ -366,33 +366,27 @@ pipeline {
                     }
                     steps{
                         unstash "PYLINT_REPORT"
-                       
                         script{
                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
-
-sh(
-                            label:" Running Build wrapper",
-                            script: '''cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON
-                                       (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
-                                       
-          mkdir -p reports/unit
-          build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
-          build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
-          (mkdir -p build/coverage &&  cd build/coverage ) 
-find . -name "build-wrapper-dump.json"
-
-                                       '''
-                       )
+                                sh(
+                                    label:" Running Build wrapper",
+                                    script: '''cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON
+                                               (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
+                                               mkdir -p reports/unit
+                                               build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+                                               build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
+                                               '''
+                                )
 
                                 if (env.CHANGE_ID){
                                     sh(
                                         label: "Running Sonar Scanner",
-                                        script:"sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=1 -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
+                                        script:"sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
                                         )
                                 } else {
                                     sh(
                                         label: "Running Sonar Scanner",
-                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=1  -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
+                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false  -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
                                         )
                                 }
                             }
