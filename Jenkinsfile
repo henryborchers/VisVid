@@ -377,7 +377,7 @@ pipeline {
                                 if (env.CHANGE_ID){
                                     sh(
                                         label: "Running Sonar Scanner",
-                                        script:"sonar-scanner  -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=1 -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
+                                        script:"sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=1 -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
                                         )
                                 } else {
                                     sh(
@@ -406,6 +406,16 @@ pipeline {
                                     recordIssues(tools: [sonarQube(pattern: 'reports/sonar-report.json')])
                                 }
                             }
+                        }
+                        cleanup{
+                            cleanWs(
+                                deleteDirs: true,
+                                patterns: [
+                                    [pattern: 'build/', type: 'INCLUDE'],
+                                    [pattern: 'reports/', type: 'INCLUDE'],
+//                                    [pattern: 'logs/', type: 'INCLUDE']
+                                ]
+                            )
                         }
                     }
                 }
