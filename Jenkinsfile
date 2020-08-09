@@ -370,7 +370,13 @@ pipeline {
                             label:" Running Build wrapper",
                             script: '''cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON
                                        (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
-                                       find . -name "build-wrapper-dump.json"
+                                       
+          mkdir -p reports/unit
+          build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+          build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
+          (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \; ) 
+find . -name "build-wrapper-dump.json"
+
                                        '''
                        )
                         script{
