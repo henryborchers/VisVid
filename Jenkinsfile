@@ -374,7 +374,7 @@ pipeline {
           mkdir -p reports/unit
           build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
           build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
-          (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \; ) 
+          (mkdir -p build/coverage &&  cd build/coverage ) 
 find . -name "build-wrapper-dump.json"
 
                                        '''
