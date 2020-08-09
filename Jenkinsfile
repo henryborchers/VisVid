@@ -98,7 +98,7 @@ pipeline {
                 stage("Run Tests on C code"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/dockerfile'
+                            filename 'ci/dockerfiles/conan/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
@@ -428,7 +428,7 @@ pipeline {
         stage('Build Documentation') {
             agent{
                 dockerfile {
-                    filename 'ci/dockerfiles/conan/dockerfile'
+                    filename 'ci/dockerfiles/conan/Dockerfile'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
                 }
@@ -469,7 +469,7 @@ pipeline {
                 stage('Package Source and Linux binary Packages') {
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/dockerfile'
+                            filename 'ci/dockerfiles/conan/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
