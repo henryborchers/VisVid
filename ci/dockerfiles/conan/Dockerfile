@@ -5,39 +5,40 @@ RUN apt-get update && \
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add - && \
     apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 
-RUN apt-get update && apt-get install -y build-essential \
-    python3-pip \
-    cmake \
-    mesa-common-dev:amd64 \
-    libgbm-dev:amd64 \
-    libasound2-dev:amd64 \
-    libjack-dev:amd64 \
-    libpulse-dev:amd64 \
+RUN apt-get update && apt-get install -y \
     autoconf \
     automake \
-    libtool \
-    libegl1-mesa-dev:amd64 \
+    build-essential \
+    cmake \
+    libasound2-dev:amd64 \
     libaudio-dev:amd64 \
-    libxcursor-dev:amd64 \
-    libxinerama-dev:amd64 \
-    libxi-dev:amd64 \
-    libxrandr-dev:amd64 \
-    libxss-dev:amd64 \
-    libvdpau-dev:amd64 \
-    libva-dev:amd64 \
-    libxcb-shm0-dev:amd64 \
     libcap-dev \
-    python3 \
-    xorg-dev \
+    libdbus-1-dev \
+    libegl1-mesa-dev:amd64 \
+    libgbm-dev:amd64 \
     libgl1-mesa-dev \
-    libxcb-render-util0-dev \
-    libxcb-xkb-dev \
+    libjack-dev:amd64 \
+    libpulse-dev:amd64 \
+    libtool \
+    libva-dev:amd64 \
+    libvdpau-dev:amd64 \
     libxcb-icccm4-dev \
     libxcb-image0-dev \
     libxcb-keysyms1-dev  \
+    libxcb-render-util0-dev \
+    libxcb-shm0-dev:amd64 \
+    libxcb-xkb-dev \
     libxcb-xinerama0-dev \
+    libxcursor-dev:amd64 \
+    libxi-dev:amd64 \
+    libxinerama-dev:amd64 \
+    libxrandr-dev:amd64 \
+    libxss-dev:amd64 \
+    mesa-common-dev:amd64 \
+    python3 \
+    python3-pip \
+    xorg-dev \
   && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y  libdbus-1-dev
 ENV CONAN_NON_INTERACTIVE=1
 RUN python3 -m pip install --upgrade pip && python3 -m pip install conan
 COPY ci/dockerfiles/conan/remotes.json /home/user/.conan/remotes.json
