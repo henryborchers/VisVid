@@ -1,10 +1,56 @@
+FROM ubuntu:18.04 as conan_builder
+RUN apt-get update && \
+    apt-get install -y software-properties-common wget
+
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add - && \
+    apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+
+RUN apt-get update && apt-get install -y build-essential \
+    python3-pip \
+    cmake \
+    mesa-common-dev:amd64 \
+    libgbm-dev:amd64 \
+    libasound2-dev:amd64 \
+    libjack-dev:amd64 \
+    libpulse-dev:amd64 \
+    autoconf \
+    automake \
+    libtool \
+    libegl1-mesa-dev:amd64 \
+    libaudio-dev:amd64 \
+    libxcursor-dev:amd64 \
+    libxinerama-dev:amd64 \
+    libxi-dev:amd64 \
+    libxrandr-dev:amd64 \
+    libxss-dev:amd64 \
+    libvdpau-dev:amd64 \
+    libva-dev:amd64 \
+    libxcb-shm0-dev:amd64 \
+    libcap-dev \
+    python3 \
+    xorg-dev \
+    libgl1-mesa-dev \
+    libxcb-render-util0-dev \
+    libxcb-xkb-dev \
+    libxcb-icccm4-dev \
+    libxcb-image0-dev \
+    libxcb-keysyms1-dev  \
+    libxcb-xinerama0-dev \
+  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y  libdbus-1-dev
+ENV CONAN_NON_INTERACTIVE=1
+RUN python3 -m pip install --upgrade pip && python3 -m pip install conan
+COPY ci/dockerfiles/conan/remotes.json /home/user/.conan/remotes.json
+ENV CONAN_USER_HOME=/home/user/
+COPY ci/dockerfiles/conan/profiles/ /home/user/.conan/profiles/
+ENV CONAN_DEFAULT_PROFILE_PATH=/home/user/.conan/profiles/x64
+ADD conanfile.py /tmp/
+RUN conan install /tmp/ --no-imports --build missing
+
 FROM ubuntu:18.04
 
 RUN apt-get update && \
     apt-get install -y software-properties-common wget
-
-# RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add && \
-#     apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main"
 
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add - && \
     apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
@@ -53,25 +99,37 @@ RUN apt-get update && apt-get install -y build-essential \
     gcovr \
     valgrind \
     ffmpeg \
+    xorg-dev \
+    libxcb-render-util0-dev \
+    libxcb-xkb-dev \
+    libxcb-icccm4-dev \
+    libxcb-image0-dev \
+    libxcb-keysyms1-dev  \
+    libxcb-xinerama0-dev \
+    curl \
+    unzip \
   && rm -rf /var/lib/apt/lists/*
 
-ENV CONAN_NON_INTERACTIVE=1
+ENV SONAR_SCANNER_VERSION=4.4.0.2170
+ENV SONAR_SCANNER_HOME=/root/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
+    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
+ENV SONAR_SCANNER_OPTS="-server"
+
+RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip  https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
+    unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+ENV PATH=/root/.sonar/build-wrapper-linux-x86:$PATH
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-
-RUN python3 -m pip install --upgrade pip && python3 -m pip install conan
-
 RUN groupadd -g $GROUP_ID user && \
     useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user
-
-COPY ci/dockerfiles/conan/remotes.json /home/user/.conan/remotes.json
+#
+COPY --from=conan_builder  /home/user/.conan /home/user/.conan/
+ENV CONAN_NON_INTERACTIVE=1
 ENV CONAN_USER_HOME=/home/user/
-
+COPY ci/dockerfiles/conan/remotes.json /home/user/.conan/remotes.json
 COPY ci/dockerfiles/conan/profiles/ /home/user/.conan/profiles/
 ENV CONAN_DEFAULT_PROFILE_PATH=/home/user/.conan/profiles/x64
-
-
-ADD conanfile.py /tmp/
-RUN conan install /tmp/ --no-imports --build sdl2 --build ffmpeg && conan remove --locks -f
-RUN chown -R user:user /home/user/.conan/
+RUN python3 -m pip install --upgrade pip && python3 -m pip install conan
