@@ -111,16 +111,6 @@ RUN apt-get update && apt-get install -y build-essential \
     unzip \
   && rm -rf /var/lib/apt/lists/*
 
-ENV SONAR_SCANNER_VERSION=4.4.0.2170
-ENV SONAR_SCANNER_HOME=/root/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
-    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
-ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
-ENV SONAR_SCANNER_OPTS="-server"
-
-RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip  https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
-    unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
-ENV PATH=/root/.sonar/build-wrapper-linux-x86:$PATH
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -134,3 +124,14 @@ COPY ci/dockerfiles/conan/remotes.json /home/user/.conan/remotes.json
 COPY ci/dockerfiles/conan/profiles/ /home/user/.conan/profiles/
 ENV CONAN_DEFAULT_PROFILE_PATH=/home/user/.conan/profiles/x64
 RUN python3 -m pip install --upgrade pip && python3 -m pip install conan
+USER user
+ENV SONAR_SCANNER_VERSION=4.4.0.2170
+ENV SONAR_SCANNER_HOME=/home/user/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
+    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
+ENV SONAR_SCANNER_OPTS="-server"
+
+RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip  https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
+    unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
