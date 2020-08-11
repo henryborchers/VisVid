@@ -546,10 +546,15 @@ pipeline {
                                 steps{
                                     sh(
                                         label: "Building packages",
-                                        script: '''python -m pep517.build . --out-dir ./dist
+                                        script: '''python -m pep517.build . --binary ./dist
                                                    ls -laR ./dist/
                                                    '''
                                     )
+                                }
+                                post{
+                                    always{
+                                        stash includes: 'dist/*.whl', name: "whl ${PYTHON_VERSION}"
+                                    }
                                 }
                             }
                             stage("Testing Python on wheel package"){
@@ -567,6 +572,7 @@ pipeline {
                                                 [pattern: 'tox.ini', type: 'EXCLUDE'],
                                             ]
                                     )
+                                    unstash "whl ${PYTHON_VERSION}"
                                     script{
                                         findFiles(glob: "dist/*.whl").each{
                                             sh(
