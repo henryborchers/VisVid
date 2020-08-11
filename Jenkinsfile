@@ -531,16 +531,14 @@ pipeline {
                         }
                     }
                     steps{
-                        steps{
-                            sh(
-                                label: "Building Wheel Package",
-                                script: 'python -m pep517.build . --source --out-dir ./dist'
-                            )
-                        }
-                        post{
-                            always{
-                                stash includes: 'dist/*.zip,dist/*.tar.gz,', name: "PYTHON_SDIST"
-                            }
+                        sh(
+                            label: "Building Wheel Package",
+                            script: 'python -m pep517.build . --source --out-dir ./dist'
+                        )
+                    }
+                    post{
+                        always{
+                            stash includes: 'dist/*.zip,dist/*.tar.gz,', name: "PYTHON_SDIST"
                         }
                     }
                 }
