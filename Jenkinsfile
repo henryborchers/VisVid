@@ -522,6 +522,28 @@ pipeline {
                         }
                     }
                 }
+                stage("Python sdist"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/python/linux/Dockerfile'
+                            additionalBuildArgs "--build-arg USER_ID=\$(id -u) --build-arg GROUP_ID=\$(id -g) --build-arg PYTHON_VERSION=3.8"
+                            label "linux"
+                        }
+                    }
+                    steps{
+                        steps{
+                            sh(
+                                label: "Building Wheel Package",
+                                script: 'python -m pep517.build . --source --out-dir ./dist'
+                            )
+                        }
+                        post{
+                            always{
+                                stash includes: 'dist/*.zip,dist/*.tar.gz,', name: "PYTHON_SDIST"
+                            }
+                        }
+                    }
+                }
                 stage("Python Packages"){
                     matrix{
                         axes{
@@ -545,7 +567,7 @@ pipeline {
                             stage("Build Python package"){
                                 steps{
                                     sh(
-                                        label: "Building packages",
+                                        label: "Building Wheel Package",
                                         script: '''python -m pep517.build . --binary --out-dir ./dist
                                                    ls -laR ./dist/
                                                    '''
@@ -598,6 +620,7 @@ pipeline {
                                                 [pattern: 'tox.ini', type: 'EXCLUDE'],
                                             ]
                                     )
+                                    unstash "PYTHON_SDIST"
                                     script{
                                         findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
                                             sh(
