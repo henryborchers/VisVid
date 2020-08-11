@@ -4,5 +4,6 @@ flake8
 pytest
 pylint
 mypy
+pep517
 pytest-runner
 tox
