@@ -1,8 +1,10 @@
 cmake
 coverage
 flake8
+numpy
 pytest
 pylint
 mypy
+pep517
 pytest-runner
 tox

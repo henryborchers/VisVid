@@ -522,6 +522,26 @@ pipeline {
                         }
                     }
                 }
+                stage("Python sdist"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/python/linux/Dockerfile'
+                            additionalBuildArgs "--build-arg USER_ID=\$(id -u) --build-arg GROUP_ID=\$(id -g) --build-arg PYTHON_VERSION=3.8"
+                            label "linux"
+                        }
+                    }
+                    steps{
+                        sh(
+                            label: "Building Wheel Package",
+                            script: 'python -m pep517.build . --source --out-dir ./dist'
+                        )
+                    }
+                    post{
+                        always{
+                            stash includes: 'dist/*.zip,dist/*.tar.gz,', name: "PYTHON_SDIST"
+                        }
+                    }
+                }
                 stage("Python Packages"){
                     matrix{
                         axes{
@@ -545,11 +565,16 @@ pipeline {
                             stage("Build Python package"){
                                 steps{
                                     sh(
-                                        label: "Building packages",
-                                        script: '''python setup.py build bdist_wheel --dist-dir=./dist sdist --dist-dir=./dist
+                                        label: "Building Wheel Package",
+                                        script: '''python -m pep517.build . --binary --out-dir ./dist
                                                    ls -laR ./dist/
-                                        '''
+                                                   '''
                                     )
+                                }
+                                post{
+                                    always{
+                                        stash includes: 'dist/*.whl', name: "PYTHON_${PYTHON_VERSION}_WHL"
+                                    }
                                 }
                             }
                             stage("Testing Python on wheel package"){
@@ -557,6 +582,17 @@ pipeline {
                                     warnError('Python whl test failed')
                                 }
                                 steps{
+                                    cleanWs(
+                                        notFailBuild: true,
+                                        deleteDirs: true,
+                                        disableDeferredWipeout: true,
+                                        patterns: [
+                                                [pattern: '.git/**', type: 'EXCLUDE'],
+                                                [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                            ]
+                                    )
+                                    unstash "PYTHON_${PYTHON_VERSION}_WHL"
                                     script{
                                         findFiles(glob: "dist/*.whl").each{
                                             sh(
@@ -572,6 +608,17 @@ pipeline {
                                     warnError('Python sdist test failed')
                                 }
                                 steps{
+                                    cleanWs(
+                                        notFailBuild: true,
+                                        deleteDirs: true,
+                                        disableDeferredWipeout: true,
+                                        patterns: [
+                                                [pattern: '.git/**', type: 'EXCLUDE'],
+                                                [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                            ]
+                                    )
+                                    unstash "PYTHON_SDIST"
                                     script{
                                         findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
                                             sh(
