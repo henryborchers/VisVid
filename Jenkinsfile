@@ -557,6 +557,16 @@ pipeline {
                                     warnError('Python whl test failed')
                                 }
                                 steps{
+                                    cleanWs(
+                                        notFailBuild: true,
+                                        deleteDirs: true,
+                                        disableDeferredWipeout: true,
+                                        patterns: [
+                                                [pattern: '.git/**', type: 'EXCLUDE'],
+                                                [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                            ]
+                                    )
                                     script{
                                         findFiles(glob: "dist/*.whl").each{
                                             sh(
@@ -572,6 +582,16 @@ pipeline {
                                     warnError('Python sdist test failed')
                                 }
                                 steps{
+                                    cleanWs(
+                                        notFailBuild: true,
+                                        deleteDirs: true,
+                                        disableDeferredWipeout: true,
+                                        patterns: [
+                                                [pattern: '.git/**', type: 'EXCLUDE'],
+                                                [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                            ]
+                                    )
                                     script{
                                         findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
                                             sh(
