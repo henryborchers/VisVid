@@ -306,6 +306,7 @@ pipeline {
                                     post {
                                         always {
                                             junit "reports/pytest-junit.xml"
+                                            stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
                                         }
                                     }
                                 }
@@ -367,6 +368,7 @@ pipeline {
                     }
                     steps{
                         unstash "PYLINT_REPORT"
+                        unstash "PYTEST_REPORT"
                         script{
                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
                                 sh(
