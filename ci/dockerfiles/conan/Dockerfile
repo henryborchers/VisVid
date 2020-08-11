@@ -115,7 +115,9 @@ RUN apt-get update && apt-get install -y build-essential \
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN groupadd -g $GROUP_ID user && \
-    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user
+    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
+    mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
+    chmod -R g+w /.cache/
 #
 COPY --from=conan_builder  /home/user/.conan /home/user/.conan/
 ENV CONAN_NON_INTERACTIVE=1
@@ -127,11 +129,16 @@ RUN python3 -m pip install --upgrade pip && python3 -m pip install conan
 USER user
 ENV SONAR_SCANNER_VERSION=4.4.0.2170
 ENV SONAR_SCANNER_HOME=/home/user/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
-    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip \
+        https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
+    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/ && \
+    rm $HOME/.sonar/sonar-scanner.zip && \
+    mkdir -p /home/user/.sonar/cache && \
+    chown user:user /home/user/.sonar/cache
 ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
 ENV SONAR_SCANNER_OPTS="-server"
-
-RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip  https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
+RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
     unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
 ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
+RUN which sonar-scanner
+
