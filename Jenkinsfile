@@ -418,16 +418,16 @@ pipeline {
                                 }
                             }
                         }
-//                        cleanup{
-//                            cleanWs(
-//                                deleteDirs: true,
-//                                patterns: [
-//                                    [pattern: 'build/', type: 'INCLUDE'],
-//                                    [pattern: 'reports/', type: 'INCLUDE'],
-////                                    [pattern: 'logs/', type: 'INCLUDE']
-//                                ]
-//                            )
-//                        }
+                       cleanup{
+                           cleanWs(
+                               deleteDirs: true,
+                               patterns: [
+                                   [pattern: 'build/', type: 'INCLUDE'],
+                                   [pattern: 'reports/', type: 'INCLUDE'],
+                                   [pattern: '.scannerwork/', type: 'INCLUDE']
+                               ]
+                           )
+                       }
                     }
                 }
             }
