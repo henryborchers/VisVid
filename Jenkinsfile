@@ -1,7 +1,20 @@
+def get_sonarqube_unresolved_issues(report_task_file){
+    script{
+        if (! fileExists(report_task_file)){
+            error "File not found ${report_task_file}"
+        }
+        def props = readProperties  file: report_task_file
+        def response = httpRequest url : props['serverUrl'] + "/api/issues/search?componentKeys=" + props['projectKey'] + "&resolved=no"
+        def outstandingIssues = readJSON text: response.content
+        return outstandingIssues
+    }
+}
+
 pipeline {
     agent none
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
+        booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
         booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: false, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
@@ -85,7 +98,7 @@ pipeline {
                 stage("Run Tests on C code"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/dockerfile'
+                            filename 'ci/dockerfiles/conan/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
@@ -221,7 +234,8 @@ pipeline {
                                     [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
                                     [pattern: 'build/', type: 'INCLUDE'],
                                     [pattern: 'reports/', type: 'INCLUDE'],
-                                    [pattern: 'logs/', type: 'INCLUDE']
+                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                    [pattern: '**/*.so', type: 'INCLUDE'],
                                 ]
                             )
                         }
@@ -293,6 +307,8 @@ pipeline {
                                     post {
                                         always {
                                             junit "reports/pytest-junit.xml"
+                                            stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
+                                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                                         }
                                     }
                                 }
@@ -307,6 +323,13 @@ pipeline {
                                                     label: "Running pylint"
                                                 )
                                             }
+                                        }
+                                        tee("reports/pylint_issues.txt"){
+                                             sh(
+                                                label: "Running pylint for sonarqube",
+                                                script: '''(cd src/applications/pyvisvid && pylint pyvisvid  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}")''',
+                                                returnStatus: true
+                                             )
                                         }
                                     }
                                     post{
@@ -326,10 +349,90 @@ pipeline {
                                 patterns: [
                                     [pattern: 'build/', type: 'INCLUDE'],
                                     [pattern: 'reports/', type: 'INCLUDE'],
-                                    [pattern: 'logs/', type: 'INCLUDE']
+                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                    [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
+                                    [pattern: '**/__pycache__/', type: 'INCLUDE'],
+                                    [pattern: '**/*.so', type: 'INCLUDE'],
+
                                 ]
                             )
                         }
+                    }
+                }
+                stage("Submit results to SonarCloud"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/conan/Dockerfile'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            label "linux"
+                            args '--mount source=sonar-cache-visvid,target=/home/user/.sonar/cache'
+                        }
+                    }
+                    when{
+                        equals expected: true, actual: params.USE_SONARQUBE
+                        beforeAgent true
+                        beforeOptions true
+                    }
+                    steps{
+                        unstash "PYLINT_REPORT"
+                        unstash "PYTEST_REPORT"
+                        unstash "PYTHON_COVERAGE_REPORT"
+                        script{
+                            withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
+                                sh(
+                                    label:" Running Build wrapper",
+                                    script: '''cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON
+                                               (cd build && /home/user/.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
+                                               mkdir -p reports/unit
+                                               build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+                                               build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
+                                               (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )
+                                               '''
+                                )
+
+                                if (env.CHANGE_ID){
+                                    sh(
+                                        label: "Running Sonar Scanner",
+                                        script:"sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=\$(grep -c ^processor /proc/cpuinfo) -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
+                                        )
+                                } else {
+                                    sh(
+                                        label: "Running Sonar Scanner",
+                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=\$(grep -c ^processor /proc/cpuinfo) -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
+                                        )
+                                }
+                            }
+                            timeout(time: 1, unit: 'HOURS') {
+                                def sonarqube_result = waitForQualityGate(abortPipeline: false)
+                                if (sonarqube_result.status != 'OK') {
+                                    unstable "SonarQube quality gate: ${sonarqube_result.status}"
+                                }
+                                def outstandingIssues = get_sonarqube_unresolved_issues(".scannerwork/report-task.txt")
+                                writeJSON file: 'reports/sonar-report.json', json: outstandingIssues
+                            }
+                        }
+
+                    }
+                    post{
+                        always{
+                            script{
+                                if(fileExists('reports/sonar-report.json')){
+                                    stash includes: "reports/sonar-report.json", name: 'SONAR_REPORT'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/sonar-report.json'
+                                    recordIssues(tools: [sonarQube(pattern: 'reports/sonar-report.json')])
+                                }
+                            }
+                        }
+                       cleanup{
+                           cleanWs(
+                               deleteDirs: true,
+                               patterns: [
+                                   [pattern: 'build/', type: 'INCLUDE'],
+                                   [pattern: 'reports/', type: 'INCLUDE'],
+                                   [pattern: '.scannerwork/', type: 'INCLUDE']
+                               ]
+                           )
+                       }
                     }
                 }
             }
@@ -337,7 +440,7 @@ pipeline {
         stage('Build Documentation') {
             agent{
                 dockerfile {
-                    filename 'ci/dockerfiles/conan/dockerfile'
+                    filename 'ci/dockerfiles/conan/Dockerfile'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
                 }
@@ -378,7 +481,7 @@ pipeline {
                 stage('Package Source and Linux binary Packages') {
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/dockerfile'
+                            filename 'ci/dockerfiles/conan/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
