@@ -1,6 +1,7 @@
 cmake
 coverage
 flake8
+numpy
 pytest
 pylint
 mypy
