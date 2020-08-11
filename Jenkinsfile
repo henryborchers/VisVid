@@ -575,7 +575,7 @@ pipeline {
                                 }
                                 post{
                                     always{
-                                        stash includes: 'dist/*.whl', name: "whl ${PYTHON_VERSION}"
+                                        stash includes: 'dist/*.whl', name: "PYTHON_${PYTHON_VERSION}_WHL"
                                     }
                                 }
                             }
@@ -594,7 +594,7 @@ pipeline {
                                                 [pattern: 'tox.ini', type: 'EXCLUDE'],
                                             ]
                                     )
-                                    unstash "whl ${PYTHON_VERSION}"
+                                    unstash "PYTHON_${PYTHON_VERSION}_WHL"
                                     script{
                                         findFiles(glob: "dist/*.whl").each{
                                             sh(
