@@ -546,7 +546,7 @@ pipeline {
                                 steps{
                                     sh(
                                         label: "Building packages",
-                                        script: '''python -m pep517.build . --binary ./dist
+                                        script: '''python -m pep517.build . --binary --out-dir ./dist
                                                    ls -laR ./dist/
                                                    '''
                                     )
