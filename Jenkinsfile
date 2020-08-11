@@ -234,7 +234,8 @@ pipeline {
                                     [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
                                     [pattern: 'build/', type: 'INCLUDE'],
                                     [pattern: 'reports/', type: 'INCLUDE'],
-                                    [pattern: 'logs/', type: 'INCLUDE']
+                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                    [pattern: '**/*.so', type: 'INCLUDE'],
                                 ]
                             )
                         }
@@ -351,6 +352,7 @@ pipeline {
                                     [pattern: 'logs/', type: 'INCLUDE'],
                                     [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
                                     [pattern: '**/__pycache__/', type: 'INCLUDE'],
+                                    [pattern: '**/*.so', type: 'INCLUDE'],
 
                                 ]
                             )
