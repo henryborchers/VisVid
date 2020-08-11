@@ -359,6 +359,7 @@ pipeline {
                             filename 'ci/dockerfiles/conan/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
+                            args '--mount source=sonar-cache-visvid,target=/home/user/.sonar/cache'
                         }
                     }
                     when{
