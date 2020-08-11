@@ -355,7 +355,7 @@ pipeline {
                 stage("Submit results to SonarCloud"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/python/linux/Dockerfile'
+                            filename 'ci/dockerfiles/conan/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
