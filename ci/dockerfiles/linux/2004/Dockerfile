@@ -53,7 +53,10 @@ RUN apt-get update && \
         libcap-dev \
         libdbus-1-dev \
         libva-dev \
-        libvdpau-dev
+        libvdpau-dev \
+        libgbm-dev \
+        libjack-dev \
+        libaudio-dev
 
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
