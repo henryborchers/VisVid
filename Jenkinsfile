@@ -106,6 +106,7 @@ pipeline {
                     stages{
                         stage("Build Debug Version for Testing"){
                             steps{
+                                sh "conan install . -if build/debug"
                                 tee("logs/cmakebuild.log"){
                                     cmakeBuild(
                                         buildDir: 'build/debug',
