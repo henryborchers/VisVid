@@ -92,7 +92,7 @@ ENV SONAR_SCANNER_OPTS="-server"
 RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
     unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
 ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
-
+USER root
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing --update
-#RUN chown -R  user /home/user/.conan/data
+RUN chown -R  user /home/user/.conan/data
