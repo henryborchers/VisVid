@@ -63,6 +63,14 @@ RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install cmake && \
      python3 -m pip install conan
 
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -g $GROUP_ID user && \
+    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
+    mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
+    chmod -R g+w /.cache/
+#
+ENV CONAN_USER_HOME=/home/user/
 COPY conanfile.py /tmp/
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing --update

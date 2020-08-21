@@ -99,7 +99,7 @@ pipeline {
                     agent{
                         dockerfile {
                             filename 'ci/dockerfiles/linux/2004/Dockerfile'
-//                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
                     }
