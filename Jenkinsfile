@@ -98,8 +98,8 @@ pipeline {
                 stage("Run Tests on C code"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/Dockerfile'
-                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            filename 'ci/dockerfiles/linux/2004/Dockerfile'
+//                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
                     }
