@@ -114,6 +114,7 @@ pipeline {
                                         cleanBuild: true,
                                         installation: 'InSearchPath',
                                         cmakeArgs: '\
+                                                -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" \
                                                 -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
                                                 -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
                                                 -DCMAKE_C_FLAGS="-Wall -Wextra" \
