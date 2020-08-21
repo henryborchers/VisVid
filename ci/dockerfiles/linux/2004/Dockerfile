@@ -59,7 +59,8 @@ RUN apt-get update && \
         libaudio-dev \
         gcovr \
         valgrind \
-        ninja-build
+        ninja-build \
+        curl
 
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
@@ -73,8 +74,24 @@ RUN groupadd -g $GROUP_ID user && \
     mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
     chmod -R g+w /.cache/
 #
-ENV CONAN_USER_HOME=/home/user/
+
 COPY conanfile.py /tmp/
+ENV CONAN_USER_HOME=/home/user/
+USER user
+ENV SONAR_SCANNER_VERSION=4.4.0.2170
+ENV SONAR_SCANNER_HOME=/home/user/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip \
+        https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
+    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/ && \
+    rm $HOME/.sonar/sonar-scanner.zip && \
+    mkdir -p /home/user/.sonar/cache && \
+    chown user:user /home/user/.sonar/cache
+ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
+ENV SONAR_SCANNER_OPTS="-server"
+RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
+    unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
+
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing --update
-RUN chown -R  user /home/user/.conan/data
+#RUN chown -R  user /home/user/.conan/data
