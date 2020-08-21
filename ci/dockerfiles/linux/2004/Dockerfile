@@ -56,7 +56,9 @@ RUN apt-get update && \
         libvdpau-dev \
         libgbm-dev \
         libjack-dev \
-        libaudio-dev
+        libaudio-dev \
+        gcovr \
+        valgrind
 
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
