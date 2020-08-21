@@ -108,24 +108,25 @@ pipeline {
                             steps{
                                 sh "conan install . -if build/debug/"
                                 tee("logs/cmakebuild.log"){
-                                    cmakeBuild(
-                                        buildDir: 'build/debug',
-                                        buildType: 'Debug',
-                                        cleanBuild: true,
-                                        installation: 'InSearchPath',
-                                        cmakeArgs: '\
-                                                -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" \
-                                                -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-                                                -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-                                                -DCMAKE_C_FLAGS="-Wall -Wextra" \
-                                                -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-                                                -Dlibvisvid_TESTS:BOOL=ON \
-                                                -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-                                        steps: [
-                                            [args: '--target test-visvid', withCmake: true],
-                                            [args: '--target test-visvid-internal', withCmake: true],
-                                        ]
-                                    )
+                                    sh 'cmake . -B build/debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON'
+//                                    cmakeBuild(
+//                                        buildDir: 'build/debug',
+//                                        buildType: 'Debug',
+//                                        cleanBuild: true,
+//                                        installation: 'InSearchPath',
+//                                        cmakeArgs: '\
+//                                                -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" \
+//                                                -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
+//                                                -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
+//                                                -DCMAKE_C_FLAGS="-Wall -Wextra" \
+//                                                -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
+//                                                -Dlibvisvid_TESTS:BOOL=ON \
+//                                                -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
+//                                        steps: [
+//                                            [args: '--target test-visvid', withCmake: true],
+//                                            [args: '--target test-visvid-internal', withCmake: true],
+//                                        ]
+//                                    )
                                 }
                             }
                             post{
