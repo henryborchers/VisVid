@@ -58,7 +58,8 @@ RUN apt-get update && \
         libjack-dev \
         libaudio-dev \
         gcovr \
-        valgrind
+        valgrind \
+        ninja-build
 
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
