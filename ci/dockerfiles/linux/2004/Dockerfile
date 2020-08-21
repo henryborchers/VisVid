@@ -74,3 +74,4 @@ ENV CONAN_USER_HOME=/home/user/
 COPY conanfile.py /tmp/
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing --update
+RUN chown -R  user /home/user/.conan/data
