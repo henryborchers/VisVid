@@ -60,7 +60,8 @@ RUN apt-get update && \
         gcovr \
         valgrind \
         ninja-build \
-        curl
+        curl \
+        unzip
 
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
