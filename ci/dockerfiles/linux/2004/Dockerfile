@@ -94,5 +94,5 @@ RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://so
 ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
 USER root
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
-    conan install /tmp/ --no-imports --build missing --update
-RUN chown -R  user /home/user/.conan/data
+    conan install /tmp/ --no-imports --build missing --update && \
+    chown -R  user /home/user/.conan/data
