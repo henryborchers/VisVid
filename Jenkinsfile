@@ -461,7 +461,8 @@ pipeline {
             }
             steps{
                 sh(label: "Building Doxygen documentation",
-                   script:'''cmake -B ./build/docs/
+                   script:'''conan install . -if build/docs
+                             cmake -B ./build/docs/ -DCMAKE_TOOLCHAIN_FILE="build/docs/conan_paths.cmake"
                              cmake --build ./build/docs/ --target documentation
                              '''
                 )
