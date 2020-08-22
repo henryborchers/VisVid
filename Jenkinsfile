@@ -446,7 +446,8 @@ pipeline {
         stage('Build Documentation') {
             agent{
                 dockerfile {
-                    filename 'ci/dockerfiles/conan/Dockerfile'
+//                    filename 'ci/dockerfiles/conan/Dockerfile'
+                    filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
                 }
