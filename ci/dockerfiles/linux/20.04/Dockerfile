@@ -61,7 +61,8 @@ RUN apt-get update && \
         valgrind \
         ninja-build \
         curl \
-        unzip
+        unzip \
+        doxygen
 
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
