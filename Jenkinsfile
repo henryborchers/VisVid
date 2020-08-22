@@ -378,6 +378,9 @@ pipeline {
                         beforeAgent true
                         beforeOptions true
                     }
+                    options{
+                        lock("visvid-sonarscanner")
+                    }
                     steps{
                         unstash "PYLINT_REPORT"
                         unstash "PYTEST_REPORT"
