@@ -15,7 +15,7 @@ pipeline {
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
         booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
-        booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: false, description: "Build documentation")
+        booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: true, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
@@ -449,7 +449,6 @@ pipeline {
         stage('Build Documentation') {
             agent{
                 dockerfile {
-//                    filename 'ci/dockerfiles/conan/Dockerfile'
                     filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
@@ -460,12 +459,14 @@ pipeline {
                 beforeAgent true
             }
             steps{
-                sh(label: "Building Doxygen documentation",
-                   script:'''conan install . -if build/docs
-                             cmake -B ./build/docs/ -DCMAKE_TOOLCHAIN_FILE="build/docs/conan_paths.cmake"
-                             cmake --build ./build/docs/ --target documentation
-                             '''
-                )
+                tee("reports/doxygent.txt"){
+                    sh(label: "Building Doxygen documentation",
+                       script:'''conan install . -if build/docs
+                                 cmake -B ./build/docs/ -DCMAKE_TOOLCHAIN_FILE="build/docs/conan_paths.cmake"
+                                 cmake --build ./build/docs/ --target documentation
+                                 '''
+                    )
+                }
             }
             post{
                 success{
