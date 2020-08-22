@@ -459,7 +459,7 @@ pipeline {
                 beforeAgent true
             }
             steps{
-                tee("reports/doxygent.txt"){
+                tee("reports/doxygen.txt"){
                     sh(label: "Building Doxygen documentation",
                        script:'''conan install . -if build/docs
                                  cmake -B ./build/docs/ -DCMAKE_TOOLCHAIN_FILE="build/docs/conan_paths.cmake"
@@ -469,6 +469,9 @@ pipeline {
                 }
             }
             post{
+                always{
+                    recordIssues(tools: [doxygen(pattern: 'reports/doxygen.txt')])
+                }
                 success{
                     publishHTML(
                         [
