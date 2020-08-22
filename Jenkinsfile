@@ -107,7 +107,9 @@ pipeline {
                         stage("Build Debug Version for Testing"){
                             steps{
                                 sh "conan install . -if build/debug/"
-                                sh 'cmake . -B build/debug -G Ninja -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON'
+                                tee("logs/cmakeconfig.log"){
+                                    sh 'cmake . -B build/debug -G Ninja -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON'
+                                }
                                 tee("logs/cmakebuild.log"){
                                     sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
 
@@ -133,6 +135,7 @@ pipeline {
                             }
                             post{
                                 always{
+                                    recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
                                     recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
                                 }
                             }
