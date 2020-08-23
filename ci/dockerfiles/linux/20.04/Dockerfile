@@ -63,6 +63,7 @@ RUN apt-get update && \
         curl \
         unzip \
         doxygen \
+        graphviz \
         libavcodec-dev \
         libavformat-dev \
         libavdevice-dev \
