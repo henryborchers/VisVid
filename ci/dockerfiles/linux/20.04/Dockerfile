@@ -72,7 +72,7 @@ RUN apt-get update && \
         libswscale-dev \
         libswresample-dev \
         libsdl2-dev \
-        libgtk-3-dev \
+        libgtk2.0-dev \
         git
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
