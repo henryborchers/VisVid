@@ -112,25 +112,6 @@ pipeline {
                                 }
                                 tee("logs/cmakebuild.log"){
                                     sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
-
-//                                    cmakeBuild(
-//                                        buildDir: 'build/debug',
-//                                        buildType: 'Debug',
-//                                        cleanBuild: true,
-//                                        installation: 'InSearchPath',
-//                                        cmakeArgs: '\
-//                                                -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" \
-//                                                -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-//                                                -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-//                                                -DCMAKE_C_FLAGS="-Wall -Wextra" \
-//                                                -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-//                                                -Dlibvisvid_TESTS:BOOL=ON \
-//                                                -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-//                                        steps: [
-//                                            [args: '--target test-visvid', withCmake: true],
-//                                            [args: '--target test-visvid-internal', withCmake: true],
-//                                        ]
-//                                    )
                                 }
                             }
                             post{
