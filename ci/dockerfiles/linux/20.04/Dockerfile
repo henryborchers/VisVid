@@ -62,8 +62,15 @@ RUN apt-get update && \
         ninja-build \
         curl \
         unzip \
-        doxygen
-
+        doxygen \
+        libavcodec-dev \
+        libavformat-dev \
+        libavdevice-dev \
+        libavresample-dev \
+        libavutil-dev \
+        libswscale-dev \
+        libswresample-dev \
+        libsdl2-dev
 ENV CONAN_NON_INTERACTIVE=1
 RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install cmake && \

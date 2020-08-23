@@ -489,9 +489,9 @@ pipeline {
                         stage("Config and create a release build"){
                             steps{
                                 sh(label: "Creating release build",
-                                    script: '''cmake -B build/release
-                                               cmake --build build/release
-                                    '''
+                                   script: '''cmake -B build/release
+                                              cmake --build build/release
+                                              '''
                                 )
                             }
                         }
