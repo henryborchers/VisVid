@@ -6,12 +6,16 @@ class VisvidConan(ConanFile):
     requires = [
         "ffmpeg/4.2.1@bincrafters/stable",
         "sdl2/2.0.12@bincrafters/stable",
+        "libiconv/1.16"
     ]
     settings = "os", "arch", "compiler", "build_type"
 
     generators = ["cmake_paths"]
     default_options = {
-        "ffmpeg:shared": True,
+        # "ffmpeg:shared": True,
+        "ffmpeg:openjpeg": False,
+        "ffmpeg:x264": False,
+        "ffmpeg:x265": False,
     }
 
     def imports(self):

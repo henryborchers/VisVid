@@ -81,7 +81,6 @@ struct visBuffer {
  * @struct VisImageRGB
  * @brief RGB image data
  */
-//struct visImageRGB{
 typedef struct visImageRGB{
     uint8_t *plane;     /**< Raw data for pixel information.*/
     int     pitch;      /**< Pitch of the image.*/

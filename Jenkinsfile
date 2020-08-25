@@ -15,7 +15,7 @@ pipeline {
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
         booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
-        booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: false, description: "Build documentation")
+        booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: true, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
@@ -38,7 +38,7 @@ pipeline {
                             steps{
                                 tee('logs/clang-tidy_debug.log') {
                                     catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-                                        sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
+                                        sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
                                                run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
                                                '''
                                     }
@@ -71,7 +71,7 @@ pipeline {
                                 catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
                                     sh(
                                         label: "Running cppcheck",
-                                        script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
+                                        script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
                                                    mkdir -p logs
                                                    cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
                                                    '''
@@ -98,7 +98,7 @@ pipeline {
                 stage("Run Tests on C code"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/Dockerfile'
+                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
@@ -106,28 +106,17 @@ pipeline {
                     stages{
                         stage("Build Debug Version for Testing"){
                             steps{
+                                sh "conan install . -if build/debug/"
+                                tee("logs/cmakeconfig.log"){
+                                    sh 'cmake . -B build/debug -G Ninja -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON'
+                                }
                                 tee("logs/cmakebuild.log"){
-                                    cmakeBuild(
-                                        buildDir: 'build/debug',
-                                        buildType: 'Debug',
-                                        cleanBuild: true,
-                                        installation: 'InSearchPath',
-                                        cmakeArgs: '\
-                                                -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" \
-                                                -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" \
-                                                -DCMAKE_C_FLAGS="-Wall -Wextra" \
-                                                -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" \
-                                                -Dlibvisvid_TESTS:BOOL=ON \
-                                                -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON',
-                                        steps: [
-                                            [args: '--target test-visvid', withCmake: true],
-                                            [args: '--target test-visvid-internal', withCmake: true],
-                                        ]
-                                    )
+                                    sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
                                 }
                             }
                             post{
                                 always{
+                                    recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
                                     recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
                                 }
                             }
@@ -362,7 +351,7 @@ pipeline {
                 stage("Submit results to SonarCloud"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/Dockerfile'
+                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                             args '--mount source=sonar-cache-visvid,target=/home/user/.sonar/cache'
@@ -373,6 +362,9 @@ pipeline {
                         beforeAgent true
                         beforeOptions true
                     }
+                    options{
+                        lock("visvid-sonarscanner")
+                    }
                     steps{
                         unstash "PYLINT_REPORT"
                         unstash "PYTEST_REPORT"
@@ -381,7 +373,8 @@ pipeline {
                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
                                 sh(
                                     label:" Running Build wrapper",
-                                    script: '''cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON
+                                    script: '''conan install . -if build/
+                                               cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D libvisvid_TESTS:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
                                                (cd build && /home/user/.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
                                                mkdir -p reports/unit
                                                build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
@@ -440,7 +433,7 @@ pipeline {
         stage('Build Documentation') {
             agent{
                 dockerfile {
-                    filename 'ci/dockerfiles/conan/Dockerfile'
+                    filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                     label "linux"
                 }
@@ -450,13 +443,19 @@ pipeline {
                 beforeAgent true
             }
             steps{
-                sh(label: "Building Doxygen documentation",
-                   script:'''cmake -B ./build/docs/
-                             cmake --build ./build/docs/ --target documentation
-                             '''
-                )
+                tee("reports/doxygen.txt"){
+                    sh(label: "Building Doxygen documentation",
+                       script:'''conan install . -if build/docs
+                                 cmake -B ./build/docs/ -DCMAKE_TOOLCHAIN_FILE="build/docs/conan_paths.cmake"
+                                 cmake --build ./build/docs/ --target documentation
+                                 '''
+                    )
+                }
             }
             post{
+                always{
+                    recordIssues(tools: [doxygen(pattern: 'reports/doxygen.txt')])
+                }
                 success{
                     publishHTML(
                         [
@@ -481,7 +480,7 @@ pipeline {
                 stage('Package Source and Linux binary Packages') {
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/conan/Dockerfile'
+                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                             label "linux"
                         }
@@ -490,9 +489,9 @@ pipeline {
                         stage("Config and create a release build"){
                             steps{
                                 sh(label: "Creating release build",
-                                    script: '''cmake -B build/release
-                                               cmake --build build/release
-                                    '''
+                                   script: '''cmake -B build/release
+                                              cmake --build build/release
+                                              '''
                                 )
                             }
                         }
