@@ -2,5 +2,12 @@ build-essential
 cmake
 cppcheck
 git
+libavcodec-dev
+libavformat-dev
+libavdevice-dev
+libavresample-dev
 libavutil-dev
+libswscale-dev
+libswresample-dev
+libgtk2.0-dev
 libsdl2-dev
