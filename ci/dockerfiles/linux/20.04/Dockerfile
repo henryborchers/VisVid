@@ -75,6 +75,9 @@ RUN apt-get update && \
         libgtk2.0-dev \
         git
 ENV CONAN_NON_INTERACTIVE=1
+ARG PIP_EXTRA_INDEX_URL
+ARG PIP_TRUSTED_HOST
+ARG PIP_INDEX_URL
 RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install cmake && \
      python3 -m pip install conan
