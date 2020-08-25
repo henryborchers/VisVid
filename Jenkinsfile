@@ -95,6 +95,18 @@ pipeline {
                         }
                     }
                 }
+                stage("Build with clang"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/linux/clang/Dockerfile'
+                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                            label "linux"
+                        }
+                    }
+                    steps{
+                        echo "Builing with clang"
+                    }
+                }
                 stage("Run Tests on C code"){
                     agent{
                         dockerfile {
