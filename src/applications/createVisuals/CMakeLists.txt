@@ -69,11 +69,11 @@ target_link_libraries(CreateVisual
             Visvid::Visvid
             ${FFMPEG_LIBRARIES}
         )
-#if (TARGET SDL2::SDL2-static)
-#    target_link_libraries(CreateVisual PRIVATE SDL2::SDL2-static)
-#else()
+if (TARGET SDL2::SDL2-static)
+    target_link_libraries(CreateVisual PRIVATE SDL2::SDL2-static)
+else()
     target_link_libraries(CreateVisual PRIVATE SDL2::SDL2)
-#endif ()
+endif ()
 
 set(DialogBox_src filedialog.c filedialog.h)
 add_library(DialogBox STATIC EXCLUDE_FROM_ALL ${DialogBox_src})
