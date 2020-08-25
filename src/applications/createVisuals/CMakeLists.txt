@@ -71,8 +71,11 @@ target_link_libraries(CreateVisual
         )
 if (TARGET SDL2::SDL2)
     target_link_libraries(CreateVisual PRIVATE SDL2::SDL2)
-else()
+elseif (TARGET SDL2::SDL2-static)
     target_link_libraries(CreateVisual PRIVATE SDL2::SDL2-static)
+else()
+    target_include_directories(CreateVisual PRIVATE ${SDL2_INCLUDE_DIRS})
+    target_link_libraries(CreateVisual PRIVATE ${SDL2_LIBRARIES})
 endif ()
 
 set(DialogBox_src filedialog.c filedialog.h)
