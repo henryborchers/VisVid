@@ -20,6 +20,9 @@ RUN groupadd -g $GROUP_ID user && \
     useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user
 COPY --from=wheel_builder /wheels/ /wheels/
 
+ARG PIP_EXTRA_INDEX_URL
+ARG PIP_TRUSTED_HOST
+ARG PIP_INDEX_URL
 COPY ci/dockerfiles/python/shared/requirements-ci.txt /packages/
 RUN pip install --no-index --find-links=/wheels -r /packages/requirements-ci.txt
 ENV PIP_FIND_LINKS=/wheels
