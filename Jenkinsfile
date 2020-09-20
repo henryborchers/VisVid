@@ -326,7 +326,7 @@ pipeline {
 //                            coverage html -d ./reports/coverage
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports/coverage-reports
-                                          coverage combine src/applications/pyvisvid
+                                          coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml
                                           '''
