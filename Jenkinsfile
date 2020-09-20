@@ -328,7 +328,9 @@ pipeline {
 //                                          coverage xml -o ./reports/coverage-python.xml
 //                                          coverage html -d ./reports/coverage
                             sh(label: "combining coverage data",
-                               script: '''gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml reports/coverage-python-c-extension.xml'''
+                               script: '''mkdir -p reports
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage-python-c-extension.xml
+                                          '''
                            )
                         }
                         cleanup{
