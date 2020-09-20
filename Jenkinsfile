@@ -323,6 +323,15 @@ pipeline {
                         }
                     }
                     post{
+                        always{
+                            sh(label: "combining coverage data",
+                               script: '''coverage combine
+                                          coverage xml -o ./reports/coverage-python.xml
+                                          coverage html -d ./reports/coverage
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml reports/coverage-python-c-extension.xml
+                               '''
+                           )
+                        }
                         cleanup{
                             cleanWs(
                                 deleteDirs: true,
