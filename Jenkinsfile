@@ -278,7 +278,6 @@ pipeline {
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
                                                            (cd src/applications/pyvisvid && coverage run  --parallel --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ -p no:cacheprovider --junitxml=../../../reports/pytest-junit.xml)
-//                                                           (cd src/applications/pyvisvid && coverage xml -o ../../../reports/coverage-reports/pythoncoverage-pytest.xml )
                                                            '''
                                             )
                                         }
