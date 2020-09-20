@@ -3,4 +3,7 @@ requires = ["setuptools>=40.8.0", "wheel", "cmake"]
 build-backend = "setuptools.build_meta"
 
 [tool.coverage.run]
+branch = true
+include = ["src/*"]
+[tool.coverage.paths]
 source = ["src"]
