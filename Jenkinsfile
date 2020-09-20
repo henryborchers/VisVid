@@ -234,7 +234,7 @@ pipeline {
                             steps{
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace develop'
+                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace'
                                     )
                             }
                         }
