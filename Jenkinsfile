@@ -234,7 +234,7 @@ pipeline {
                             steps{
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace'
+                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace develop'
                                     )
                             }
                         }
@@ -278,8 +278,8 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           (cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ -p no:cacheprovider --junitxml=../../../reports/pytest-junit.xml)
-                                                           (cd src/applications/pyvisvid && coverage xml -o ../../../reports/coverage-reports/pythoncoverage-pytest.xml )
+                                                           coverage run  --source=./src/applications/pyvisvid -m pytest -p no:cacheprovider --junitxml=./reports/pytest-junit.xml
+                                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
                                                            '''
                                             )
                                         }
