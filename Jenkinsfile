@@ -328,7 +328,7 @@ pipeline {
                                script: '''mkdir -p reports/coverage-reports
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-                                          gcovr --filter src --print-summary  --xml -o reports/coverage-python-c-extension.xml
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml
                                           '''
                            )
                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
