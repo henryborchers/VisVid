@@ -324,7 +324,6 @@ pipeline {
                     post{
                         always{
 //                            coverage html -d ./reports/coverage
-                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports
                                           coverage combine
@@ -332,6 +331,7 @@ pipeline {
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-python-c-extension.xml
                                           '''
                            )
+                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                            publishCoverage(
                                adapters: [coberturaAdapter('reports/coverage*.xml')],
                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
