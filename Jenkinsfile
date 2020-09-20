@@ -108,7 +108,10 @@ pipeline {
                             steps{
                                 sh "conan install . -if build/debug/"
                                 tee("logs/cmakeconfig.log"){
-                                    sh 'cmake . -B build/debug -G Ninja -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_C_FLAGS_DEBUG="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON'
+                                    sh(label:"configuring a debug build",
+                                       script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                                  '''
+                                   )
                                 }
                                 tee("logs/cmakebuild.log"){
                                     sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
@@ -125,11 +128,12 @@ pipeline {
                             parallel{
                                 stage("Run CTest"){
                                     steps{
-                                        ctest(
-                                            arguments: "--output-on-failure --no-compress-output -T Test",
-                                            installation: 'InSearchPath',
-                                            workingDir: "build/debug"
-                                        )
+                                        sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
+//                                        ctest(
+//                                            arguments: "--output-on-failure --no-compress-output -T Test",
+//                                            installation: 'InSearchPath',
+//                                            workingDir: "build/debug"
+//                                        )
                                     }
                                     post{
                                         always{
@@ -149,30 +153,6 @@ pipeline {
                                                         stopProcessingIfError: true
                                                     )
                                                 ]
-                                            )
-                                        }
-                                    }
-                                }
-                                stage("CTest: Coverage"){
-                                    steps{
-                                        ctest(
-                                            arguments: "-T coverage",
-                                            installation: 'InSearchPath',
-                                            workingDir: 'build/debug'
-                                        )
-                                    }
-                                    post{
-                                        always{
-                                            sh(label: "Generating coverage report in Coberatura xml file format",
-                                               script: """mkdir -p reports/coverage
-                                                          gcovr -r ./ --xml -o reports/coverage/coverage.xml build/debug
-                                                          """
-
-                                            )
-                                            publishCoverage(
-                                                adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-                                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                                                tag: "AllCoverage"
                                             )
                                         }
                                     }
@@ -216,6 +196,19 @@ pipeline {
                         }
                     }
                     post{
+                        always{
+                            sh(label: "Generating coverage report in Coberatura xml file format",
+                               script: """mkdir -p reports/coverage
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml build/debug
+                                          """
+
+                            )
+                            publishCoverage(
+                                adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                                tag: "AllCoverage"
+                            )
+                        }
                         cleanup{
                             cleanWs(
                                 deleteDirs: true,
@@ -243,7 +236,7 @@ pipeline {
                             steps{
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: "python setup.py build build_ext --inplace"
+                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace'
                                     )
                             }
                         }
@@ -287,8 +280,7 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           (cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ -p no:cacheprovider --junitxml=../../../reports/pytest-junit.xml)
-                                                           (cd src/applications/pyvisvid && coverage xml -o ../../../reports/coverage-reports/pythoncoverage-pytest.xml )
+                                                           coverage run  --parallel setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
                                                            '''
                                             )
                                         }
@@ -297,7 +289,7 @@ pipeline {
                                         always {
                                             junit "reports/pytest-junit.xml"
                                             stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
-                                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
+//                                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                                         }
                                     }
                                 }
@@ -332,6 +324,22 @@ pipeline {
                         }
                     }
                     post{
+                        always{
+//                            coverage html -d ./reports/coverage
+                            sh(label: "combining coverage data",
+                               script: '''mkdir -p reports/coverage-reports
+                                          coverage combine
+                                          coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml
+                                          '''
+                           )
+                            stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
+                           publishCoverage(
+                               adapters: [coberturaAdapter('reports/coverage-reports/*.xml')],
+                               sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                               tag: "AllCoverage"
+                           )
+                        }
                         cleanup{
                             cleanWs(
                                 deleteDirs: true,
