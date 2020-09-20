@@ -277,7 +277,7 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           (cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ -p no:cacheprovider --junitxml=../../../reports/pytest-junit.xml)
+                                                           (cd src/applications/pyvisvid && coverage run  --parallel --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ -p no:cacheprovider --junitxml=../../../reports/pytest-junit.xml)
 //                                                           (cd src/applications/pyvisvid && coverage xml -o ../../../reports/coverage-reports/pythoncoverage-pytest.xml )
                                                            '''
                                             )
@@ -323,9 +323,10 @@ pipeline {
                     }
                     post{
                         always{
-//                               coverage combine
-//                                          coverage xml -o ./reports/coverage-python.xml
-//                                          coverage html -d ./reports/coverage
+                            coverage combine
+                            coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
+//                            coverage html -d ./reports/coverage
+                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-python-c-extension.xml
