@@ -196,7 +196,7 @@ pipeline {
                         always{
                             sh(label: "Generating coverage report in Coberatura xml file format",
                                script: """mkdir -p reports/coverage
-                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml build/debug
                                           find . -name "*.gcno"
                                           """
 
