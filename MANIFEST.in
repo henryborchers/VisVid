@@ -2,5 +2,4 @@ include CMakeLists.txt license.txt tox.ini README.md
 recursive-include src *.c *.cpp *.h CMakeLists.txt *.h.in
 recursive-include tests *.cpp *.h CMakeLists.txt *.py
 recursive-include cmake *.cmake *.cmake.in
-//recursive-include src/applications/pyvisvid/pyvisvid *.cpp *.h
 recursive-include examples/shared *.c *.h
