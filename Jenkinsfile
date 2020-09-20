@@ -154,41 +154,41 @@ pipeline {
                                         }
                                     }
                                 }
-                                stage("CTest: MemCheck"){
-                                    steps{
-                                        script{
-                                            def cores = sh(
-                                                label: 'looking up number of cores',
-                                                returnStdout: true,
-                                                script: 'grep -c ^processor /proc/cpuinfo'
-                                                ).trim()
-                                            ctest(
-                                                arguments: "-T memcheck -j${cores}",
-                                                installation: 'InSearchPath',
-                                                workingDir: 'build/debug'
-                                            )
-                                        }
-                                    }
-                                    post{
-                                        always{
-                                            publishValgrind(
-                                                failBuildOnInvalidReports: false,
-                                                failBuildOnMissingReports: false,
-                                                failThresholdDefinitelyLost: '',
-                                                failThresholdInvalidReadWrite: '',
-                                                failThresholdTotal: '',
-                                                pattern: 'build/debug/tests/**/*.memcheck',
-                                                publishResultsForAbortedBuilds: false,
-                                                publishResultsForFailedBuilds: false,
-                                                sourceSubstitutionPaths: '',
-                                                unstableThresholdDefinitelyLost: '',
-                                                unstableThresholdInvalidReadWrite: '',
-                                                unstableThresholdTotal: ''
-                                            )
-                                            archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
-                                        }
-                                    }
-                                }
+//                                stage("CTest: MemCheck"){
+//                                    steps{
+//                                        script{
+//                                            def cores = sh(
+//                                                label: 'looking up number of cores',
+//                                                returnStdout: true,
+//                                                script: 'grep -c ^processor /proc/cpuinfo'
+//                                                ).trim()
+//                                            ctest(
+//                                                arguments: "-T memcheck -j${cores}",
+//                                                installation: 'InSearchPath',
+//                                                workingDir: 'build/debug'
+//                                            )
+//                                        }
+//                                    }
+//                                    post{
+//                                        always{
+//                                            publishValgrind(
+//                                                failBuildOnInvalidReports: false,
+//                                                failBuildOnMissingReports: false,
+//                                                failThresholdDefinitelyLost: '',
+//                                                failThresholdInvalidReadWrite: '',
+//                                                failThresholdTotal: '',
+//                                                pattern: 'build/debug/tests/**/*.memcheck',
+//                                                publishResultsForAbortedBuilds: false,
+//                                                publishResultsForFailedBuilds: false,
+//                                                sourceSubstitutionPaths: '',
+//                                                unstableThresholdDefinitelyLost: '',
+//                                                unstableThresholdInvalidReadWrite: '',
+//                                                unstableThresholdTotal: ''
+//                                            )
+//                                            archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+//                                        }
+//                                    }
+//                                }
                             }
                         }
                     }
