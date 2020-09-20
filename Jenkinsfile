@@ -108,7 +108,7 @@ pipeline {
                             steps{
                                 sh "conan install . -if build/debug/"
                                 tee("logs/cmakeconfig.log"){
-                                    sh 'cmake . -B build/debug -G Ninja -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON'
+                                    sh 'cmake . -B build/debug -G Ninja -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -fPIC" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage -fPIC -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -Dlibvisvid_TESTS:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON'
                                 }
                                 tee("logs/cmakebuild.log"){
                                     sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
