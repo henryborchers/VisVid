@@ -24,77 +24,77 @@ pipeline {
                 equals expected: true, actual: params.RUN_CHECKS
             }
             stages{
-//                stage("Static Analysis for C Code"){
-//                    parallel{
-//                        stage("Clang Tidy"){
-//                            agent{
-//                                dockerfile {
-//                                    filename 'ci/dockerfiles/static_analysis/clang_tidy/Dockerfile'
-//                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                                    label "linux"
-//                                }
-//
-//                            }
-//                            steps{
-//                                tee('logs/clang-tidy_debug.log') {
-//                                    catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-//                                        sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
-//                                               run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
-//                                               '''
-//                                    }
-//                                }
-//                            }
-//                            post{
-//                                always {
-//                                    recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
-//                                }
-//                                cleanup{
-//                                    cleanWs(
-//                                        deleteDirs: true,
-//                                        patterns: [
-//                                            [pattern: 'build/', type: 'INCLUDE'],
-//                                            [pattern: 'logs/', type: 'INCLUDE'],
-//                                        ]
-//                                    )
-//                                }
-//                            }
-//                        }
-//                        stage("cppcheck"){
-//                            agent{
-//                              dockerfile {
-//                                filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
-//                                additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                                label "linux"
-//                              }
-//                            }
-//                            steps{
-//                                catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
-//                                    sh(
-//                                        label: "Running cppcheck",
-//                                        script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
-//                                                   mkdir -p logs
-//                                                   cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
-//                                                   '''
-//                                    )
-//                                }
-//                            }
-//                            post{
-//                                always {
-//                                    recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
-//                                }
-//                                cleanup{
-//                                    cleanWs(
-//                                        deleteDirs: true,
-//                                        patterns: [
-//                                            [pattern: 'build/', type: 'INCLUDE'],
-//                                            [pattern: 'logs/', type: 'INCLUDE'],
-//                                        ]
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+                stage("Static Analysis for C Code"){
+                    parallel{
+                        stage("Clang Tidy"){
+                            agent{
+                                dockerfile {
+                                    filename 'ci/dockerfiles/static_analysis/clang_tidy/Dockerfile'
+                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                    label "linux"
+                                }
+
+                            }
+                            steps{
+                                tee('logs/clang-tidy_debug.log') {
+                                    catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
+                                        sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                               run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
+                                               '''
+                                    }
+                                }
+                            }
+                            post{
+                                always {
+                                    recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
+                                }
+                                cleanup{
+                                    cleanWs(
+                                        deleteDirs: true,
+                                        patterns: [
+                                            [pattern: 'build/', type: 'INCLUDE'],
+                                            [pattern: 'logs/', type: 'INCLUDE'],
+                                        ]
+                                    )
+                                }
+                            }
+                        }
+                        stage("cppcheck"){
+                            agent{
+                              dockerfile {
+                                filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
+                                additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                label "linux"
+                              }
+                            }
+                            steps{
+                                catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
+                                    sh(
+                                        label: "Running cppcheck",
+                                        script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                                   mkdir -p logs
+                                                   cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
+                                                   '''
+                                    )
+                                }
+                            }
+                            post{
+                                always {
+                                    recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
+                                }
+                                cleanup{
+                                    cleanWs(
+                                        deleteDirs: true,
+                                        patterns: [
+                                            [pattern: 'build/', type: 'INCLUDE'],
+                                            [pattern: 'logs/', type: 'INCLUDE'],
+                                        ]
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 stage("Run Tests on C code"){
                     agent{
                         dockerfile {
@@ -154,41 +154,41 @@ pipeline {
                                         }
                                     }
                                 }
-//                                stage("CTest: MemCheck"){
-//                                    steps{
-//                                        script{
-//                                            def cores = sh(
-//                                                label: 'looking up number of cores',
-//                                                returnStdout: true,
-//                                                script: 'grep -c ^processor /proc/cpuinfo'
-//                                                ).trim()
-//                                            ctest(
-//                                                arguments: "-T memcheck -j${cores}",
-//                                                installation: 'InSearchPath',
-//                                                workingDir: 'build/debug'
-//                                            )
-//                                        }
-//                                    }
-//                                    post{
-//                                        always{
-//                                            publishValgrind(
-//                                                failBuildOnInvalidReports: false,
-//                                                failBuildOnMissingReports: false,
-//                                                failThresholdDefinitelyLost: '',
-//                                                failThresholdInvalidReadWrite: '',
-//                                                failThresholdTotal: '',
-//                                                pattern: 'build/debug/tests/**/*.memcheck',
-//                                                publishResultsForAbortedBuilds: false,
-//                                                publishResultsForFailedBuilds: false,
-//                                                sourceSubstitutionPaths: '',
-//                                                unstableThresholdDefinitelyLost: '',
-//                                                unstableThresholdInvalidReadWrite: '',
-//                                                unstableThresholdTotal: ''
-//                                            )
-//                                            archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
-//                                        }
-//                                    }
-//                                }
+                                stage("CTest: MemCheck"){
+                                    steps{
+                                        script{
+                                            def cores = sh(
+                                                label: 'looking up number of cores',
+                                                returnStdout: true,
+                                                script: 'grep -c ^processor /proc/cpuinfo'
+                                                ).trim()
+                                            ctest(
+                                                arguments: "-T memcheck -j${cores}",
+                                                installation: 'InSearchPath',
+                                                workingDir: 'build/debug'
+                                            )
+                                        }
+                                    }
+                                    post{
+                                        always{
+                                            publishValgrind(
+                                                failBuildOnInvalidReports: false,
+                                                failBuildOnMissingReports: false,
+                                                failThresholdDefinitelyLost: '',
+                                                failThresholdInvalidReadWrite: '',
+                                                failThresholdTotal: '',
+                                                pattern: 'build/debug/tests/**/*.memcheck',
+                                                publishResultsForAbortedBuilds: false,
+                                                publishResultsForFailedBuilds: false,
+                                                sourceSubstitutionPaths: '',
+                                                unstableThresholdDefinitelyLost: '',
+                                                unstableThresholdInvalidReadWrite: '',
+                                                unstableThresholdTotal: ''
+                                            )
+                                            archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
