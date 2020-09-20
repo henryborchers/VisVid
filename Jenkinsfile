@@ -325,15 +325,15 @@ pipeline {
                         always{
 //                            coverage html -d ./reports/coverage
                             sh(label: "combining coverage data",
-                               script: '''mkdir -p reports
+                               script: '''mkdir -p reports/coverage-reports
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-python-c-extension.xml
                                           '''
                            )
-                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
+                            stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
                            publishCoverage(
-                               adapters: [coberturaAdapter('reports/coverage*.xml')],
+                               adapters: [coberturaAdapter('reports/coverage-reports/*.xml')],
                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
                                tag: "AllCoverage"
                            )
