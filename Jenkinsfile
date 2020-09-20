@@ -153,31 +153,6 @@ pipeline {
                                         }
                                     }
                                 }
-//                                stage("CTest: Coverage"){
-//                                    steps{
-//                                        sh "cd build/debug && ctest -T coverage"
-////                                        ctest(
-////                                            arguments: "-T coverage",
-////                                            installation: 'InSearchPath',
-////                                            workingDir: 'build/debug'
-////                                        )
-//                                    }
-//                                    post{
-//                                        always{
-//                                            sh(label: "Generating coverage report in Coberatura xml file format",
-//                                               script: """mkdir -p reports/coverage
-//                                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml
-//                                                          """
-//
-//                                            )
-//                                            publishCoverage(
-//                                                adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-//                                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-//                                                tag: "AllCoverage"
-//                                            )
-//                                        }
-//                                    }
-//                                }
                                 stage("CTest: MemCheck"){
                                     steps{
                                         script{
@@ -217,6 +192,19 @@ pipeline {
                         }
                     }
                     post{
+                        always{
+                            sh(label: "Generating coverage report in Coberatura xml file format",
+                               script: """mkdir -p reports/coverage
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml
+                                          """
+
+                            )
+                            publishCoverage(
+                                adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                                tag: "AllCoverage"
+                            )
+                        }
                         cleanup{
                             cleanWs(
                                 deleteDirs: true,
