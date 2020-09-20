@@ -323,12 +323,12 @@ pipeline {
                     }
                     post{
                         always{
-                            coverage combine
-                            coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
 //                            coverage html -d ./reports/coverage
                             stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports
+                                          coverage combine
+                                          coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-python-c-extension.xml
                                           '''
                            )
