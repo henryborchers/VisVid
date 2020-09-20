@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.coverage.run]
 branch = true
-#source = ["src"]
 include = ["src/*"]
 [tool.coverage.paths]
 source = ["src"]
