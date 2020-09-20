@@ -125,11 +125,12 @@ pipeline {
                             parallel{
                                 stage("Run CTest"){
                                     steps{
-                                        ctest(
-                                            arguments: "--output-on-failure --no-compress-output -T Test",
-                                            installation: 'InSearchPath',
-                                            workingDir: "build/debug"
-                                        )
+                                        sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
+//                                        ctest(
+//                                            arguments: "--output-on-failure --no-compress-output -T Test",
+//                                            installation: 'InSearchPath',
+//                                            workingDir: "build/debug"
+//                                        )
                                     }
                                     post{
                                         always{
@@ -196,6 +197,7 @@ pipeline {
                             sh(label: "Generating coverage report in Coberatura xml file format",
                                script: """mkdir -p reports/coverage
                                           gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml
+                                          find . -name "*.gcno"
                                           """
 
                             )
