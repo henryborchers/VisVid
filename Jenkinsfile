@@ -197,7 +197,6 @@ pipeline {
                             sh(label: "Generating coverage report in Coberatura xml file format",
                                script: """mkdir -p reports/coverage
                                           gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml build/debug
-                                          find . -name "*.gcno"
                                           """
 
                             )
@@ -331,6 +330,11 @@ pipeline {
                                script: '''mkdir -p reports
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-python-c-extension.xml
                                           '''
+                           )
+                           publishCoverage(
+                               adapters: [coberturaAdapter('reports/coverage*.xml')],
+                               sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                               tag: "AllCoverage"
                            )
                         }
                         cleanup{
