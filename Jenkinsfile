@@ -234,7 +234,7 @@ pipeline {
                             steps{
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: 'CFLAGS="--coverage" python setup.py develop'
+                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace develop'
                                     )
                             }
                         }
@@ -278,8 +278,8 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           coverage run  --source=./src/applications/pyvisvid -m pytest -p no:cacheprovider --junitxml=./reports/pytest-junit.xml
-                                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
+                                                           (cd src/applications/pyvisvid && coverage run  --source=../../../src/applications/pyvisvid -m pytest ../../../tests/pyvisvid/ -p no:cacheprovider --junitxml=../../../reports/pytest-junit.xml)
+//                                                           (cd src/applications/pyvisvid && coverage xml -o ../../../reports/coverage-reports/pythoncoverage-pytest.xml )
                                                            '''
                                             )
                                         }
@@ -288,7 +288,7 @@ pipeline {
                                         always {
                                             junit "reports/pytest-junit.xml"
                                             stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
-                                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
+//                                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                                         }
                                     }
                                 }
@@ -324,12 +324,11 @@ pipeline {
                     }
                     post{
                         always{
+//                               coverage combine
+//                                          coverage xml -o ./reports/coverage-python.xml
+//                                          coverage html -d ./reports/coverage
                             sh(label: "combining coverage data",
-                               script: '''coverage combine
-                                          coverage xml -o ./reports/coverage-python.xml
-                                          coverage html -d ./reports/coverage
-                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml reports/coverage-python-c-extension.xml
-                               '''
+                               script: '''gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml reports/coverage-python-c-extension.xml'''
                            )
                         }
                         cleanup{
