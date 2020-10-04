@@ -79,7 +79,7 @@ ARG PIP_TRUSTED_HOST
 ARG PIP_INDEX_URL
 RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install cmake && \
-     python3 -m pip install conan gcovr pybind11
+     python3 -m pip install conan gcovr
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
