@@ -8,10 +8,7 @@ from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 from setuptools.command.build_clib import build_clib
 from distutils.cmd import Command
-from urllib import request
 import tarfile
-
-PYBIND11_URL = "https://github.com/pybind/pybind11/archive/v2.4.3.tar.gz"
 
 
 class PackageSharedSource(Command):
@@ -95,11 +92,8 @@ class PackageVisvid(Command):
 class BuildExt(build_ext):
 
     def run(self):
-        self.get_deps()
         clib_cmd = self.get_finalized_command("build_clib")
-
         # Include the paths built by the clib
-        self.include_dirs.append(".")
         self.include_dirs.append("./src/visvid/include")
 
         self.include_dirs.insert(
@@ -108,37 +102,9 @@ class BuildExt(build_ext):
         self.library_dirs.insert(
             0, os.path.join(clib_cmd.build_clib, "lib"))
 
+        import pybind11
+        self.include_dirs.insert(0, pybind11.get_include())
         super().run()
-
-    def get_deps(self):
-        self.mkpath(self.build_temp)
-
-        archive_dest = os.path.abspath(
-            os.path.join(self.build_temp, "pybind11.tar.gz"))
-
-        if not os.path.exists(archive_dest):
-            self.announce("Downloading pybind11", level=5)
-            request.urlretrieve(PYBIND11_URL, filename=archive_dest)
-            self.announce("Downloading pybind11 done", level=1)
-
-        with tarfile.open(archive_dest, "r") as tf:
-            self.announce("Extracting pybind11")
-            for f in tf:
-                dest = os.path.join(self.build_temp, f.name)
-
-                if "pybind11.h" in f.name:
-
-                    pybind11_include_path = os.path.abspath(
-                        os.path.join(os.path.dirname(dest), ".."))
-
-                    self.announce(
-                        f"Adding {pybind11_include_path} to include path")
-
-                    self.include_dirs.append(pybind11_include_path)
-
-                if os.path.exists(dest):
-                    continue
-                tf.extract(f, self.build_temp)
 
 
 class BuildCMakeClib(build_clib):
@@ -155,11 +121,15 @@ class BuildCMakeClib(build_clib):
                 archive_file.extract(f, self.build_temp)
 
     def initialize_options(self):
-        self.cmake_path = shutil.which("cmake")
+        self.cmake_path = None
 
         super().initialize_options()
 
     def finalize_options(self):
+        import cmake
+        if self.cmake_path is None:
+            self.cmake_path = shutil.which("cmake", path=cmake.CMAKE_BIN_DIR)
+
         super().finalize_options()
 
         assert self.cmake_path, "CMake command is required to build visvid"
@@ -183,10 +153,14 @@ class BuildCMakeClib(build_clib):
                                                           "build",
                                                           lib_name))
 
-                if build_ext_cmd.force == 1 or not os.path.exists(os.path.join(build_path, "CMakeCache.txt")):
+                if build_ext_cmd.force == 1 or \
+                        not os.path.exists(os.path.join(build_path,
+                                                        "CMakeCache.txt")
+                                           ):
+
                     install_prefix = os.path.abspath(self.build_clib)
                     source_dir = lib['CMAKE_SOURCE_DIR']
-                    cmake_config_command =[
+                    cmake_config_command = [
                         self.cmake_path,
                         "-S", os.path.abspath(source_dir),
                         "-B", build_path,
@@ -212,11 +186,20 @@ class BuildCMakeClib(build_clib):
                         compiler_flags.append(flag)
 
                     CMAKE_SHARED_LINKER_FLAGS = " ".join(compiler_flags)
-                    cmake_config_command.append("-DCMAKE_C_FLAGS={}".format(CMAKE_SHARED_LINKER_FLAGS))
+
+                    cmake_config_command.append(
+                        "-DCMAKE_C_FLAGS={}".format(CMAKE_SHARED_LINKER_FLAGS)
+                    )
+
                     self.compiler.spawn(cmake_config_command)
 
-                self.compiler.spawn([
-                    self.cmake_path, "--build", build_path, "--target", "install"])
+                self.compiler.spawn(
+                    [
+                        self.cmake_path,
+                        "--build", build_path,
+                        "--target", "install"
+                    ]
+                )
 
 
 pyvisvid_extension = Extension(
