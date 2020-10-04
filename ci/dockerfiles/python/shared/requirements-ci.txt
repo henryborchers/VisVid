@@ -3,6 +3,7 @@ coverage
 flake8
 gcovr
 numpy
+pybind11
 pytest
 pylint
 mypy
