@@ -279,7 +279,11 @@ setup(
     packages=["pyvisvid"],
     package_dir={"": "src/applications/pyvisvid"},
     package_data={"pyvisvid": ["visvid.pyi"]},
-    setup_requires=["pytest-runner"],
+    setup_requires=[
+        "pytest-runner",
+        "pybind11",
+        "cmake"
+    ],
     test_suite='examples/pyvisvid/tests',
     cmdclass={
         'build_ext': BuildExt,
