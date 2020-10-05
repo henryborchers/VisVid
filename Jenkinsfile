@@ -80,7 +80,14 @@ pipeline {
                             }
                             post{
                                 always {
-                                    recordIssues(tools: [cppCheck(pattern: 'logs/cppcheck_debug.xml')])
+                                    recordIssues(
+                                        filters: [
+                                                excludeFile('build/debug/_deps/*')
+                                            ],
+                                        tools: [
+                                                cppCheck(pattern: 'logs/cppcheck_debug.xml')
+                                            ]
+                                    )
                                 }
                                 cleanup{
                                     cleanWs(
