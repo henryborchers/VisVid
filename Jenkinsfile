@@ -82,7 +82,7 @@ pipeline {
                                 always {
                                     recordIssues(
                                         filters: [
-                                                excludeFile('build/debug/_deps/**')
+                                                excludeFile('build/debug/_deps/*')
                                             ],
                                         tools: [
                                                 cppCheck(pattern: 'logs/cppcheck_debug.xml')
