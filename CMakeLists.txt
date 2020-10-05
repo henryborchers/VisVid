@@ -35,9 +35,8 @@ endif(libvisvid_build_examples)
 
 
 # build tests
-if(${PROJECT_NAME}_TESTS)
-    include(CTest)
-    enable_testing()
+include(CTest)
+if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
