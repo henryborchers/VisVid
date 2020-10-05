@@ -16,3 +16,6 @@ endif()
 add_subdirectory(internal)
 
 add_subdirectory(publicAPI)
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
+        DEPENDS tests/test-visvid-internal tests/test-visvid
+        )
