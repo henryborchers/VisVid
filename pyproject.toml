@@ -21,3 +21,6 @@ disable=[
     "missing-module-docstring",
     "missing-function-docstring"
 ]
+extension-pkg-whitelist=[
+    "pyvisvid.visvid"
+    ]
