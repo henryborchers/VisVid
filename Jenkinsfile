@@ -306,7 +306,7 @@ pipeline {
                                             catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
                                                 sh(
                                                     script: '''mkdir -p reports
-                                                               python -m pylint src/applications/pyvisvid/pyvisvid// -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+                                                               python -m pylint src/applications/pyvisvid/pyvisvid/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
                                                                ''',
                                                     label: "Running pylint"
                                                 )
