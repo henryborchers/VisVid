@@ -15,3 +15,9 @@ testpaths = [
     "tests/pyvisvid"
 ]
 junit_family="xunit1"
+
+[tool.pylint.'MESSAGES CONTROL']
+disable=[
+    "missing-module-docstring",
+    "missing-function-docstring"
+]
