@@ -121,6 +121,21 @@ int visView_Update4(visView *pView, const visBuffer *buffer) {
     return 0;
 }
 
+int visView_Update5(visView *pView, const visBuffer *visBuffer, PixelValue *pixelBuffer, size_t size){
+    if(pView == NULL || visBuffer == NULL){
+        return -1;
+    }
+    for (int y = 0; y < pView->height; ++y) {
+        int res = visBuffer_getResult(pixelBuffer, visBuffer, visBuffer->bufferLen - 1 - y);
+        if(res != 0 ){
+            return res;
+        }
+        int offset =  (pView->width * y);
+        PixelValue *data = pView->data + offset;
+        memcpy(data, pixelBuffer, size);
+    }
+    return 0;
+}
 
 int index_lookup(int x, int y, int view_width){
     int index = (view_width * y) + x;

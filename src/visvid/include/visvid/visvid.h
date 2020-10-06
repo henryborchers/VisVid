@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+
+#include "visvid_export.h"
+
 /** \example make_image.c
  * Example of creating, adding to and deleting buffers
  */
@@ -177,7 +180,8 @@ void VisView_Destroy(visView **pvd);
 
 
 int visView_Update3(visView *pView, visBuffer *buffer);
-int visView_Update4(visView *pView, const visBuffer *buffer);
+VISVID_DEPRECATED int visView_Update4(visView *pView, const visBuffer *buffer);
+int visView_Update5(visView *pView, const visBuffer *visBuffer, PixelValue *pixelBuffer, size_t size);
 
 
 /**

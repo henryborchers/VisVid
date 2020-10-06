@@ -44,6 +44,18 @@ TEST_CASE("visView_Update4 fails on empty buffer", "[visView]"){
     VisView_Destroy(&pvid);
 
 }
+
+TEST_CASE("visView_Update5 fails on empty buffer", "[visView]"){
+
+    visView *pvid = VisView_Create(640, 480);
+    visBuffer *buffer = VisBuffer_Create2(10, 2);
+    PixelValue *pixelBuffer =(PixelValue*) malloc(sizeof(int) * pvid->width);
+    CHECK(visView_Update5(pvid, buffer, pixelBuffer, pvid->width) < 0);
+    free(pixelBuffer);
+    VisBuffer_Destroy(&buffer);
+    VisView_Destroy(&pvid);
+
+}
 //
 
 TEST_CASE("visViewRGBA_value2color1", "[visView, visViewRGBA_value2color1]") {
