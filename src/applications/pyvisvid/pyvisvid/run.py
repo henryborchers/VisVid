@@ -20,7 +20,7 @@ def is_valid_output(destination):
     if os.path.isdir(destination):
         return False
 
-    base, ext = os.path.splitext(os.path.basename(destination))
+    ext = os.path.splitext(os.path.basename(destination))[-1]
 
     if ext != ".pgm":
         return False
