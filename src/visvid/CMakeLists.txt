@@ -18,6 +18,7 @@ add_library(Visvid::Visvid ALIAS Visvid)
 list(APPEND VISPUBLIC_HEADER include/visvid/visvid.h)
 list(APPEND VISPUBLIC_HEADER include/visvid/utils.h)
 list(APPEND VISPUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/visvid/visVersion.h")
+list(APPEND VISPUBLIC_HEADER "${CMAKE_CURRENT_BINARY_DIR}/visvid_export.h")
 target_link_libraries(Visvid PRIVATE FFmpeg::avutil)
 set_target_properties(Visvid PROPERTIES
         C_STANDARD 11
