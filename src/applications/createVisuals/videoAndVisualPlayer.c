@@ -204,15 +204,11 @@ int playVideoVis(DecoderContext *decoder, DisplayWidgetContext *vidCtx, VidVisWi
             Uint32 frameTime = SDL_GetTicks() - startframeTime;
             if (frameTime > 50){
                 // update a view of the buffer
-//                PixelValue *pixelBuffer =(PixelValue*) malloc(sizeof(int) * view->width);
-//                visView_Update5(view, buffer,)
                 if((rc = visView_Update5(view, buffer, pixelBuffer, view->width)) != 0){
-//                if((rc = visView_Update4(view, buffer)) != 0){
                     returncode = rc;
                     fprintf(stderr, "visView_Update Failed with code %d.\n", rc);
                     break;
                 }
-//                free(pixelBuffer);
 //            // Render a picture of the view to the visualization image
                 if((rc = visViewRGB_GenerateRGBA(&vidCtx->buffer, view, visViewRGBA_value2color1)) != 0){
                     returncode = rc;
