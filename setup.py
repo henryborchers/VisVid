@@ -92,6 +92,8 @@ class PackageVisvid(Command):
 class BuildExt(build_ext):
 
     def run(self):
+        self.include_dirs.insert(
+            0, os.path.join(self.build_temp, "include", "visvid"))
         clib_cmd = self.get_finalized_command("build_clib")
         # Include the paths built by the clib
         self.include_dirs.append("./src/visvid/include")
@@ -101,7 +103,6 @@ class BuildExt(build_ext):
 
         self.library_dirs.insert(
             0, os.path.join(clib_cmd.build_clib, "lib"))
-
         import pybind11
         self.include_dirs.insert(0, pybind11.get_include())
         super().run()
@@ -164,9 +165,10 @@ class BuildCMakeClib(build_clib):
                         self.cmake_path,
                         "-S", os.path.abspath(source_dir),
                         "-B", build_path,
-                        f"-DCMAKE_INSTALL_PREFIX:PATH={install_prefix}"
+                        f"-DCMAKE_INSTALL_PREFIX:PATH={install_prefix}",
+                        "-DBUILD_TESTING:BOOL=false"
                     ]
-
+                    build_ext_cmd.include_dirs.append(os.path.join(self.build_clib, "include", "visvid"))
                     compiler_flags = list()
 
                     for flag in self.compiler.compiler:
