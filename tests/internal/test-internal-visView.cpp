@@ -14,11 +14,12 @@ TEST_CASE("visView Functions on an Empty Buffer"){
 
     visView *pvid = VisView_Create(640, 480);
     CHECK(nullptr != pvid);
+    PixelValue *pixelBuffer =(PixelValue*) malloc(sizeof(int) * 640);
 
     SECTION("visView is empty on creation"){
         visBuffer *Buffer = VisBuffer_Create2(10, 0);
         CHECK(nullptr != Buffer );
-        int rc = visView_Update(pvid, Buffer);
+        int rc = visView_Update5(pvid, Buffer, pixelBuffer, pvid->width);
         CHECK(rc == 0);
 
 
@@ -29,8 +30,9 @@ TEST_CASE("visView Functions on an Empty Buffer"){
             }
         }
         VisBuffer_Destroy(&Buffer);
-//        CHECK(Buffer == nullptr);
+        CHECK(Buffer == nullptr);
     }
+    free(pixelBuffer);
 
     VisView_Destroy(&pvid);
     CHECK(nullptr == pvid);

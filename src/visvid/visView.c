@@ -125,14 +125,16 @@ int visView_Update5(visView *pView, const visBuffer *visBuffer, PixelValue *pixe
     if(pView == NULL || visBuffer == NULL){
         return -1;
     }
-    for (int y = 0; y < pView->height; ++y) {
-        int res = visBuffer_getResult(pixelBuffer, visBuffer, visBuffer->bufferLen - 1 - y);
-        if(res != 0 ){
-            return res;
+    if(visBuffer->bufferLen > 0){
+        for (int y = 0; y < pView->height; ++y) {
+            int res = visBuffer_getResult(pixelBuffer, visBuffer, visBuffer->bufferLen - 1 - y);
+            if(res != 0 ){
+                return res;
+            }
+            int offset =  (pView->width * y);
+            PixelValue *data = pView->data + offset;
+            memcpy(data, pixelBuffer, size);
         }
-        int offset =  (pView->width * y);
-        PixelValue *data = pView->data + offset;
-        memcpy(data, pixelBuffer, size);
     }
     return 0;
 }
