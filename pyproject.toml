@@ -7,3 +7,11 @@ branch = true
 include = ["src/*"]
 [tool.coverage.paths]
 source = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-v"
+testpaths = [
+    "tests/pyvisvid"
+]
+junit_family="xunit1"
