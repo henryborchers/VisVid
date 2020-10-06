@@ -306,7 +306,7 @@ pipeline {
                                             catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
                                                 sh(
                                                     script: '''mkdir -p reports
-                                                               (cd src/applications/pyvisvid && pylint pyvisvid  -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}")
+                                                               pylint pyvisvid  -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
                                                                ''',
                                                     label: "Running pylint"
                                                 )
@@ -315,7 +315,7 @@ pipeline {
                                         tee("reports/pylint_issues.txt"){
                                              sh(
                                                 label: "Running pylint for sonarqube",
-                                                script: '''(cd src/applications/pyvisvid && pylint pyvisvid  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}")''',
+                                                script: '''pylint pyvisvid  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}"''',
                                                 returnStatus: true
                                              )
                                         }
