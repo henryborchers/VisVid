@@ -24,209 +24,208 @@ pipeline {
                 equals expected: true, actual: params.RUN_CHECKS
             }
             stages{
-                stage("Static Analysis for C Code"){
-                    parallel{
-                        stage("Clang Tidy"){
-                            agent{
-                                dockerfile {
-                                    filename 'ci/dockerfiles/static_analysis/clang_tidy/Dockerfile'
-                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                                    label "linux"
-                                }
-
-                            }
-                            steps{
-                                tee('logs/clang-tidy_debug.log') {
-                                    catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-                                        sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
-                                               run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
-                                               '''
-                                    }
-                                }
-                            }
-                            post{
-                                always {
-                                    recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
-                                }
-                                cleanup{
-                                    cleanWs(
-                                        deleteDirs: true,
-                                        patterns: [
-                                            [pattern: 'build/', type: 'INCLUDE'],
-                                            [pattern: 'logs/', type: 'INCLUDE'],
-                                        ]
-                                    )
-                                }
-                            }
-                        }
-                        stage("cppcheck"){
-                            agent{
-                              dockerfile {
-                                filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
-                                additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-                                label "linux"
-                              }
-                            }
-                            steps{
-                                catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
-                                    sh(
-                                        label: "Running cppcheck",
-                                        script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
-                                                   mkdir -p logs
-                                                   cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
-                                                   '''
-                                    )
-                                }
-                            }
-                            post{
-                                always {
-                                    recordIssues(
-                                        filters: [
-                                                excludeFile('build/debug/_deps/*')
-                                            ],
-                                        tools: [
-                                                cppCheck(pattern: 'logs/cppcheck_debug.xml')
-                                            ]
-                                    )
-                                }
-                                cleanup{
-                                    cleanWs(
-                                        deleteDirs: true,
-                                        patterns: [
-                                            [pattern: 'build/', type: 'INCLUDE'],
-                                            [pattern: 'logs/', type: 'INCLUDE'],
-                                        ]
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                stage("Run Tests on C code"){
-                    agent{
-                        dockerfile {
-                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-                            label "linux"
-                        }
-                    }
+                stage("C Code"){
                     stages{
-                        stage("Build Debug Version for Testing"){
-                            steps{
-                                sh "conan install . -if build/debug/"
-                                tee("logs/cmakeconfig.log"){
-                                    sh(label:"configuring a debug build",
-                                       script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
-                                                  '''
-                                   )
-                                }
-                                tee("logs/cmakebuild.log"){
-                                    sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
-                                }
-                            }
-                            post{
-                                always{
-                                    recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
-                                    recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
-                                }
-                            }
-                        }
-                        stage("Run ctests"){
+                        stage("Static Analysis"){
                             parallel{
-                                stage("Run CTest"){
+                                stage("Clang Tidy"){
+                                    agent{
+                                        dockerfile {
+                                            filename 'ci/dockerfiles/static_analysis/clang_tidy/Dockerfile'
+                                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                            label "linux"
+                                        }
+
+                                    }
                                     steps{
-                                        sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
-//                                        ctest(
-//                                            arguments: "--output-on-failure --no-compress-output -T Test",
-//                                            installation: 'InSearchPath',
-//                                            workingDir: "build/debug"
-//                                        )
+                                        tee('logs/clang-tidy_debug.log') {
+                                            catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
+                                                sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                                       run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
+                                                       '''
+                                            }
+                                        }
                                     }
                                     post{
-                                        always{
-                                            xunit(
-                                                testTimeMargin: '3000',
-                                                thresholdMode: 1,
-                                                thresholds: [
-                                                    failed(),
-                                                    skipped()
-                                                ],
-                                                tools: [
-                                                    CTest(
-                                                        deleteOutputFiles: true,
-                                                        failIfNotNew: true,
-                                                        pattern: "build/debug/Testing/**/*.xml",
-                                                        skipNoTestFiles: true,
-                                                        stopProcessingIfError: true
-                                                    )
+                                        always {
+                                            recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
+                                        }
+                                        cleanup{
+                                            cleanWs(
+                                                deleteDirs: true,
+                                                patterns: [
+                                                    [pattern: 'build/', type: 'INCLUDE'],
+                                                    [pattern: 'logs/', type: 'INCLUDE'],
                                                 ]
                                             )
                                         }
                                     }
                                 }
-                                stage("CTest: MemCheck"){
+                                stage("cppcheck"){
+                                    agent{
+                                      dockerfile {
+                                        filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
+                                        additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                        label "linux"
+                                      }
+                                    }
                                     steps{
-                                        script{
-                                            def cores = sh(
-                                                label: 'looking up number of cores',
-                                                returnStdout: true,
-                                                script: 'grep -c ^processor /proc/cpuinfo'
-                                                ).trim()
-                                            ctest(
-                                                arguments: "-T memcheck -j${cores}",
-                                                installation: 'InSearchPath',
-                                                workingDir: 'build/debug'
+                                        catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
+                                            sh(
+                                                label: "Running cppcheck",
+                                                script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                                           mkdir -p logs
+                                                           cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
+                                                           '''
                                             )
                                         }
                                     }
                                     post{
-                                        always{
-                                            publishValgrind(
-                                                failBuildOnInvalidReports: false,
-                                                failBuildOnMissingReports: false,
-                                                failThresholdDefinitelyLost: '',
-                                                failThresholdInvalidReadWrite: '',
-                                                failThresholdTotal: '',
-                                                pattern: 'build/debug/tests/**/*.memcheck',
-                                                publishResultsForAbortedBuilds: false,
-                                                publishResultsForFailedBuilds: false,
-                                                sourceSubstitutionPaths: '',
-                                                unstableThresholdDefinitelyLost: '',
-                                                unstableThresholdInvalidReadWrite: '',
-                                                unstableThresholdTotal: ''
+                                        always {
+                                            recordIssues(
+                                                filters: [
+                                                        excludeFile('build/debug/_deps/*')
+                                                    ],
+                                                tools: [
+                                                        cppCheck(pattern: 'logs/cppcheck_debug.xml')
+                                                    ]
                                             )
-                                            archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                        }
+                                        cleanup{
+                                            cleanWs(
+                                                deleteDirs: true,
+                                                patterns: [
+                                                    [pattern: 'build/', type: 'INCLUDE'],
+                                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                                ]
+                                            )
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    post{
-                        always{
-                            sh(label: "Generating coverage report in Coberatura xml file format",
-                               script: """mkdir -p reports/coverage
-                                          gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml build/debug
-                                          """
+                        stage("Tests"){
+                            agent{
+                                dockerfile {
+                                    filename 'ci/dockerfiles/linux/20.04/Dockerfile'
+                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+                                    label "linux"
+                                }
+                            }
+                            stages{
+                                stage("Build Debug Version for Testing"){
+                                    steps{
+                                        sh "conan install . -if build/debug/"
+                                        tee("logs/cmakeconfig.log"){
+                                            sh(label:"configuring a debug build",
+                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                                          '''
+                                           )
+                                        }
+                                        tee("logs/cmakebuild.log"){
+                                            sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
+                                        }
+                                    }
+                                    post{
+                                        always{
+                                            recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
+                                            recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
+                                        }
+                                    }
+                                }
+                                stage("Run ctests"){
+                                    parallel{
+                                        stage("Run CTest"){
+                                            steps{
+                                                sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
+                                            }
+                                            post{
+                                                always{
+                                                    xunit(
+                                                        testTimeMargin: '3000',
+                                                        thresholdMode: 1,
+                                                        thresholds: [
+                                                            failed(),
+                                                            skipped()
+                                                        ],
+                                                        tools: [
+                                                            CTest(
+                                                                deleteOutputFiles: true,
+                                                                failIfNotNew: true,
+                                                                pattern: "build/debug/Testing/**/*.xml",
+                                                                skipNoTestFiles: true,
+                                                                stopProcessingIfError: true
+                                                            )
+                                                        ]
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        stage("CTest: MemCheck"){
+                                            steps{
+                                                script{
+                                                    def cores = sh(
+                                                        label: 'looking up number of cores',
+                                                        returnStdout: true,
+                                                        script: 'grep -c ^processor /proc/cpuinfo'
+                                                        ).trim()
+                                                    ctest(
+                                                        arguments: "-T memcheck -j${cores}",
+                                                        installation: 'InSearchPath',
+                                                        workingDir: 'build/debug'
+                                                    )
+                                                }
+                                            }
+                                            post{
+                                                always{
+                                                    publishValgrind(
+                                                        failBuildOnInvalidReports: false,
+                                                        failBuildOnMissingReports: false,
+                                                        failThresholdDefinitelyLost: '',
+                                                        failThresholdInvalidReadWrite: '',
+                                                        failThresholdTotal: '',
+                                                        pattern: 'build/debug/tests/**/*.memcheck',
+                                                        publishResultsForAbortedBuilds: false,
+                                                        publishResultsForFailedBuilds: false,
+                                                        sourceSubstitutionPaths: '',
+                                                        unstableThresholdDefinitelyLost: '',
+                                                        unstableThresholdInvalidReadWrite: '',
+                                                        unstableThresholdTotal: ''
+                                                    )
+                                                    archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            post{
+                                always{
+                                    sh(label: "Generating coverage report in Coberatura xml file format",
+                                       script: """mkdir -p reports/coverage
+                                                  gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml build/debug
+                                                  """
 
-                            )
-                            publishCoverage(
-                                adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                                tag: "AllCoverage"
-                            )
-                        }
-                        cleanup{
-                            cleanWs(
-                                deleteDirs: true,
-                                patterns: [
-                                    [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
-                                    [pattern: 'build/', type: 'INCLUDE'],
-                                    [pattern: 'reports/', type: 'INCLUDE'],
-                                    [pattern: 'logs/', type: 'INCLUDE'],
-                                    [pattern: '**/*.so', type: 'INCLUDE'],
-                                ]
-                            )
+                                    )
+                                    publishCoverage(
+                                        adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+                                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                                        tag: "AllCoverage"
+                                    )
+                                }
+                                cleanup{
+                                    cleanWs(
+                                        deleteDirs: true,
+                                        patterns: [
+                                            [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
+                                            [pattern: 'build/', type: 'INCLUDE'],
+                                            [pattern: 'reports/', type: 'INCLUDE'],
+                                            [pattern: 'logs/', type: 'INCLUDE'],
+                                            [pattern: '**/*.so', type: 'INCLUDE'],
+                                        ]
+                                    )
+                                }
+                            }
                         }
                     }
                 }
