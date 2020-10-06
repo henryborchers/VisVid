@@ -229,7 +229,7 @@ pipeline {
                         }
                     }
                 }
-                stage("Python Analysis"){
+                stage("Python Code"){
                     agent{
                         dockerfile {
                             filename 'ci/dockerfiles/python/linux/Dockerfile'
@@ -295,7 +295,6 @@ pipeline {
                                         always {
                                             junit "reports/pytest-junit.xml"
                                             stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
-//                                            stash includes: 'reports/coverage-reports/pythoncoverage-pytest.xml', name: "PYTHON_COVERAGE_REPORT"
                                         }
                                     }
                                 }
@@ -334,7 +333,6 @@ pipeline {
                     }
                     post{
                         always{
-//                            coverage html -d ./reports/coverage
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports/coverage-reports
                                           coverage combine
