@@ -19,6 +19,18 @@ pipeline {
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
+        stage("Windows"){
+            agent{
+                dockerfile {
+                    filename 'ci/dockerfiles/windows/Dockerfile'
+                    label "windows"
+                }
+            }
+            steps{
+                bat "echo hello from windows"
+            }
+
+        }
         stage("Checks"){
             when{
                 equals expected: true, actual: params.RUN_CHECKS
