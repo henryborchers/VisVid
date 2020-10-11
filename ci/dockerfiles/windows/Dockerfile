@@ -19,8 +19,16 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; `
     Remove-Item C:\ProgramData\chocolatey\bin\cpack.exe ; `
     Remove-Item -Force -Recurse ${Env:TEMP}\*
 
-ADD ci/dockerfiles/windows/chocolatey/packages.config choco/packages.config
 
+ADD ci/dockerfiles/windows/chocolatey/visual_studio.config choco/visual_studio.config
+RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
+    C:\ProgramData\chocolatey\bin\choco.exe install -y --stoponfirstfailure --no-progress --verbose choco/visual_studio.config ; `
+    if (! (Test-Path 'C:\BuildTools\Common7\Tools\VsDevCmd.bat')) `
+    { `
+        throw 'VsDevCmd.bat not found' ; `
+    }
+
+ADD ci/dockerfiles/windows/chocolatey/packages.config choco/packages.config
 RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
     C:\ProgramData\chocolatey\bin\choco.exe install -y --stoponfirstfailure --no-progress --verbose choco/packages.config ;`
     Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse ; `
@@ -34,8 +42,7 @@ RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
     { `
         throw 'git.exe not found' ; `
     }; `
-    if (! (Test-Path 'C:\BuildTools\Common7\Tools\VsDevCmd.bat')) `
-    { `
-        throw 'VsDevCmd.bat not found' ; `
-    }; `
     Write-Host "Finished install packages with Chocolatey"
+
+ADD ci/dockerfiles/windows/startup.bat c:\temp\startup.bat
+RUN Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Command Processor' -Name 'AutoRun' -Value "c:\temp\startup.bat"
