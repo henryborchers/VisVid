@@ -23,10 +23,11 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; `
 ADD ci/dockerfiles/windows/chocolatey/visual_studio.config choco/visual_studio.config
 RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
     C:\ProgramData\chocolatey\bin\choco.exe install -y --stoponfirstfailure --no-progress --verbose choco/visual_studio.config ; `
-    if (! (Test-Path 'C:\BuildTools\Common7\Tools\VsDevCmd.bat')) `
+    if (! (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\VsDevCmd.bat')) `
     { `
         throw 'VsDevCmd.bat not found' ; `
     }
+RUN ls \"C:\Program Files (x86)\Microsoft Visual Studio\2019/\" ; Get-ChildItem -Path \"C:\Program Files (x86)\Microsoft Visual Studio\" -Recurse -ErrorAction SilentlyContinue vcvarsall.bat
 
 ADD ci/dockerfiles/windows/chocolatey/packages.config choco/packages.config
 RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
@@ -34,10 +35,6 @@ RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
     Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse ; `
     refreshenv ; `
     Remove-Item -Force -Recurse ${Env:TEMP}\* ; `
-    if (!(Test-Path 'C:\Program Files\CMake\bin\cmake.exe')) `
-    { `
-        throw 'cmake.exe not found' ; `
-    }; `
     if (!(Test-Path 'C:\Program Files\Git\cmd\git.exe')) `
     { `
         throw 'git.exe not found' ; `
@@ -46,3 +43,22 @@ RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
 
 ADD ci/dockerfiles/windows/startup.bat c:\temp\startup.bat
 RUN Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Command Processor' -Name 'AutoRun' -Value "c:\temp\startup.bat"
+
+ARG PYTHON_VERSION=3.8.0
+RUN choco install -y python --version=$env:PYTHON_VERSION
+ADD requirements-dev.txt ci/dockerfiles/python/shared/requirements-ci.txt  c:/requirements/
+RUN python -m pip install --upgrade pip ; `
+    pip install --upgrade setuptools ; `
+    pip install wheel ; `
+    pip install conan ; `
+    pip wheel --no-cache --wheel-dir c:/wheels/ `
+        -r c:/requirements/requirements-dev.txt  `
+        -r c:/requirements/requirements-ci.txt  `
+     pip install  --find-links=c:/wheels/ `
+         -r c:/requirements/requirements-dev.txt `
+         -r c:/requirements/requirements-ci.txt
+
+ADD conanfile.py c:/temp/conanfile.py
+ADD ci/dockerfiles/python/shared/remotes.json C:/Users/ContainerAdministrator/.conan/remotes.json
+RUN conan install C:/TEMP/ --build  missing --no-import ;`
+    conan remove * -b --src -f
