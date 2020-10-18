@@ -34,8 +34,7 @@ pipeline {
                                 cmake --build build --parallel %NUMBER_OF_PROCESSORS% --config Release
                                 '''
                 )
-//                powershell("Get-ChildItem -Path 'build' -Filter CMakeCache.txt -Recurse -ErrorAction SilentlyContinue -Force ")
-                bat( script: "cd build && cpack -G WIX")
+                bat( script: "cd build && cpack -G WIX -G NSIS")
             }
 
         }
