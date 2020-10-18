@@ -19,25 +19,6 @@ pipeline {
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
     stages {
-        stage("Windows"){
-            agent{
-                dockerfile {
-                    filename 'ci/dockerfiles/windows/Dockerfile'
-                    label "windows"
-                }
-            }
-            steps{
-                bat(
-                    label: "Building",
-                    script:  '''conan install . -if build
-                                cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake" -DBUILD_TESTING:BOOL=false
-                                cmake --build build --parallel %NUMBER_OF_PROCESSORS% --config Release
-                                '''
-                )
-                bat( script: "cd build && cpack -G WIX;NSIS")
-            }
-
-        }
         stage("Checks"){
             when{
                 equals expected: true, actual: params.RUN_CHECKS
@@ -511,6 +492,28 @@ pipeline {
                 equals expected: true, actual: params.PACKAGE
             }
             stages{
+                stage("Distribution Packages for Library"){
+                    parallel{
+                        stage("Windows"){
+                            agent{
+                                dockerfile {
+                                    filename 'ci/dockerfiles/windows/Dockerfile'
+                                    label "windows"
+                                }
+                            }
+                            steps{
+                                bat(
+                                    label: "Building",
+                                    script:  '''conan install . -if build
+                                                cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake" -DBUILD_TESTING:BOOL=false
+                                                cmake --build build --parallel %NUMBER_OF_PROCESSORS% --config Release
+                                                '''
+                                )
+                                bat( script: "cd build && cpack -G WIX;NSIS")
+                            }
+                        }
+                    }
+                }
                 stage('Package Source and Linux binary Packages') {
                     agent{
                         dockerfile {
@@ -530,16 +533,12 @@ pipeline {
                             }
                         }
                         stage("Packaging"){
-                            parallel{
-                                stage("Creating CPack sdist"){
-                                    steps{
-                                        sh(label: "Creating CPack sdist",
-                                           script: '''mkdir -p dist
-                                                      cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
-                                                      '''
-                                        )
-                                    }
-                                }
+                            steps{
+                                sh(label: "Creating CPack sdist",
+                                   script: '''mkdir -p dist
+                                              cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
+                                              '''
+                                )
                             }
                         }
                     }
