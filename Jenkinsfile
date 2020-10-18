@@ -492,7 +492,7 @@ pipeline {
                 equals expected: true, actual: params.PACKAGE
             }
             stages{
-                stage("Distribution Packages for Library"){
+                stage("Distribution Packages for Core Library"){
                     parallel{
                         stage("Windows"){
                             agent{
@@ -546,109 +546,113 @@ pipeline {
                         }
                     }
                 }
-                stage("Python sdist"){
-                    agent{
-                        dockerfile {
-                            filename 'ci/dockerfiles/python/linux/Dockerfile'
-                            additionalBuildArgs "--build-arg USER_ID=\$(id -u) --build-arg GROUP_ID=\$(id -g) --build-arg PYTHON_VERSION=3.8 --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL"
-                            label "linux"
-                        }
-                    }
-                    steps{
-                        sh(
-                            label: "Building Wheel Package",
-                            script: 'python -m pep517.build . --source --out-dir ./dist'
-                        )
-                    }
-                    post{
-                        always{
-                            stash includes: 'dist/*.zip,dist/*.tar.gz,', name: "PYTHON_SDIST"
-                        }
-                    }
-                }
-                stage("Python Packages"){
-                    matrix{
-                        axes{
-                            axis {
-                                name "PYTHON_VERSION"
-                                values(
-                                    "3.7",
-                                    "3.8",
-                                    "3.9-rc"
+                stage("Python Packaging"){
+                    stages{
+                        stage("Python sdist"){
+                            agent{
+                                dockerfile {
+                                    filename 'ci/dockerfiles/python/linux/Dockerfile'
+                                    additionalBuildArgs "--build-arg USER_ID=\$(id -u) --build-arg GROUP_ID=\$(id -g) --build-arg PYTHON_VERSION=3.8 --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL"
+                                    label "linux"
+                                }
+                            }
+                            steps{
+                                sh(
+                                    label: "Building Wheel Package",
+                                    script: 'python -m pep517.build . --source --out-dir ./dist'
                                 )
                             }
-                        }
-                        agent{
-                            dockerfile {
-                                filename 'ci/dockerfiles/python/linux/Dockerfile'
-                                additionalBuildArgs "--build-arg USER_ID=\$(id -u) --build-arg GROUP_ID=\$(id -g) --build-arg PYTHON_VERSION=${PYTHON_VERSION} --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL"
-                                label "linux"
+                            post{
+                                always{
+                                    stash includes: 'dist/*.zip,dist/*.tar.gz,', name: "PYTHON_SDIST"
+                                }
                             }
                         }
-                        stages{
-                            stage("Build Python package"){
-                                steps{
-                                    sh(
-                                        label: "Building Wheel Package",
-                                        script: '''python -m pep517.build . --binary --out-dir ./dist
-                                                   ls -laR ./dist/
-                                                   '''
-                                    )
-                                }
-                                post{
-                                    always{
-                                        stash includes: 'dist/*.whl', name: "PYTHON_${PYTHON_VERSION}_WHL"
+                        stage("Python Packages"){
+                            matrix{
+                                axes{
+                                    axis {
+                                        name "PYTHON_VERSION"
+                                        values(
+                                            "3.7",
+                                            "3.8",
+                                            "3.9-rc"
+                                        )
                                     }
                                 }
-                            }
-                            stage("Testing Python on wheel package"){
-                                options {
-                                    warnError('Python whl test failed')
+                                agent{
+                                    dockerfile {
+                                        filename 'ci/dockerfiles/python/linux/Dockerfile'
+                                        additionalBuildArgs "--build-arg USER_ID=\$(id -u) --build-arg GROUP_ID=\$(id -g) --build-arg PYTHON_VERSION=${PYTHON_VERSION} --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL"
+                                        label "linux"
+                                    }
                                 }
-                                steps{
-                                    cleanWs(
-                                        notFailBuild: true,
-                                        deleteDirs: true,
-                                        disableDeferredWipeout: true,
-                                        patterns: [
-                                                [pattern: '.git/**', type: 'EXCLUDE'],
-                                                [pattern: 'tests/**', type: 'EXCLUDE'],
-                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
-                                            ]
-                                    )
-                                    unstash "PYTHON_${PYTHON_VERSION}_WHL"
-                                    script{
-                                        findFiles(glob: "dist/*.whl").each{
+                                stages{
+                                    stage("Build Python package"){
+                                        steps{
                                             sh(
-                                                label:"Running ${it.path}",
-                                                script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                                label: "Building Wheel Package",
+                                                script: '''python -m pep517.build . --binary --out-dir ./dist
+                                                           ls -laR ./dist/
+                                                           '''
                                             )
                                         }
+                                        post{
+                                            always{
+                                                stash includes: 'dist/*.whl', name: "PYTHON_${PYTHON_VERSION}_WHL"
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                            stage("Testing Python on sdist package"){
-                                options {
-                                    warnError('Python sdist test failed')
-                                }
-                                steps{
-                                    cleanWs(
-                                        notFailBuild: true,
-                                        deleteDirs: true,
-                                        disableDeferredWipeout: true,
-                                        patterns: [
-                                                [pattern: '.git/**', type: 'EXCLUDE'],
-                                                [pattern: 'tests/**', type: 'EXCLUDE'],
-                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
-                                            ]
-                                    )
-                                    unstash "PYTHON_SDIST"
-                                    script{
-                                        findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
-                                            sh(
-                                                label:"Running ${it.path}",
-                                                script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                    stage("Testing Python on wheel package"){
+                                        options {
+                                            warnError('Python whl test failed')
+                                        }
+                                        steps{
+                                            cleanWs(
+                                                notFailBuild: true,
+                                                deleteDirs: true,
+                                                disableDeferredWipeout: true,
+                                                patterns: [
+                                                        [pattern: '.git/**', type: 'EXCLUDE'],
+                                                        [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                        [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                                    ]
                                             )
+                                            unstash "PYTHON_${PYTHON_VERSION}_WHL"
+                                            script{
+                                                findFiles(glob: "dist/*.whl").each{
+                                                    sh(
+                                                        label:"Running ${it.path}",
+                                                        script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                    stage("Testing Python on sdist package"){
+                                        options {
+                                            warnError('Python sdist test failed')
+                                        }
+                                        steps{
+                                            cleanWs(
+                                                notFailBuild: true,
+                                                deleteDirs: true,
+                                                disableDeferredWipeout: true,
+                                                patterns: [
+                                                        [pattern: '.git/**', type: 'EXCLUDE'],
+                                                        [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                        [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                                    ]
+                                            )
+                                            unstash "PYTHON_SDIST"
+                                            script{
+                                                findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
+                                                    sh(
+                                                        label:"Running ${it.path}",
+                                                        script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                 }
