@@ -588,7 +588,7 @@ pipeline {
                                     }
                                 }
                                 stages{
-                                    stage("Build"){
+                                    stage("Build Wheel"){
                                         steps{
                                             sh(
                                                 label: "Building Wheel Package",
