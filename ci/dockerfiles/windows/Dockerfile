@@ -34,7 +34,7 @@ RUN $CocoPackageInstallConfig = \"choco\\visual_studio.config\" ; `
     }
 
 # Install WiX toolset for making .msi installers and put the tools on the path
-ADD CI/jenkins/dockerfiles/build_VS2019/nuget/packages.config nuget/packages.config
+ADD ci/dockerfiles/windows/nuget/packages.config nuget/packages.config
 RUN Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force ; `
     nuget update -self ;`
     nuget install nuget/packages.config -OutputDirectory c:\BuildTools\ ; `
