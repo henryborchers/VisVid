@@ -33,8 +33,6 @@ RUN $CocoPackageInstallConfig = \"choco\\visual_studio.config\" ; `
         throw 'VsDevCmd.bat not found' ; `
     }
 
-RUN ls c:\\
-RUN Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft Visual Studio' -Filter vcvarsall.bat	 -Recurse -ErrorAction SilentlyContinue -Force
 
 ADD ci/dockerfiles/windows/chocolatey/packages.config choco/packages.config
 RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
