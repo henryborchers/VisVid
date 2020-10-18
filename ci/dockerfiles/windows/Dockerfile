@@ -33,7 +33,6 @@ RUN $CocoPackageInstallConfig = \"choco\\visual_studio.config\" ; `
         throw 'VsDevCmd.bat not found' ; `
     }
 
-
 ADD ci/dockerfiles/windows/chocolatey/packages.config choco/packages.config
 RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
     C:\ProgramData\chocolatey\bin\choco.exe install -y --stoponfirstfailure --no-progress --verbose choco/packages.config ;`
@@ -49,7 +48,7 @@ RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
 ADD ci/dockerfiles/windows/startup.bat c:\temp\startup.bat
 RUN Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Command Processor' -Name 'AutoRun' -Value "c:\temp\startup.bat"
 ARG PYTHON_VERSION=3.8.5
-RUN choco install -y python --version=$env:PYTHON_VERSION
+RUN choco install -y python --no-progress --version=$env:PYTHON_VERSION
 SHELL ["cmd", "/S", "/C" ]
 ADD requirements-dev.txt ci/dockerfiles/python/shared/requirements-ci.txt  c:/requirements/
 RUN python -m pip install --upgrade pip &&`
