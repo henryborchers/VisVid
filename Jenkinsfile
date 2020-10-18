@@ -28,6 +28,7 @@ pipeline {
             }
             steps{
                 bat "echo hello from windows"
+                bat "conan install . -if build"
             }
 
         }
