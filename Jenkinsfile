@@ -512,45 +512,39 @@ pipeline {
                                 bat( script: "cd build && cpack -G WIX;NSIS")
                             }
                         }
-                    }
-                }
-                stage('Package Source and Linux binary Packages') {
-                    agent{
-                        dockerfile {
-                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-                            label "linux"
-                        }
-                    }
-                    stages{
-                        stage("Config and create a release build"){
-                            steps{
-                                sh(label: "Creating release build",
-                                   script: '''cmake -B build/release
-                                              cmake --build build/release
-                                              '''
-                                )
+                        stage('Package Source and Linux binary Packages') {
+                            agent{
+                                dockerfile {
+                                    filename 'ci/dockerfiles/linux/20.04/Dockerfile'
+                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+                                    label "linux"
+                                }
                             }
-                        }
-                        stage("Packaging"){
-                            steps{
-                                sh(label: "Creating CPack sdist",
-                                   script: '''mkdir -p dist
-                                              cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
-                                              '''
-                                )
+                            stage("Config and create a release build"){
+                                steps{
+                                    sh(label: "Creating release build",
+                                       script: '''cmake -B build/release
+                                                  cmake --build build/release
+                                                  '''
+                                    )
+                                    sh(label: "Creating CPack sdist",
+                                       script: '''mkdir -p dist
+                                                  cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
+                                                  '''
+                                    )
+                                }
                             }
-                        }
-                    }
-                    post{
-                        cleanup{
-                            cleanWs(
-                                deleteDirs: true,
-                                patterns: [
-                                    [pattern: 'build/', type: 'INCLUDE'],
-                                    [pattern: 'dist/', type: 'INCLUDE'],
-                                ]
-                            )
+                            post{
+                                cleanup{
+                                    cleanWs(
+                                        deleteDirs: true,
+                                        patterns: [
+                                            [pattern: 'build/', type: 'INCLUDE'],
+                                            [pattern: 'dist/', type: 'INCLUDE'],
+                                        ]
+                                    )
+                                }
+                            }
                         }
                     }
                 }
