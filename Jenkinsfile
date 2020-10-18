@@ -492,47 +492,57 @@ pipeline {
                 equals expected: true, actual: params.PACKAGE
             }
             stages{
-                stage('Package Source and Linux binary Packages') {
-                    agent{
-                        dockerfile {
-                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-                            label "linux"
+                stage("Distribution Packages for Library"){
+                    parallel{
+                        stage("Windows"){
+                            agent{
+                                dockerfile {
+                                    filename 'ci/dockerfiles/windows/Dockerfile'
+                                    label "windows"
+                                }
+                            }
+                            steps{
+                                bat(
+                                    label: "Building",
+                                    script:  '''conan install . -if build
+                                                cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake" -DBUILD_TESTING:BOOL=false
+                                                cmake --build build --parallel %NUMBER_OF_PROCESSORS% --config Release
+                                                '''
+                                )
+                                bat( script: "cd build && cpack -G WIX;NSIS")
+                            }
                         }
-                    }
-                    stages{
-                        stage("Config and create a release build"){
+                        stage('Package Source and Linux binary Packages') {
+                            agent{
+                                dockerfile {
+                                    filename 'ci/dockerfiles/linux/20.04/Dockerfile'
+                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+                                    label "linux"
+                                }
+                            }
                             steps{
                                 sh(label: "Creating release build",
                                    script: '''cmake -B build/release
                                               cmake --build build/release
                                               '''
                                 )
+                                sh(label: "Creating CPack sdist",
+                                   script: '''mkdir -p dist
+                                              cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
+                                              '''
+                                )
                             }
-                        }
-                        stage("Packaging"){
-                            parallel{
-                                stage("Creating CPack sdist"){
-                                    steps{
-                                        sh(label: "Creating CPack sdist",
-                                           script: '''mkdir -p dist
-                                                      cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
-                                                      '''
-                                        )
-                                    }
+                            post{
+                                cleanup{
+                                    cleanWs(
+                                        deleteDirs: true,
+                                        patterns: [
+                                            [pattern: 'build/', type: 'INCLUDE'],
+                                            [pattern: 'dist/', type: 'INCLUDE'],
+                                        ]
+                                    )
                                 }
                             }
-                        }
-                    }
-                    post{
-                        cleanup{
-                            cleanWs(
-                                deleteDirs: true,
-                                patterns: [
-                                    [pattern: 'build/', type: 'INCLUDE'],
-                                    [pattern: 'dist/', type: 'INCLUDE'],
-                                ]
-                            )
                         }
                     }
                 }
