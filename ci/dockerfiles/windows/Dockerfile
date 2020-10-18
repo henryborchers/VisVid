@@ -33,6 +33,14 @@ RUN $CocoPackageInstallConfig = \"choco\\visual_studio.config\" ; `
         throw 'VsDevCmd.bat not found' ; `
     }
 
+# Install WiX toolset for making .msi installers and put the tools on the path
+ADD CI/jenkins/dockerfiles/build_VS2019/nuget/packages.config nuget/packages.config
+RUN Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force ; `
+    nuget update -self ;`
+    nuget install nuget/packages.config -OutputDirectory c:\BuildTools\ ; `
+    [Environment]::SetEnvironmentVariable('PATH', \"$($env:Path);$((Get-Childitem -Path C:\BuildTools -Include wix.dll -File -Recurse)[0].DirectoryName)\", [EnvironmentVariableTarget]::Machine)
+
+
 ADD ci/dockerfiles/windows/chocolatey/packages.config choco/packages.config
 RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
     C:\ProgramData\chocolatey\bin\choco.exe install -y --stoponfirstfailure --no-progress --verbose choco/packages.config ;`
