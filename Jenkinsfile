@@ -492,7 +492,7 @@ pipeline {
                 equals expected: true, actual: params.PACKAGE
             }
             stages{
-                stage("Distribution Packages for Core Library"){
+                stage("Core Library"){
                     parallel{
                         stage("Windows"){
                             agent{
