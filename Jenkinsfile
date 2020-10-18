@@ -588,7 +588,7 @@ pipeline {
                                     }
                                 }
                                 stages{
-                                    stage("Build Python package"){
+                                    stage("Build"){
                                         steps{
                                             sh(
                                                 label: "Building Wheel Package",
@@ -603,54 +603,58 @@ pipeline {
                                             }
                                         }
                                     }
-                                    stage("Testing Python on wheel package"){
-                                        options {
-                                            warnError('Python whl test failed')
-                                        }
-                                        steps{
-                                            cleanWs(
-                                                notFailBuild: true,
-                                                deleteDirs: true,
-                                                disableDeferredWipeout: true,
-                                                patterns: [
-                                                        [pattern: '.git/**', type: 'EXCLUDE'],
-                                                        [pattern: 'tests/**', type: 'EXCLUDE'],
-                                                        [pattern: 'tox.ini', type: 'EXCLUDE'],
-                                                    ]
-                                            )
-                                            unstash "PYTHON_${PYTHON_VERSION}_WHL"
-                                            script{
-                                                findFiles(glob: "dist/*.whl").each{
-                                                    sh(
-                                                        label:"Running ${it.path}",
-                                                        script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                    stage("Testing Python Packages"){
+                                        stages{
+                                            stage("Testing wheel"){
+                                                options {
+                                                    warnError('Python whl test failed')
+                                                }
+                                                steps{
+                                                    cleanWs(
+                                                        notFailBuild: true,
+                                                        deleteDirs: true,
+                                                        disableDeferredWipeout: true,
+                                                        patterns: [
+                                                                [pattern: '.git/**', type: 'EXCLUDE'],
+                                                                [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                                            ]
                                                     )
+                                                    unstash "PYTHON_${PYTHON_VERSION}_WHL"
+                                                    script{
+                                                        findFiles(glob: "dist/*.whl").each{
+                                                            sh(
+                                                                label:"Running ${it.path}",
+                                                                script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                                            )
+                                                        }
+                                                    }
                                                 }
                                             }
-                                        }
-                                    }
-                                    stage("Testing Python on sdist package"){
-                                        options {
-                                            warnError('Python sdist test failed')
-                                        }
-                                        steps{
-                                            cleanWs(
-                                                notFailBuild: true,
-                                                deleteDirs: true,
-                                                disableDeferredWipeout: true,
-                                                patterns: [
-                                                        [pattern: '.git/**', type: 'EXCLUDE'],
-                                                        [pattern: 'tests/**', type: 'EXCLUDE'],
-                                                        [pattern: 'tox.ini', type: 'EXCLUDE'],
-                                                    ]
-                                            )
-                                            unstash "PYTHON_SDIST"
-                                            script{
-                                                findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
-                                                    sh(
-                                                        label:"Running ${it.path}",
-                                                        script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                            stage("Testing sdist"){
+                                                options {
+                                                    warnError('Python sdist test failed')
+                                                }
+                                                steps{
+                                                    cleanWs(
+                                                        notFailBuild: true,
+                                                        deleteDirs: true,
+                                                        disableDeferredWipeout: true,
+                                                        patterns: [
+                                                                [pattern: '.git/**', type: 'EXCLUDE'],
+                                                                [pattern: 'tests/**', type: 'EXCLUDE'],
+                                                                [pattern: 'tox.ini', type: 'EXCLUDE'],
+                                                            ]
                                                     )
+                                                    unstash "PYTHON_SDIST"
+                                                    script{
+                                                        findFiles(glob: "dist/*.tar.gz,dist/*.zip").each{
+                                                            sh(
+                                                                label:"Running ${it.path}",
+                                                                script: "tox --installpkg=${it.path} -e py --recreate -v",
+                                                            )
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
