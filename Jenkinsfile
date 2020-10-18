@@ -520,19 +520,17 @@ pipeline {
                                     label "linux"
                                 }
                             }
-                            stage("Config and create a release build"){
-                                steps{
-                                    sh(label: "Creating release build",
-                                       script: '''cmake -B build/release
-                                                  cmake --build build/release
-                                                  '''
-                                    )
-                                    sh(label: "Creating CPack sdist",
-                                       script: '''mkdir -p dist
-                                                  cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
-                                                  '''
-                                    )
-                                }
+                            steps{
+                                sh(label: "Creating release build",
+                                   script: '''cmake -B build/release
+                                              cmake --build build/release
+                                              '''
+                                )
+                                sh(label: "Creating CPack sdist",
+                                   script: '''mkdir -p dist
+                                              cd dist && cpack --config ../build/release/CPackSourceConfig.cmake -G ZIP
+                                              '''
+                                )
                             }
                             post{
                                 cleanup{
