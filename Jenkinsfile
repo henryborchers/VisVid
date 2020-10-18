@@ -34,7 +34,7 @@ pipeline {
                                 cmake --build build --parallel %NUMBER_OF_PROCESSORS% --config Release
                                 '''
                 )
-                bat( script: "cd build && cpack -G WIX -G NSIS")
+                bat( script: "cd build && cpack -G WIX;NSIS")
             }
 
         }
