@@ -28,7 +28,12 @@ pipeline {
             }
             steps{
                 bat "echo hello from windows"
-                bat "conan install . -if build"
+                bat(
+                    label: "Building",
+                    script:  """conan install . -if build
+                                cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
+                    """
+                )
             }
 
         }
