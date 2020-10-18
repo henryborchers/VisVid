@@ -21,13 +21,20 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; `
 
 
 ADD ci/dockerfiles/windows/chocolatey/visual_studio.config choco/visual_studio.config
-RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
-    C:\ProgramData\chocolatey\bin\choco.exe install -y --stoponfirstfailure --no-progress --verbose choco/visual_studio.config ; `
-    if (! (Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\VsDevCmd.bat')) `
+RUN $CocoPackageInstallConfig = \"choco\\visual_studio.config\" ; `
+    C:\ProgramData\chocolatey\bin\choco.exe sources ; `
+    Get-Content -Path $CocoPackageInstallConfig ; `
+    C:\ProgramData\chocolatey\bin\choco.exe install -y --stoponfirstfailure --no-progress --verbose $CocoPackageInstallConfig; `
+    Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse ; `
+    refreshenv ; `
+    Remove-Item -Force -Recurse ${Env:TEMP}\* ; `
+    if (! (Test-Path 'C:\BuildTools\Common7\Tools\VsDevCmd.bat')) `
     { `
         throw 'VsDevCmd.bat not found' ; `
     }
-RUN ls \"C:\Program Files (x86)\Microsoft Visual Studio\2019/\" ; Get-ChildItem -Path \"C:\Program Files (x86)\Microsoft Visual Studio\" -Recurse -ErrorAction SilentlyContinue vcvarsall.bat
+
+RUN ls c:\\
+RUN Get-ChildItem -Path 'C:\Program Files (x86)\Microsoft Visual Studio' -Filter vcvarsall.bat	 -Recurse -ErrorAction SilentlyContinue -Force
 
 ADD ci/dockerfiles/windows/chocolatey/packages.config choco/packages.config
 RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
@@ -43,22 +50,27 @@ RUN C:\ProgramData\chocolatey\bin\choco.exe sources ; `
 
 ADD ci/dockerfiles/windows/startup.bat c:\temp\startup.bat
 RUN Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Command Processor' -Name 'AutoRun' -Value "c:\temp\startup.bat"
-
-ARG PYTHON_VERSION=3.8.0
+ARG PYTHON_VERSION=3.8.5
 RUN choco install -y python --version=$env:PYTHON_VERSION
+SHELL ["cmd", "/S", "/C" ]
 ADD requirements-dev.txt ci/dockerfiles/python/shared/requirements-ci.txt  c:/requirements/
-RUN python -m pip install --upgrade pip ; `
-    pip install --upgrade setuptools ; `
-    pip install wheel ; `
-    pip install conan ; `
+RUN python -m pip install --upgrade pip &&`
+    pip install --upgrade setuptools && `
+    pip install wheel && `
+    pip install conan &&`
     pip wheel --no-cache --wheel-dir c:/wheels/ `
         -r c:/requirements/requirements-dev.txt  `
-        -r c:/requirements/requirements-ci.txt  `
-     pip install  --find-links=c:/wheels/ `
-         -r c:/requirements/requirements-dev.txt `
-         -r c:/requirements/requirements-ci.txt
+        -r c:/requirements/requirements-ci.txt  && `
+    pip install  --find-links=c:/wheels/ `
+        -r c:/requirements/requirements-dev.txt `
+        -r c:/requirements/requirements-ci.txt
 
 ADD conanfile.py c:/temp/conanfile.py
 ADD ci/dockerfiles/python/shared/remotes.json C:/Users/ContainerAdministrator/.conan/remotes.json
-RUN conan install C:/TEMP/ --build  missing --no-import ;`
+
+WORKDIR C:\\BuildTools
+
+RUN conan config init
+RUN type C:\Users\ContainerAdministrator\.conan\profiles\default
+RUN conan install C:/TEMP/ --build  missing --no-import && `
     conan remove * -b --src -f
