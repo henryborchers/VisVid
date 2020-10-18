@@ -31,7 +31,7 @@ pipeline {
                     label: "Building",
                     script:  """conan install . -if build
                                 cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
-                                cmake --build build --parallel %NUMBER_OF_PROCESSORS$
+                                cmake --build build --parallel %NUMBER_OF_PROCESSOR%
                     """
                 )
             }
