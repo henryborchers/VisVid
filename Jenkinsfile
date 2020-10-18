@@ -34,6 +34,7 @@ pipeline {
                                 cmake --build build --parallel %NUMBER_OF_PROCESSOR%
                                 '''
                 )
+                bat( script: "cd build && cpack")
             }
 
         }
