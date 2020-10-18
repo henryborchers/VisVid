@@ -30,8 +30,8 @@ pipeline {
                 bat(
                     label: "Building",
                     script:  '''conan install . -if build
-                                cmake -B ./build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake" -DBUILD_TESTING:BOOL=false
-                                cmake --build build --parallel %NUMBER_OF_PROCESSORS%
+                                cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake" -DBUILD_TESTING:BOOL=false
+                                cmake --build build --parallel %NUMBER_OF_PROCESSORS% --config Release
                                 '''
                 )
 //                powershell("Get-ChildItem -Path 'build' -Filter CMakeCache.txt -Recurse -ErrorAction SilentlyContinue -Force ")
