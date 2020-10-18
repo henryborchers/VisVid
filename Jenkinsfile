@@ -29,10 +29,10 @@ pipeline {
             steps{
                 bat(
                     label: "Building",
-                    script:  """conan install . -if build
-                                cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
+                    script:  '''conan install . -if build
+                                cmake -B ./build/ -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake" -DBUILD_TESTING:BOOL=false
                                 cmake --build build --parallel %NUMBER_OF_PROCESSOR%
-                    """
+                                '''
                 )
             }
 
