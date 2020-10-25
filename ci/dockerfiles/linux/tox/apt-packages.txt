@@ -7,3 +7,4 @@ python3.9-dev
 python3.9-distutils
 libgl-dev
 build-essential
+pkg-config
