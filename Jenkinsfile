@@ -33,6 +33,27 @@ pipeline {
                     }
                     steps{
                         echo "here"
+                        script {
+                            def cmds
+                            def envs
+                            if(isUnix()){
+                                envs = sh(returnStdout: true, script: "tox -l").trim().split('\n')
+                                cmds = envs.collectEntries({ tox_env ->
+                                    [tox_env, {
+                                        sh( label:"Running Tox", script: "tox  -vvve $tox_env")
+                                    }]
+                                })
+                            } else{
+                                envs = bat(returnStdout: true, script: "@tox -l").trim().split('\n')
+                                cmds = envs.collectEntries({ tox_env ->
+                                    [tox_env, {
+                                        bat( label:"Running Tox", script: "tox  -vvve $tox_env")
+                                    }]
+                                })
+                            }
+                            echo "Setting up tox tests for ${envs.join(', ')}"
+                            parallel(cmds)
+                        }
                     }
 
                 }
