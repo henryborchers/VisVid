@@ -24,6 +24,18 @@ pipeline {
                 equals expected: true, actual: params.RUN_CHECKS
             }
             stages{
+                stage("Tox"){
+                    agent{
+                        dockerfile {
+                            filename 'ci/dockerfiles/linux/tox/Dockerfile'
+                            label "linux"
+                        }
+                    }
+                    steps{
+                        echo "here"
+                    }
+
+                }
                 stage("C Code"){
                     stages{
                         stage("Static Analysis"){
