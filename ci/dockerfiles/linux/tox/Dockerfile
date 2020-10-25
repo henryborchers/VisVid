@@ -1,5 +1,4 @@
-ARG BASE_IMAGE=ubuntu:20.04
-FROM BASE_IMAGE as wheel_builder_py36
+FROM ubuntu:20.04 as wheel_builder_py36
 RUN apt update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
@@ -16,7 +15,7 @@ RUN PYTHON=python3.6 && \
     $PYTHON -m pip wheel -w /wheels --no-cache-dir -r /tmp/requirements-ci.txt
 
 # ==============================================================================
-FROM BASE_IMAGE as wheel_builder_py37
+FROM ubuntu:20.04 as wheel_builder_py37
 RUN apt update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
@@ -32,11 +31,10 @@ COPY ci/dockerfiles/python/shared/requirements-ci.txt  /tmp/
 RUN PYTHON=python3.7 && \
     $PYTHON -m pip install pip --upgrade pip && \
     $PYTHON -m pip install wheel && \
-    $PYTHON -m pip wheel -w /wheels --no-cache-dir -r /tmp/requirements-ci.txt && \
-    $PYTHON -m pip wheel -w /wheels --no-cache-dir -v -r /tmp/requirements-extras.txt
+    $PYTHON -m pip wheel -w /wheels --no-cache-dir -r /tmp/requirements-ci.txt
 
 # ==============================================================================
-FROM BASE_IMAGE as wheel_builder_py38
+FROM ubuntu:20.04 as wheel_builder_py38
 RUN apt update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
@@ -55,7 +53,26 @@ RUN PYTHON=python3.8 && \
     $PYTHON -m pip wheel -w /wheels --no-cache-dir -r /tmp/requirements-ci.txt
 
 # ==============================================================================
-FROM BASE_IMAGE
+FROM ubuntu:20.04 as wheel_builder_py39
+RUN apt update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt update
+
+COPY ci/dockerfiles/linux/tox/apt-packages.txt /tmp/apt-packages.txt
+RUN cat /tmp/apt-packages.txt | apt install -y python3.9-dev python3.9-venv python3-pip
+
+ARG PIP_EXTRA_INDEX_URL
+ARG PIP_INDEX_URL
+
+COPY ci/dockerfiles/python/shared/requirements-ci.txt /tmp/
+RUN PYTHON=python3.9 && \
+    $PYTHON -m pip install pip --upgrade pip && \
+    $PYTHON -m pip install wheel && \
+    $PYTHON -m pip wheel -w /wheels --no-cache-dir -r /tmp/requirements-ci.txt
+
+# ==============================================================================
+FROM ubuntu:20.04
 RUN apt update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
