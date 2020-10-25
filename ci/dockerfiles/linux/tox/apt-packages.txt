@@ -9,3 +9,4 @@ libgl-dev
 build-essential
 pkg-config
 xorg-dev
+libx11-xcb-dev
