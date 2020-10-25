@@ -80,7 +80,7 @@ RUN groupadd -g $GROUP_ID user && \
 
 USER user
 WORKDIR /home/user
-#COPY --chown=user:user ci/docker/shared/conan/remotes.json  /home/user/.conan/remotes.json
+COPY --chown=user:user ci/dockerfiles/conan/remotes.json  /home/user/.conan/remotes.json
 ADD conanfile.py /tmp/conanfile.py
 ENV CONAN_USER_HOME=/home/user/
 RUN conan config home && \
