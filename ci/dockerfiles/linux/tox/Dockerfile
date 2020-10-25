@@ -17,7 +17,7 @@ RUN PYTHON=python3.6 && \
     $PYTHON -m pip wheel -w /wheels --no-cache-dir -r /tmp/requirements-ci.txt
 
 # ==============================================================================
-FROM base_wheel_builder as wheel_builder_py36
+FROM base_wheel_builder as wheel_builder_py37
 RUN cat /tmp/apt-packages.txt | apt install -y python3.7-dev python3.7-venv python3-pip
 
 ARG PIP_EXTRA_INDEX_URL
