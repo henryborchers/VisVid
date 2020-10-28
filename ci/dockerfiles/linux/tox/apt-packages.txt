@@ -28,3 +28,6 @@ libva-dev
 libvdpau-dev
 libopenjp2-7-dev
 libopenjp2-7
+libgbm-dev
+libjack-dev
+libaudio-dev

@@ -1,12 +1,12 @@
-# syntax = docker/dockerfile:experimental
 FROM ubuntu:20.04 as base_wheel_builder
-RUN --mount=type=cache,target=/var/cache/apt  --mount=type=cache,target=/var/lib/apt apt update && \
+RUN apt update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt update
 COPY ci/dockerfiles/linux/tox/apt-packages.txt /tmp/apt-packages.txt
 COPY ci/dockerfiles/python/shared/requirements-ci.txt   /tmp/
-RUN --mount=type=cache,target=/var/cache/apt cat /tmp/apt-packages.txt | xargs apt install -y
+RUN cat /tmp/apt-packages.txt | xargs apt install -y
+RUN cat /tmp/apt-packages.txt | xargs apt install -y
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -68,8 +68,8 @@ FROM base_wheel_builder as conan_builder
 RUN pip3 install conan cmake
 COPY ci/dockerfiles/conan/remotes.json  /root/.conan/remotes.json
 ADD conanfile.py /tmp/conanfile.py
-RUN  --mount=type=cache,target=/root/.conan/data conan config home && \
-    conan install /tmp --build libx264 --build libx265 --build openjpeg --build  missing --no-import && \
+RUN conan config home && \
+    conan install /tmp --build libx264 --build libx265 --build openjpeg --build  missing -o ffmpeg:openjpeg=False --no-import && \
     conan remove "*" -b --src -f && \
     conan remove --locks
 
@@ -79,7 +79,6 @@ COPY --chown=user:user ci/dockerfiles/conan/remotes.json  /home/user/.conan/remo
 ADD conanfile.py /tmp/conanfile.py
 ENV CONAN_USER_HOME=/home/user/
 RUN conan config home && \
-#RUN  --mount=type=cache,uid=1000,gid=GROUP_ID,target=/home/user/.conan/data \
     conan config home && \
     conan install /tmp --build  missing --no-import && \
     conan remove "*" -b --src -f && \
@@ -91,7 +90,7 @@ RUN cat /tmp/apt-packages.txt | xargs apt install -y
 ARG PIP_EXTRA_INDEX_URL
 ARG PIP_INDEX_URL
 
-COPY --from=conan_builder --chown=user:user /home/user/.conan/* /home/user/.conan/*
+COPY --from=conan_builder --chown=user:user /home/user/.conan /home/user/.conan
 COPY --from=wheel_builder_py36 /wheels/* /wheels/
 COPY --from=wheel_builder_py37 /wheels/* /wheels/
 COPY --from=wheel_builder_py38 /wheels/* /wheels/
@@ -105,7 +104,7 @@ COPY --chown=user:user ci/dockerfiles/conan/remotes.json  /home/user/.conan/remo
 ADD conanfile.py /tmp/conanfile.py
 ENV CONAN_USER_HOME=/home/user/
 RUN conan config home && \
-    conan install /tmp --build  missing --no-import && \
+    conan install /tmp --build  missing -o ffmpeg:openjpeg=False --no-import && \
     conan remove "*" -b --src -f && \
     conan remove --locks
 WORKDIR /src
