@@ -70,7 +70,6 @@ COPY ci/dockerfiles/conan/remotes.json  /root/.conan/remotes.json
 ADD conanfile.py /tmp/conanfile.py
 RUN conan config home && \
     conan install /tmp --build libx264 --build libx265 --build openjpeg --build  missing -o ffmpeg:openjpeg=False --no-import && \
-    conan remove "*" -b --src -f && \
     conan remove --locks
 
 USER user
