@@ -72,6 +72,7 @@ RUN apt-get update && \
         libswresample-dev \
         libsdl2-dev \
         libgtk2.0-dev \
+        libxcb-util-dev \
         git
 ENV CONAN_NON_INTERACTIVE=1
 ARG PIP_EXTRA_INDEX_URL
