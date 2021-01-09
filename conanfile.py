@@ -16,6 +16,7 @@ class VisvidConan(ConanFile):
     default_options = {
         "with_createVisuals": False,
     }
+
     def requirements(self):
         if self.options.with_createVisuals:
             self.requires("sdl2/2.0.12@bincrafters/stable")
@@ -28,6 +29,9 @@ class VisvidConan(ConanFile):
     def configure(self):
         if self.settings.os == "Linux":
             self.options["ffmpeg"].vorbis = False
+            self.options["ffmpeg"].openjpeg = False
+            self.options["ffmpeg"].x264 = False
+            self.options["ffmpeg"].x265 = False
 
     def build(self):
         cmake = self._configure_cmake()
