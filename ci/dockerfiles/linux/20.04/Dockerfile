@@ -75,24 +75,13 @@ RUN apt-get update && \
         libxcb-util-dev \
         git \
         libxcb-dri3-dev
-ENV CONAN_NON_INTERACTIVE=1
-ARG PIP_EXTRA_INDEX_URL
-ARG PIP_TRUSTED_HOST
-ARG PIP_INDEX_URL
-RUN  python3 -m pip install --upgrade pip && \
-     python3 -m pip install cmake && \
-     python3 -m pip install conan gcovr
-
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN groupadd -g $GROUP_ID user && \
     useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
     mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
     chmod -R g+w /.cache/
-#
 
-COPY conanfile.py /tmp/
-ENV CONAN_USER_HOME=/home/user/
 USER user
 ENV SONAR_SCANNER_VERSION=4.4.0.2170
 ENV SONAR_SCANNER_HOME=/home/user/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
@@ -102,12 +91,29 @@ RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip \
     rm $HOME/.sonar/sonar-scanner.zip && \
     mkdir -p /home/user/.sonar/cache && \
     chown user:user /home/user/.sonar/cache
+
 ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
 ENV SONAR_SCANNER_OPTS="-server"
 RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
     unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+
 ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
 USER root
+
+ENV CONAN_NON_INTERACTIVE=1
+ARG PIP_EXTRA_INDEX_URL
+ARG PIP_TRUSTED_HOST
+ARG PIP_INDEX_URL
+RUN  python3 -m pip install --upgrade pip && \
+     python3 -m pip install cmake && \
+     python3 -m pip install conan gcovr
+
+
+#
+
+COPY conanfile.py /tmp/
+ENV CONAN_USER_HOME=/home/user/
+
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing --update && \
     chown -R  user /home/user/.conan/data
