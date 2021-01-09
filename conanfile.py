@@ -5,18 +5,24 @@ from conans import ConanFile, CMake
 class VisvidConan(ConanFile):
     requires = [
         "ffmpeg/4.2.1@bincrafters/stable",
-        "sdl2/2.0.12@bincrafters/stable",
         "libiconv/1.16"
     ]
     settings = "os", "arch", "compiler", "build_type"
 
     generators = ["cmake_paths"]
-    default_options = {
-        # "ffmpeg:shared": True,
-        "ffmpeg:openjpeg": False,
-        "ffmpeg:x264": False,
-        "ffmpeg:x265": False,
+    options = {
+        "with_createVisuals": [True, False]
     }
+    default_options = {
+        "with_createVisuals": False,
+    }
+
+    def requirements(self):
+        if self.options.with_createVisuals:
+            self.requires("sdl2/2.0.12@bincrafters/stable")
+            if self.settings.os == "Linux":
+                self.requires("libalsa/1.2.4")
+
 
     def imports(self):
         self.copy("*.dll", dst="bin", src="bin") # From bin to bin
@@ -25,12 +31,21 @@ class VisvidConan(ConanFile):
     def configure(self):
         if self.settings.os == "Linux":
             self.options["ffmpeg"].vorbis = False
+            self.options["ffmpeg"].openjpeg = False
+            self.options["ffmpeg"].x264 = False
+            self.options["ffmpeg"].x265 = False
 
     def build(self):
+        cmake = self._configure_cmake()
+
+        cmake.build()
+
+    def _configure_cmake(self):
         cmake = CMake(self)
         cmake_toolchain_file = os.path.join(self.build_folder, "conan_paths.cmake")
         assert os.path.exists(cmake_toolchain_file)
         cmake.definitions["CMAKE_TOOLCHAIN_FILE"] = cmake_toolchain_file
+        cmake.definitions["VISVID_SAMPLE_CREATEVISUALS"] = self.options.with_createVisuals
+        cmake.definitions["BUILD_TESTING"] = False
         cmake.configure()
-        cmake.build()
-
+        return cmake
