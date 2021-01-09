@@ -111,11 +111,11 @@ RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install conan gcovr
 
 
-#
+#libalsa/1.2.4
 
 COPY conanfile.py /tmp/
 ENV CONAN_USER_HOME=/home/user/
-
+COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
-    conan install /tmp/ --no-imports --build missing --update && \
+    conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
     chown -R  user /home/user/.conan/data

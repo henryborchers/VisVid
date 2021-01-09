@@ -20,6 +20,8 @@ class VisvidConan(ConanFile):
     def requirements(self):
         if self.options.with_createVisuals:
             self.requires("sdl2/2.0.12@bincrafters/stable")
+            if self.settings.os == "Linux":
+                self.requires("libalsa/1.2.4")
 
 
     def imports(self):
