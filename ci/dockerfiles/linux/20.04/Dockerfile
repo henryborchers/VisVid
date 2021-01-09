@@ -74,7 +74,9 @@ RUN apt-get update && \
         libgtk2.0-dev \
         libxcb-util-dev \
         git \
-        libxcb-dri3-dev
+        libxcb-dri3-dev \
+        libasound2-dev
+
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN groupadd -g $GROUP_ID user && \
