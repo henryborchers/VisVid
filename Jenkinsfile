@@ -119,7 +119,7 @@ pipeline {
                                                       cmake --build ./build/drmem
                                                       ''')
                                         tee("logs/drmemory.log"){
-                                            sh('drmemory -- ./build/drmem/tests/publicAPI/test-visvid')
+                                            sh('drmemory -logdir ./logs -- ./build/drmem/tests/publicAPI/test-visvid')
                                         }
 
                                         
