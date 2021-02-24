@@ -118,7 +118,11 @@ pipeline {
                                         sh(script: '''cmake -B ./build/drmem  -DCMAKE_C_FLAGS="-fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage"
                                                       cmake --build ./build/drmem
                                                       ''')
-                                        sh('drmemory -- ./build/drmem/tests/publicAPI/test-visvid')
+                                        tee("logs/drmemory.log"){
+                                            sh('drmemory -- ./build/drmem/tests/publicAPI/test-visvid')
+                                        }
+
+                                        recordIssues(tools: [drMemory(pattern: 'logs/drmemory.log')])
 
                                     }
                                 }
