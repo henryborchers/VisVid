@@ -122,9 +122,13 @@ pipeline {
                                             sh('drmemory -- ./build/drmem/tests/publicAPI/test-visvid')
                                         }
 
-                                        recordIssues(tools: [drMemory(pattern: 'logs/drmemory.log')])
-
+                                        
                                     }
+post{
+always {
+recordIssues(tools: [drMemory(pattern: 'logs/drmemory.log')])
+}
+}
                                 }
                                 stage("Build Debug Version for Testing"){
                                     steps{
