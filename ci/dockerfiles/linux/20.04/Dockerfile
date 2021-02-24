@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.0-experimental
-FROM ubuntu:20.04
+FROM ubuntu:20.04 as base
 
 ENV TZ=America/Chicago
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -119,3 +119,11 @@ COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
     chown -R  user /home/user/.conan/data
+
+RUN apt install -y wget
+WORKDIR /drmemory
+RUN wget --no-verbose https://github.com/DynamoRIO/drmemory/releases/download/release_2.3.0/DrMemory-Linux-2.3.0-1.tar.gz && \
+    mkdir -p /opt/drmemory && tar xzf DrMemory-Linux-2.3.0-1.tar.gz -C /opt/drmemory --strip-components=1 && \
+    ln -s /opt/drmemory/bin64/drmemory /usr/local/bin/drmemory && \
+    drmemory -version
+
