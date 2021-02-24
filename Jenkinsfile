@@ -113,6 +113,14 @@ pipeline {
                                 }
                             }
                             stages{
+                                stage("Dr memory"){
+                                    steps{
+                                        sh(script: '''cmake -B ./build/drmem  -DCMAKE_C_FLAGS="-fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage"
+                                                      cmake --build ./build/drmem
+                                                      drmemory -- ./build/drmem/tests/publicAPI/test-visvid
+                                                      ''')
+                                    }
+                                }
                                 stage("Build Debug Version for Testing"){
                                     steps{
                                         sh "conan install . -o with_createVisuals=True -if build/debug/"
