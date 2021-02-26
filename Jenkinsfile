@@ -214,7 +214,7 @@ pipeline {
 //                                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
 //                                         tag: "AllCoverage"
 //                                     )
-//                                 }
+                                }
                                 cleanup{
                                     cleanWs(
                                         deleteDirs: true,
