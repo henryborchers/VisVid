@@ -5,7 +5,7 @@ include(FetchContent)
 if(Python3_Interpreter_FOUND)
     FetchContent_Declare(libpybind11
             URL https://github.com/pybind/pybind11/archive/v2.4.3.tar.gz
-            URL_HASH SHA1=0acaeb967f09dbef53a1e2a4366780548597beba
+            URL_HASH SHA1=75d0184c1720bad96bbcbef0e25ccee92f21523b
             )
     FetchContent_GetProperties(libpybind11)
     if (NOT libpybind11_POPULATED)
@@ -41,16 +41,28 @@ if(Python3_Interpreter_FOUND)
         DEPENDS
             Visvid::Visvid
             )
-    add_library(pyvisvid_module pyvisvid/visvid_extension.cpp pyvisvid/Visualizer.cpp pyvisvid/Visualizer.h)
+
+    add_library(pyvisvid_module
+            pyvisvid/visvid_extension.cpp
+            pyvisvid/Visualizer.cpp
+            pyvisvid/Visualizer.h
+            pyvisvid/utils.cpp
+            pyvisvid/utils.h
+            pyvisvid/generate.cpp
+            pyvisvid/generate.h
+            )
+
     target_link_libraries(pyvisvid_module
             PRIVATE
                 pybind11::module
                 Visvid::Visvid
-                ${FFMPEG_LIBRARIES}
+                FFmpeg::avformat
             )
     target_include_directories(pyvisvid_module
             PRIVATE
                 ${PROJECT_SOURCE_DIR}/examples
+            PUBLIC
+                ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
             )
 
     add_custom_target(pyvisvid_run
