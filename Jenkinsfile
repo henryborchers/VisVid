@@ -203,17 +203,18 @@ pipeline {
                                 always{
                                     sh(label: "Generating coverage report in Coberatura xml file format",
                                        script: """mkdir -p reports/coverage
-                                                  gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml --json reports/coverage/coverage-cpp.json build/debug
+                                                  gcovr --json reports/coverage/coverage-cpp.json
                                                   """
+//                                                   gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml --json reports/coverage/coverage-cpp.json build/debug
 
                                     )
                                     stash includes: 'reports/coverage/coverage-cpp.json', name: 'CPP_COVERAGE_DATA'
-                                    publishCoverage(
-                                        adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-                                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                                        tag: "AllCoverage"
-                                    )
-                                }
+//                                     publishCoverage(
+//                                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+//                                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+//                                         tag: "AllCoverage"
+//                                     )
+//                                 }
                                 cleanup{
                                     cleanWs(
                                         deleteDirs: true,
