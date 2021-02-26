@@ -203,10 +203,11 @@ pipeline {
                                 always{
                                     sh(label: "Generating coverage report in Coberatura xml file format",
                                        script: """mkdir -p reports/coverage
-                                                  gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml --json coverage-cpp.json build/debug
+                                                  gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml --json reports/coverage/coverage-cpp.json build/debug
                                                   """
 
                                     )
+                                    stash includes: 'reports/coverage/coverage-cpp.json', name: 'CPP_COVERAGE_DATA'
                                     publishCoverage(
                                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
                                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
@@ -333,13 +334,16 @@ pipeline {
                     }
                     post{
                         always{
+
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports/coverage-reports
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-                                          gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml
+                                          gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml --json reports/coverage/coverage-cpp-python.json
                                           '''
                            )
+                           unstash "CPP_COVERAGE_DATA"
+                           sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary  --xml -o reports/coverage-reports/coverage-combined.xml'
                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
                            publishCoverage(
                                adapters: [coberturaAdapter('reports/coverage-reports/*.xml')],
