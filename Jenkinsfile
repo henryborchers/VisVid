@@ -286,7 +286,7 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           coverage run  --parallel setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
+                                                           CFLAGS="--coverage" coverage run  --parallel build -b ./build/python setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
                                                            '''
                                             )
                                         }
