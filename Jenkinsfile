@@ -242,7 +242,7 @@ pipeline {
                             steps{
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: 'CFLAGS="--coverage" python setup.py build -b ./build/python build_ext --inplace'
+                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace'
                                     )
                             }
                         }
@@ -286,7 +286,7 @@ pipeline {
                                             sh(
                                                 script: '''mkdir -p logs
                                                            mkdir -p reports/tests/pytest
-                                                           CFLAGS="--coverage" coverage run  --parallel build -b ./build/python setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
+                                                           coverage run  --parallel setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
                                                            '''
                                             )
                                         }
@@ -333,7 +333,7 @@ pipeline {
                     }
                     post{
                         always{
-                            sh "(mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )"
+                            sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../ -name '*.gcno' -exec gcov {} \\; )"
                             stash includes: '**/*.gcno', name: "PYTHON_CPP_COVERAGE_DATA"
                             archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.gcno,**/*.gcov,'
 
