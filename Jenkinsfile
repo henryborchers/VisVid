@@ -339,12 +339,12 @@ pipeline {
                                           mkdir -p reports/coverage
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-                                          gcovr --filter src --print-summary --json --output reports/coverage/coverage-cpp-python.json --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
+                                          gcovr --filter src --print-summary --keep --json --output reports/coverage/coverage-cpp-python.json
+                                          gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
                                           '''
                            )
 
                            unstash "CPP_COVERAGE_DATA"
-                           sh 'ls -ls reports/coverage/'
                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
                            publishCoverage(
