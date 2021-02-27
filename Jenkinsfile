@@ -343,6 +343,7 @@ pipeline {
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml --keep
                                           '''
                            )
+                           archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**, '
                            unstash "CPP_COVERAGE_DATA"
                            sh 'ls -ls reports/coverage/'
                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
