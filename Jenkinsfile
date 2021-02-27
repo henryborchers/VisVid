@@ -342,7 +342,7 @@ pipeline {
                                           gcovr --filter src --print-summary --json --output reports/coverage/coverage-cpp-python.json --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
                                           '''
                            )
-                           archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**, '
+
                            unstash "CPP_COVERAGE_DATA"
                            sh 'ls -ls reports/coverage/'
                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
@@ -352,6 +352,7 @@ pipeline {
                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
                                tag: "AllCoverage"
                            )
+                           archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
                         }
                         cleanup{
                             cleanWs(
