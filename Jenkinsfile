@@ -333,8 +333,9 @@ pipeline {
                     }
                     post{
                         always{
+                            sh "(mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )"
                             stash includes: '**/*.gcno', name: "PYTHON_CPP_COVERAGE_DATA"
-                            archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.gcno'
+                            archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.gcno,**/*.gcov,'
 
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports/coverage-reports
