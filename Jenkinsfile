@@ -333,6 +333,8 @@ pipeline {
                     }
                     post{
                         always{
+                            stash includes: '**/*.gcno', name: "PYTHON_CPP_COVERAGE_DATA"
+                            archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.gcno'
 
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports/coverage-reports
