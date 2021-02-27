@@ -339,7 +339,7 @@ pipeline {
                                           mkdir -p reports/coverage
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-                                          gcovr --filter src --json --output reports/coverage/coverage-cpp-python.json --keep  src
+                                          gcovr --filter src --print-summary --json --output reports/coverage/coverage-cpp-python.json --keep src
                                           gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml --keep
                                           '''
                            )
