@@ -341,7 +341,8 @@ pipeline {
                                script: '''mkdir -p reports/coverage-reports
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-                                          gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml --json reports/coverage/coverage-cpp-python.json
+gcovr --json reports/coverage/coverage-cpp-python.json                                       
+gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml --json reports/coverage/coverage-cpp-python.json
                                           '''
                            )
                            unstash "CPP_COVERAGE_DATA"
