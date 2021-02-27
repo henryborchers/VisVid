@@ -203,7 +203,7 @@ pipeline {
                                 always{
                                     sh(label: "Generating coverage report in Coberatura xml file format",
                                        script: """mkdir -p reports/coverage
-                                                  gcovr --json -o reports/coverage/coverage-cpp.json
+                                                  gcovr --json reports/coverage/coverage-cpp.json
                                                   """
 //                                                   gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml --json reports/coverage/coverage-cpp.json build/debug
 
