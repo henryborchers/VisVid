@@ -203,13 +203,13 @@ pipeline {
                                 always{
                                     sh(label: "Generating coverage report in Coberatura xml file format",
                                        script: """mkdir -p reports/coverage
-                                                  gcovr --json coverage-cpp.json --output reports/coverage/ build/debug
+                                                  gcovr --json  --output reports/coverage/coverage-cpp.json build/debug
                                                   ls -laR reports/
                                                   """
 //                                                   gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml --json reports/coverage/coverage-cpp.json build/debug
 
                                     )
-                                    stash includes: 'reports/coverage/coverage-cpp.json', name: 'CPP_COVERAGE_DATA'
+                                    stash includes: 'reports/coverage/*.json', name: 'CPP_COVERAGE_DATA'
 //                                     publishCoverage(
 //                                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
 //                                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
