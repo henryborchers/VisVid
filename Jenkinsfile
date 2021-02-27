@@ -393,6 +393,7 @@ pipeline {
                         unstash "PYLINT_REPORT"
                         unstash "PYTEST_REPORT"
                         unstash "PYTHON_COVERAGE_REPORT"
+                        unstash 'PYTHON_CPP_COVERAGE_DATA'
                         script{
                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
                                 sh(
