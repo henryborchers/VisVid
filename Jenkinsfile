@@ -345,6 +345,7 @@ pipeline {
                                           '''
                            )
                            unstash "CPP_COVERAGE_DATA"
+                           sh 'ls -ls reports/coverage/'
                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary  --xml -o reports/coverage-reports/coverage-combined.xml'
                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
                            publishCoverage(
