@@ -23,6 +23,25 @@ enum pixel_component{
 
 size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component component);
 
+size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component component){
+    size_t offset = 0;
+    AVPixFmtDescriptor *desc = (AVPixFmtDescriptor *) av_pix_fmt_desc_get((AVPixelFormat)frame->format);
+    signed int uvx = x >> desc->log2_chroma_w;
+    signed int uvy = y >> desc->log2_chroma_h;
+
+    switch(component){
+        case Y:
+            offset = frame->linesize[0] * y + x;
+            break;
+        case U:
+            offset = frame->linesize[1] * uvy + uvx;
+            break;
+        case V:
+            offset = frame->linesize[2] * uvy + uvx;
+            break;
+    }
+    return offset;
+}
 Visualizer::Visualizer()
     :   mAvFormatCtx(nullptr),
         mVideoStream(-1){

@@ -209,6 +209,8 @@ pyvisvid_extension = Extension(
     sources=[
         'src/applications/pyvisvid/pyvisvid/visvid_extension.cpp',
         'src/applications/pyvisvid/pyvisvid/Visualizer.cpp',
+        'src/applications/pyvisvid/pyvisvid/utils.cpp',
+        'src/applications/pyvisvid/pyvisvid/generate.cpp',
          ],
     include_dirs=[
         "src/applications/pyvisvid/pyvisvid",
