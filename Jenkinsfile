@@ -339,6 +339,7 @@ pipeline {
 
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports/coverage-reports
+                                          mkdir -p reports/coverage
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
                                           gcovr --json reports/coverage/coverage-cpp-python.json src
