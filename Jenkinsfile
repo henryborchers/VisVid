@@ -333,7 +333,7 @@ pipeline {
                     }
                     post{
                         always{
-                            sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../ -name '*.gcno' -exec gcov {} \\; )"
+                            sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/pyvisvid/pyvisvid -name '*.gcno' -exec gcov {} \\; )"
                             stash includes: '**/*.gcno', name: "PYTHON_CPP_COVERAGE_DATA"
                             archiveArtifacts allowEmptyArchive: true, artifacts: '**/*.gcno,**/*.gcov,'
 
