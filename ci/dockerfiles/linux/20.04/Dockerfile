@@ -75,14 +75,9 @@ RUN apt-get update && \
         git \
         libxcb-dri3-dev \
         libasound2-dev \
-        unzip
+        unzip \
+        python3-venv
 
-#ARG USER_ID=1000
-#ARG GROUP_ID=1000
-#RUN groupadd -g $GROUP_ID user && \
-#    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
-#    mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
-#    chmod -R g+w /.cache/
 
 ENV SONAR_SCANNER_OPTS="-server"
 ENV CONAN_NON_INTERACTIVE=1
@@ -116,13 +111,22 @@ RUN curl --create-dirs -sSLo /tmp/sonar-scanner.zip \
 #==============================================================================
 #libalsa/1.2.4
 FROM base_image as CONAN_BUILDER
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -g $GROUP_ID user && \
+    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
+    mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
+    chmod -R g+w /.cache/
 RUN python3 -m pip install conan cmake
-COPY conanfile.py /tmp/
-ENV CONAN_USER_HOME=/conan
-COPY ci/dockerfiles/linux/20.04/conan/profile.ini  /conan/.conan/profiles/default
-COPY ci/dockerfiles/conan/remotes.json  /conan/.conan/remotes.json
-RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update
 
+COPY conanfile.py /tmp/
+ENV CONAN_USER_HOME=/home/user
+USER user
+WORKDIR /home/user
+COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
+COPY --chown=user:user ci/dockerfiles/conan/remotes.json  /home/user/.conan/remotes.json
+RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update
+RUN conan remove --locks
 #COPY ci/docker/linux/build/conan/profile.ini  /conan/.conan/profiles/default
 #COPY ci/docker/shared/conan/remotes.json  /conan/.conan/remotes.json
 #ENV CONAN_USER_HOME=/conan
@@ -150,16 +154,17 @@ RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install cmake && \
     python3 -m pip install conan gcovr
 
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -g $GROUP_ID user && \
+    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
+    mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
+    chmod -R g+w /.cache/
+
 COPY conanfile.py /tmp/
-COPY --from=CONAN_BUILDER /conan/.conan /conan/.conan/
-ENV CONAN_USER_HOME=/conan
-RUN conan config home
-COPY ci/dockerfiles/linux/20.04/conan/profile.ini  /conan/.conan/profiles/default
-COPY ci/dockerfiles/conan/remotes.json  /conan/.conan/remotes.json
+ENV CONAN_USER_HOME=/home/user
+USER user
+WORKDIR /tmp
+COPY --from=CONAN_BUILDER --chown=user:user /home/user/.conan /home/user/.conan/
 RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
-    conan remove "*" -b --src -f && \
-    conan remove --locks && \
-    chmod -R 777 /conan/.conan
-RUN ls -la /conan
-#RUN mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
-#    chmod -R g+w /.cache/
+    chown -R user /home/user/.conan/data
