@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.0-experimental
-FROM ubuntu:20.04
+FROM ubuntu:20.04 as BASE_IMAGE
 
 ENV TZ=America/Chicago
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -110,12 +110,22 @@ RUN  python3 -m pip install --upgrade pip && \
      python3 -m pip install cmake && \
      python3 -m pip install conan gcovr
 
-
+#==============================================================================
 #libalsa/1.2.4
-
+FROM BASE_IMAGE as CONAN_BUILDER
+RUN python3 -m pip install conan
 COPY conanfile.py /tmp/
 ENV CONAN_USER_HOME=/home/user/
 COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
+RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
+    conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
+    chown -R  user /home/user/.conan/data
+
+FROM BASE_IMAGE
+COPY conanfile.py /tmp/
+ENV CONAN_USER_HOME=/home/user/
+COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
+COPY --from=CONAN_BUILDER /home/user/.conan /home/user/.conan/
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
     chown -R  user /home/user/.conan/data
