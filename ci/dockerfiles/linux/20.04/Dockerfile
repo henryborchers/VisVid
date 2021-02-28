@@ -75,7 +75,8 @@ RUN apt-get update && \
         libxcb-util-dev \
         git \
         libxcb-dri3-dev \
-        libasound2-dev
+        libasound2-dev \
+        unzip
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -84,7 +85,14 @@ RUN groupadd -g $GROUP_ID user && \
     mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
     chmod -R g+w /.cache/
 
-RUN apt install -y unzip
+ENV SONAR_SCANNER_OPTS="-server"
+ENV CONAN_NON_INTERACTIVE=1
+ARG PIP_EXTRA_INDEX_URL
+ARG PIP_TRUSTED_HOST
+ARG PIP_INDEX_URL
+
+#==============================================================================
+FROM BASE_IMAGE as SONAR_BUILDER
 ENV SONAR_SCANNER_VERSION=4.4.0.2170
 ARG SONAR_SCANNER_HOME=/opt/sonar/${SONAR_SCANNER_VERSION}-linux
 ENV SONAR_USER_HOME=/opt/sonar/.sonar
@@ -105,34 +113,7 @@ RUN curl --create-dirs -sSLo /tmp/sonar-scanner.zip \
     mkdir -p /home/user/.sonar/cache && \
     ln -s /opt/sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
     which sonar-scanner
-ENV SONAR_SCANNER_OPTS="-server"
-##
-#ENV SONAR_SCANNER_VERSION=4.4.0.2170
-#ENV  =/home/user/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-#RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip \
-#    https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-#
-#    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/ && \
-#    rm $HOME/.sonar/sonar-scanner.zip && \
-#    mkdir -p /home/user/.sonar/cache && \
-#    chown user:user /home/user/.sonar/cache
-#        https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
 
-#ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
-#ENV SONAR_SCANNER_OPTS="-server"
-#RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
-#    unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
-
-#ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
-USER root
-
-ENV CONAN_NON_INTERACTIVE=1
-ARG PIP_EXTRA_INDEX_URL
-ARG PIP_TRUSTED_HOST
-ARG PIP_INDEX_URL
-RUN  python3 -m pip install --upgrade pip && \
-     python3 -m pip install cmake && \
-     python3 -m pip install conan gcovr
 
 #==============================================================================
 #libalsa/1.2.4
@@ -145,7 +126,24 @@ RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/publi
     conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
     chown -R  user /home/user/.conan/data
 
+#==============================================================================
+# FINAL IMAGE
+
 FROM BASE_IMAGE
+
+
+COPY --from=SONAR_BUILDER /opt/sonar /opt/sonar/
+RUN ln -s /opt/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper-linux-x86-64 && \
+    which build-wrapper-linux-x86-64
+ENV SONAR_SCANNER_VERSION=4.4.0.2170
+ARG SONAR_SCANNER_HOME=/opt/sonar/${SONAR_SCANNER_VERSION}-linux
+RUN ln -s /opt/sonar/sonar-scanner-${SONAR_SCANNER_VERSION}-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
+    which sonar-scanner
+
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install cmake && \
+    python3 -m pip install conan gcovr
+
 COPY conanfile.py /tmp/
 ENV CONAN_USER_HOME=/home/user/
 COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
