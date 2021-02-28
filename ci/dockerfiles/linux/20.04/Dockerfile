@@ -118,7 +118,7 @@ RUN curl --create-dirs -sSLo /tmp/sonar-scanner.zip \
 #==============================================================================
 #libalsa/1.2.4
 FROM BASE_IMAGE as CONAN_BUILDER
-RUN python3 -m pip install conan
+RUN python3 -m pip install conan cmake
 COPY conanfile.py /tmp/
 ENV CONAN_USER_HOME=/home/user/
 COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default

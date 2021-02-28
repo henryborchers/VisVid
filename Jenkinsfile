@@ -26,84 +26,84 @@ pipeline {
             stages{
                 stage("C Code"){
                     stages{
-//                         stage("Static Analysis"){
-//                             parallel{
-//                                 stage("Clang Tidy"){
-//                                     agent{
-//                                         dockerfile {
-//                                             filename 'ci/dockerfiles/static_analysis/clang_tidy/Dockerfile'
-//                                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                                             label "linux"
-//                                         }
-//
-//                                     }
-//                                     steps{
-//                                         tee('logs/clang-tidy_debug.log') {
-//                                             catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
-//                                                 sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
-//                                                        run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
-//                                                        '''
-//                                             }
-//                                         }
-//                                     }
-//                                     post{
-//                                         always {
-//                                             recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
-//                                         }
-//                                         cleanup{
-//                                             cleanWs(
-//                                                 deleteDirs: true,
-//                                                 patterns: [
-//                                                     [pattern: 'build/', type: 'INCLUDE'],
-//                                                     [pattern: 'logs/', type: 'INCLUDE'],
-//                                                 ]
-//                                             )
-//                                         }
-//                                     }
-//                                 }
-//                                 stage("cppcheck"){
-//                                     agent{
-//                                       dockerfile {
-//                                         filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
-//                                         additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
-//                                         label "linux"
-//                                       }
-//                                     }
-//                                     steps{
-//                                         catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
-//                                             sh(
-//                                                 label: "Running cppcheck",
-//                                                 script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
-//                                                            mkdir -p logs
-//                                                            cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
-//                                                            '''
-//                                             )
-//                                         }
-//                                     }
-//                                     post{
-//                                         always {
-//                                             recordIssues(
-//                                                 filters: [
-//                                                         excludeFile('build/debug/_deps/*')
-//                                                     ],
-//                                                 tools: [
-//                                                         cppCheck(pattern: 'logs/cppcheck_debug.xml')
-//                                                     ]
-//                                             )
-//                                         }
-//                                         cleanup{
-//                                             cleanWs(
-//                                                 deleteDirs: true,
-//                                                 patterns: [
-//                                                     [pattern: 'build/', type: 'INCLUDE'],
-//                                                     [pattern: 'logs/', type: 'INCLUDE'],
-//                                                 ]
-//                                             )
-//                                         }
-//                                     }
-//                                 }
-//                             }
-//                         }
+                        stage("Static Analysis"){
+                            parallel{
+                                stage("Clang Tidy"){
+                                    agent{
+                                        dockerfile {
+                                            filename 'ci/dockerfiles/static_analysis/clang_tidy/Dockerfile'
+                                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                            label "linux"
+                                        }
+
+                                    }
+                                    steps{
+                                        tee('logs/clang-tidy_debug.log') {
+                                            catchError(buildResult: 'SUCCESS', message: 'Clang Tidy found issues', stageResult: 'UNSTABLE') {
+                                                sh  '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                                       run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/
+                                                       '''
+                                            }
+                                        }
+                                    }
+                                    post{
+                                        always {
+                                            recordIssues(tools: [clangTidy(pattern: 'logs/clang-tidy_debug.log')])
+                                        }
+                                        cleanup{
+                                            cleanWs(
+                                                deleteDirs: true,
+                                                patterns: [
+                                                    [pattern: 'build/', type: 'INCLUDE'],
+                                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                                ]
+                                            )
+                                        }
+                                    }
+                                }
+                                stage("cppcheck"){
+                                    agent{
+                                      dockerfile {
+                                        filename 'ci/dockerfiles/static_analysis/cppcheck/Dockerfile'
+                                        additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
+                                        label "linux"
+                                      }
+                                    }
+                                    steps{
+                                        catchError(buildResult: 'SUCCESS', message: 'cppcheck found issues', stageResult: 'UNSTABLE') {
+                                            sh(
+                                                label: "Running cppcheck",
+                                                script: '''cmake -B ./build/debug/ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                                           mkdir -p logs
+                                                           cppcheck --error-exitcode=1 --project=build/debug/compile_commands.json --enable=all  -ibuild/debug/_deps --xml --output-file=logs/cppcheck_debug.xml
+                                                           '''
+                                            )
+                                        }
+                                    }
+                                    post{
+                                        always {
+                                            recordIssues(
+                                                filters: [
+                                                        excludeFile('build/debug/_deps/*')
+                                                    ],
+                                                tools: [
+                                                        cppCheck(pattern: 'logs/cppcheck_debug.xml')
+                                                    ]
+                                            )
+                                        }
+                                        cleanup{
+                                            cleanWs(
+                                                deleteDirs: true,
+                                                patterns: [
+                                                    [pattern: 'build/', type: 'INCLUDE'],
+                                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                                ]
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         stage("Tests"){
                             agent{
                                 dockerfile {
