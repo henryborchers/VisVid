@@ -250,10 +250,9 @@ pipeline {
                     stages{
                         stage("Build Python Extension for Testing"){
                             steps{
-                                sh "which python3"
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: 'CFLAGS="--coverage" python setup.py build -t build/python_temp/ build_ext --inplace'
+                                    script: 'CFLAGS="--coverage" python3 setup.py build -t build/python_temp/ build_ext --inplace'
                                     )
                             }
                         }
@@ -315,7 +314,7 @@ pipeline {
                                             catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
                                                 sh(
                                                     script: '''mkdir -p reports
-                                                               python -m pylint src/applications/pyvisvid/pyvisvid/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+                                                               python3 -m pylint src/applications/pyvisvid/pyvisvid/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
                                                                ''',
                                                     label: "Running pylint"
                                                 )
@@ -324,7 +323,7 @@ pipeline {
                                         tee("reports/pylint_issues.txt"){
                                              sh(
                                                 label: "Running pylint for sonarqube",
-                                                script: '''python -m pylint src/applications/pyvisvid/pyvisvid/  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}"''',
+                                                script: '''python3 -m pylint src/applications/pyvisvid/pyvisvid/  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}"''',
                                                 returnStatus: true
                                              )
                                         }
