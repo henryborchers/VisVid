@@ -75,7 +75,6 @@ RUN apt-get update && \
         git \
         libxcb-dri3-dev \
         libasound2-dev \
-        unzip \
         python3-venv
 
 
@@ -87,6 +86,8 @@ ARG PIP_INDEX_URL
 
 #==============================================================================
 FROM base_image as SONAR_BUILDER
+RUN apt-get update && \
+    apt-get install -y unzip
 ENV SONAR_SCANNER_VERSION=4.4.0.2170
 ARG SONAR_SCANNER_HOME=/opt/sonar/${SONAR_SCANNER_VERSION}-linux
 ENV SONAR_USER_HOME=/opt/sonar/.sonar
@@ -125,17 +126,9 @@ USER user
 WORKDIR /home/user
 COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
 COPY --chown=user:user ci/dockerfiles/conan/remotes.json  /home/user/.conan/remotes.json
-RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update
-RUN conan remove --locks
-#COPY ci/docker/linux/build/conan/profile.ini  /conan/.conan/profiles/default
-#COPY ci/docker/shared/conan/remotes.json  /conan/.conan/remotes.json
-#ENV CONAN_USER_HOME=/conan
-#COPY conanfile.py /tmp/conanfile.py
-#RUN conan config home
-#RUN conan install /tmp --build outdated --build=openjpeg --no-import  && \
-#    conan install /tmp --build outdated --build=openjpeg --no-import  -s build_type=Debug && \
-#    conan remove "*" -b --src -f && \
-#    conan remove --locks
+RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
+    conan remove --locks
+
 #==============================================================================
 # FINAL IMAGE
 
