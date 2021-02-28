@@ -108,7 +108,6 @@ pipeline {
                             agent{
                                 dockerfile {
                                     filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-//                                     additionalBuildArgs '--build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
                                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
                                     label "linux"
                                 }
@@ -236,14 +235,22 @@ pipeline {
                 stage("Python Code"){
                     agent{
                         dockerfile {
-                            filename 'ci/dockerfiles/python/linux/Dockerfile'
+                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
                             label "linux"
                         }
                     }
+    //                     agent{
+//                         dockerfile {
+//                             filename 'ci/dockerfiles/python/linux/Dockerfile'
+//                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+//                             label "linux"
+//                         }
+//                     }
                     stages{
                         stage("Build Python Extension for Testing"){
                             steps{
+                                sh "which python3"
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
                                     script: 'CFLAGS="--coverage" python setup.py build -t build/python_temp/ build_ext --inplace'
