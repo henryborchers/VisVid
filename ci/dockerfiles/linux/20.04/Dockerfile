@@ -75,7 +75,8 @@ RUN apt-get update && \
         git \
         libxcb-dri3-dev \
         libasound2-dev \
-        python3-venv
+        python3-venv \
+        ffmpeg
 
 
 ENV SONAR_SCANNER_OPTS="-server"
@@ -148,9 +149,6 @@ RUN python3 -m pip wheel -r /tmp/requirements-dev.txt -r /tmp/requirements-ci.tx
 
 FROM PYTHON_BASE
 
-# todo remove this line
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
 COPY --from=SONAR_BUILDER /opt/sonar /opt/sonar/
 RUN ln -s /opt/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper-linux-x86-64 && \
     which build-wrapper-linux-x86-64
@@ -174,6 +172,7 @@ RUN groupadd -g $GROUP_ID user && \
 
 COPY conanfile.py /tmp/
 ENV CONAN_USER_HOME=/home/user
+RUN apt update && apt install -y ffmpeg
 USER user
 WORKDIR /tmp
 COPY --from=CONAN_BUILDER --chown=user:user /home/user/.conan /home/user/.conan/
