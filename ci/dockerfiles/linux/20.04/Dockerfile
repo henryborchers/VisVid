@@ -84,22 +84,46 @@ RUN groupadd -g $GROUP_ID user && \
     mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
     chmod -R g+w /.cache/
 
-USER user
+RUN apt install -y unzip
 ENV SONAR_SCANNER_VERSION=4.4.0.2170
-ENV SONAR_SCANNER_HOME=/home/user/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip \
+ARG SONAR_SCANNER_HOME=/opt/sonar/${SONAR_SCANNER_VERSION}-linux
+ENV SONAR_USER_HOME=/opt/sonar/.sonar
+RUN curl --create-dirs -sSLo /tmp/build-wrapper-linux-x86.zip \
+        https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
+    unzip -o /tmp/build-wrapper-linux-x86.zip -d /opt/sonar/ && \
+    rm /tmp/build-wrapper-linux-x86.zip && \
+    mkdir -p $SONAR_USER_HOME/cache && \
+    chmod -R 777 "${SONAR_USER_HOME}" &&\
+    ln -s /opt/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper-linux-x86-64 && \
+    which build-wrapper-linux-x86-64
+RUN curl --create-dirs -sSLo /tmp/sonar-scanner.zip \
         https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
-    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/ && \
-    rm $HOME/.sonar/sonar-scanner.zip && \
+    unzip -o /tmp/sonar-scanner.zip -d /opt/sonar/ && \
+    rm /tmp/sonar-scanner.zip && \
+    mkdir -p $SONAR_USER_HOME/cache && \
+    chmod -R 777 "${SONAR_USER_HOME}" &&\
     mkdir -p /home/user/.sonar/cache && \
-    chown user:user /home/user/.sonar/cache
-
-ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
+    ln -s /opt/sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
+    which sonar-scanner
 ENV SONAR_SCANNER_OPTS="-server"
-RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
-    unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+##
+#ENV SONAR_SCANNER_VERSION=4.4.0.2170
+#ENV  =/home/user/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+#RUN curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip \
+#    https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+#
+#    unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/ && \
+#    rm $HOME/.sonar/sonar-scanner.zip && \
+#    mkdir -p /home/user/.sonar/cache && \
+#    chown user:user /home/user/.sonar/cache
+#        https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip && \
 
-ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
+#ENV PATH=$SONAR_SCANNER_HOME/bin:$PATH
+#ENV SONAR_SCANNER_OPTS="-server"
+#RUN curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
+#    unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+
+#ENV PATH=/home/user/.sonar/build-wrapper-linux-x86:$PATH
 USER root
 
 ENV CONAN_NON_INTERACTIVE=1

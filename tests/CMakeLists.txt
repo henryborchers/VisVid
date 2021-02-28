@@ -16,6 +16,11 @@ endif()
 add_subdirectory(internal)
 
 add_subdirectory(publicAPI)
+
+if(VISVID_PYVISVID)
+    add_subdirectory(pyvisvid)
+endif()
+
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
         DEPENDS tests/test-visvid-internal tests/test-visvid
         )

@@ -118,12 +118,12 @@ pipeline {
                                         sh "conan install . -o with_createVisuals=True -if build/debug/"
                                         tee("logs/cmakeconfig.log"){
                                             sh(label:"configuring a debug build",
-                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON
+                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON
                                                           '''
                                            )
                                         }
                                         tee("logs/cmakebuild.log"){
-                                            sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal'
+                                            sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal --target test_pyvisvid'
                                         }
                                     }
                                     post{
@@ -203,15 +203,15 @@ pipeline {
                                 always{
                                     sh(label: "Generating coverage report in Coberatura xml file format",
                                        script: """mkdir -p reports/coverage
-                                                  gcovr --filter src --print-summary  --xml -o reports/coverage/coverage.xml build/debug
+                                                  gcovr --filter src  --json  --output reports/coverage/coverage-cpp.json --keep build/debug
                                                   """
-
                                     )
-                                    publishCoverage(
-                                        adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-                                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                                        tag: "AllCoverage"
-                                    )
+                                    stash includes: 'reports/coverage/*.json', name: 'CPP_COVERAGE_DATA'
+//                                     publishCoverage(
+//                                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
+//                                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+//                                         tag: "AllCoverage"
+//                                     )
                                 }
                                 cleanup{
                                     cleanWs(
@@ -242,7 +242,7 @@ pipeline {
                             steps{
                                 sh(
                                     label: "Running Python setup script to build wheel and sdist",
-                                    script: 'CFLAGS="--coverage" python setup.py build build_ext --inplace'
+                                    script: 'CFLAGS="--coverage" python setup.py build -t build/python_temp/ build_ext --inplace'
                                     )
                             }
                         }
@@ -333,19 +333,27 @@ pipeline {
                     }
                     post{
                         always{
+                            sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
+                            stash includes: '**/*.gcov', name: "PYTHON_CPP_COVERAGE_DATA"
                             sh(label: "combining coverage data",
                                script: '''mkdir -p reports/coverage-reports
+                                          mkdir -p reports/coverage
                                           coverage combine
                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-                                          gcovr --filter src --print-summary  --xml -o reports/coverage-reports/coverage-python-c-extension.xml
+                                          gcovr --filter src --print-summary --keep --json --output reports/coverage/coverage-cpp-python.json
+                                          gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
                                           '''
                            )
+
+                           unstash "CPP_COVERAGE_DATA"
+                           sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
                            publishCoverage(
-                               adapters: [coberturaAdapter('reports/coverage-reports/*.xml')],
+                               adapters: [coberturaAdapter(path: 'reports/coverage-reports/*.xml', mergeToOneReport: true)],
                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
                                tag: "AllCoverage"
                            )
+                           archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
                         }
                         cleanup{
                             cleanWs(
@@ -385,13 +393,14 @@ pipeline {
                         unstash "PYLINT_REPORT"
                         unstash "PYTEST_REPORT"
                         unstash "PYTHON_COVERAGE_REPORT"
+                        unstash 'PYTHON_CPP_COVERAGE_DATA'
                         script{
                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
                                 sh(
                                     label:" Running Build wrapper",
                                     script: '''conan install . -if build/
                                                cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -DBUILD_TESTING:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
-                                               (cd build && /home/user/.sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
+                                               (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
                                                mkdir -p reports/unit
                                                build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
                                                build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
