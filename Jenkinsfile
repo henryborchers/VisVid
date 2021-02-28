@@ -108,8 +108,8 @@ pipeline {
                             agent{
                                 dockerfile {
                                     filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-                                    additionalBuildArgs '--build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-//                                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+//                                     additionalBuildArgs '--build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+                                    additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
                                     label "linux"
                                 }
                             }
