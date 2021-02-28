@@ -120,12 +120,21 @@ RUN curl --create-dirs -sSLo /tmp/sonar-scanner.zip \
 FROM BASE_IMAGE as CONAN_BUILDER
 RUN python3 -m pip install conan cmake
 COPY conanfile.py /tmp/
-ENV CONAN_USER_HOME=/home/user/
-COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
+ENV CONAN_USER_HOME=/conan
+COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /conan/.conan/profiles/default
 RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
     conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
-    chown -R  user /home/user/.conan/data
+    chown -R  user /conan/.conan/data
 
+#COPY ci/docker/linux/build/conan/profile.ini  /conan/.conan/profiles/default
+#COPY ci/docker/shared/conan/remotes.json  /conan/.conan/remotes.json
+#ENV CONAN_USER_HOME=/conan
+#COPY conanfile.py /tmp/conanfile.py
+#RUN conan config home
+#RUN conan install /tmp --build outdated --build=openjpeg --no-import  && \
+#    conan install /tmp --build outdated --build=openjpeg --no-import  -s build_type=Debug && \
+#    conan remove "*" -b --src -f && \
+#    conan remove --locks
 #==============================================================================
 # FINAL IMAGE
 
@@ -145,9 +154,9 @@ RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install conan gcovr
 
 COPY conanfile.py /tmp/
-ENV CONAN_USER_HOME=/home/user/
-COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /home/user/.conan/profiles/default
-COPY --from=CONAN_BUILDER /home/user/.conan /home/user/.conan/
+ENV CONAN_USER_HOME=/conan
+COPY --chown=user:user ci/dockerfiles/linux/20.04/conan/profile.ini  /conan/.conan/profiles/default
+COPY --from=CONAN_BUILDER /conan/.conan /conan/.conan/
 #RUN conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan && \
 RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
-    chown -R  user /home/user/.conan/data
+    chown -R  user /conan/.conan/data
