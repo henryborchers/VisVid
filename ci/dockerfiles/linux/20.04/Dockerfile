@@ -130,10 +130,26 @@ RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True 
     conan remove --locks
 
 #==============================================================================
+FROM base_image as PYTHON_BASE
+RUN apt update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt update
+
+#==============================================================================
+FROM PYTHON_BASE as WHEEL_BUILDER
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install wheel
+COPY requirements-dev.txt /tmp/requirements-dev.txt
+COPY ci/dockerfiles/python/shared/requirements-ci.txt /tmp/requirements-ci.txt
+RUN python3 -m pip wheel -r /tmp/requirements-dev.txt -r /tmp/requirements-ci.txt -w /wheels
+#==============================================================================
 # FINAL IMAGE
 
-FROM base_image
+FROM PYTHON_BASE
 
+# todo remove this line
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY --from=SONAR_BUILDER /opt/sonar /opt/sonar/
 RUN ln -s /opt/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper-linux-x86-64 && \
@@ -142,8 +158,10 @@ ENV SONAR_SCANNER_VERSION=4.4.0.2170
 ARG SONAR_SCANNER_HOME=/opt/sonar/${SONAR_SCANNER_VERSION}-linux
 RUN ln -s /opt/sonar/sonar-scanner-${SONAR_SCANNER_VERSION}-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
     which sonar-scanner
-
+COPY --from=WHEEL_BUILDER /wheels /wheels/
+COPY ci/dockerfiles/python/shared/requirements-ci.txt /tmp/requirements-ci.txt
 RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install -r /tmp/requirements-ci.txt && \
     python3 -m pip install cmake && \
     python3 -m pip install conan gcovr
 
