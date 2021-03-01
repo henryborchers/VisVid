@@ -149,6 +149,13 @@ RUN python3 -m pip wheel -r /tmp/requirements-dev.txt -r /tmp/requirements-ci.tx
 
 FROM PYTHON_BASE
 
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -g $GROUP_ID user && \
+    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
+    mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
+    chmod -R g+w /.cache/
+
 COPY --from=SONAR_BUILDER /opt/sonar /opt/sonar/
 RUN ln -s /opt/sonar/build-wrapper-linux-x86/build-wrapper-linux-x86-64 /usr/local/bin/build-wrapper-linux-x86-64 && \
     which build-wrapper-linux-x86-64
@@ -156,19 +163,13 @@ ENV SONAR_SCANNER_VERSION=4.4.0.2170
 ARG SONAR_SCANNER_HOME=/opt/sonar/${SONAR_SCANNER_VERSION}-linux
 RUN ln -s /opt/sonar/sonar-scanner-${SONAR_SCANNER_VERSION}-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
     which sonar-scanner
+RUN mkdir -p /home/user/.sonar/ && chmod -R 777 /home/user/
 COPY --from=WHEEL_BUILDER /wheels /wheels/
 COPY ci/dockerfiles/python/shared/requirements-ci.txt /tmp/requirements-ci.txt
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install -r /tmp/requirements-ci.txt && \
     python3 -m pip install cmake && \
     python3 -m pip install conan gcovr
-
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-RUN groupadd -g $GROUP_ID user && \
-    useradd -u $USER_ID -s /bin/sh -m -d /home/user -g user user && \
-    mkdir -p /.cache/pip && chgrp -R  user /.cache/ && \
-    chmod -R g+w /.cache/
 
 COPY conanfile.py /tmp/
 ENV CONAN_USER_HOME=/home/user
