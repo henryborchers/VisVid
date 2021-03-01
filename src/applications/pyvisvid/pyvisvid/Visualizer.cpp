@@ -12,7 +12,7 @@ extern "C"{
 }
 #include <iostream>
 #include <stdexcept>
-#define MAX_BUFFER_SIZE 200
+const int MAX_BUFFER_SIZE = 200;
 
 
 enum pixel_component{
