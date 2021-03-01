@@ -12,7 +12,7 @@ extern "C"{
 }
 #include <iostream>
 #include <stdexcept>
-#define MAX_BUFFER_SIZE 200
+const int MAX_BUFFER_SIZE = 200;
 
 
 enum pixel_component{
@@ -25,7 +25,7 @@ size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component compo
 
 size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component component){
     size_t offset = 0;
-    AVPixFmtDescriptor *desc = (AVPixFmtDescriptor *) av_pix_fmt_desc_get((AVPixelFormat)frame->format);
+    auto *desc = (AVPixFmtDescriptor *) av_pix_fmt_desc_get((AVPixelFormat)frame->format);
     signed int uvx = x >> desc->log2_chroma_w;
     signed int uvy = y >> desc->log2_chroma_h;
 
@@ -42,14 +42,7 @@ size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component compo
     }
     return offset;
 }
-Visualizer::Visualizer()
-    :   mAvFormatCtx(nullptr),
-        mVideoStream(-1){
-    AVFrame *frame = av_frame_alloc();
-    if(!frame){
-        throw std::runtime_error("Could not allocate a video frame\n");
-    }
-}
+
 
 Visualizer::~Visualizer() {
     if(mAvFormatCtx != nullptr){
@@ -189,12 +182,12 @@ void Visualizer::init_video() {
     }
 
     const AVCodec *codec = avcodec_find_decoder(mAvFormatCtx->streams[mVideoStream]->codecpar->codec_id);
-    if(!codec){
+    if(codec == nullptr){
         throw std::runtime_error("unable to find codec");
     }
 
     mCodecCtx =  avcodec_alloc_context3(codec);
-    if(!mCodecCtx){
+    if(mCodecCtx == nullptr){
         throw std::runtime_error("Could not allocate video codec context");
     }
 

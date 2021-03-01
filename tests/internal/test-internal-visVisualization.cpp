@@ -95,7 +95,7 @@ SCENARIO("Visualization Ramping Luma values") {
                 CHECK(visVisResult_CaculateBrightestOverWidth(&result, frame, slice) == 0);
                 delete[] slice;
 
-                for(PixelValue i = 0; i < buffersize; i++){
+                for(PixelValue i = 0; i < (PixelValue)buffersize; i++){
                     PixelValue value = 0;
 
                     VisVisualResult_GetValue(&value, &result, i);
