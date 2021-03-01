@@ -137,14 +137,14 @@ SCENARIO("visFrameYUV Functions"){
 
 
             VisYUVFrame_SetSize(frame, width, height);
-            for(PixelValue x = 0; x < width; x++){
+            for(PixelValue x = 0; x < (PixelValue)width; x++){
                 brush.Y = x;
                 YUVPixel_Draw(frame, &brush, x, 0);
             }
 
             THEN("All pixels in the frame have the color of the brush"){
 
-                for(PixelValue x = 0; x < width; x++){
+                for(PixelValue x = 0; x < (PixelValue)width; x++){
 
                     PixelValue y = x;
                     PixelValue u = 0;
