@@ -146,7 +146,8 @@ pipeline {
                                                             steps{
                                                                 sh(
                                                                     label:'Run tests',
-                                                                    script: '''build/debug/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+                                                                    script: '''mkdir -p reports/unit
+                                                                               build/debug/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
                                                                                build/debug/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
                                                                                '''
                                                                            )
