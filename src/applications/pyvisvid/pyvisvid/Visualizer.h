@@ -23,7 +23,6 @@ class Visualizer {
     visView *mView;
 
 public:
-    Visualizer();
 
     void load(const std::string &source);
     void init_video();
