@@ -42,8 +42,7 @@ size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component compo
     }
     return offset;
 }
-Visualizer::Visualizer()
-    : mVideoStream(-1){
+Visualizer::Visualizer(){
     AVFrame *frame = av_frame_alloc();
     if(frame == nullptr){
         throw std::runtime_error("Could not allocate a video frame\n");
