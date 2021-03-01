@@ -140,8 +140,18 @@ pipeline {
                                                         }
                                                     }
                                                 }
-                                                stage("Run ctests"){
+                                                stage("Run tests"){
                                                     parallel{
+                                                        stage("Run Test"){
+                                                            steps{
+                                                                sh(
+                                                                    label:'Run tests',
+                                                                    script: '''build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+                                                                               build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
+                                                                               '''
+                                                                           )
+                                                            }
+                                                        }
                                                         stage("Run CTest"){
                                                             steps{
                                                                 sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
@@ -210,6 +220,7 @@ pipeline {
                                                 always{
                                                     sh(label: "Generating coverage report in Coberatura xml file format",
                                                        script: """mkdir -p reports/coverage
+                                                                  (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )
                                                                   gcovr --filter src  --json  --output reports/coverage/coverage-cpp.json --keep build/debug
                                                                   """
                                                     )
@@ -315,7 +326,7 @@ pipeline {
                                                 always{
                                                     sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
                                                     sh(label: "combining coverage data",
-                                                       script: '''mkdir -p reports/coverage-reports
+                                                        script: '''mkdir -p reports/coverage-reports
                                                                   mkdir -p reports/coverage
                                                                   coverage combine
                                                                   coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
@@ -323,15 +334,17 @@ pipeline {
                                                                   gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
                                                                   '''
                                                    )
+                                                   sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
                                                 }
                                             }
                                         }
                                     }
                                     post{
                                         always{
-                                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
+                                            sh 'ls -l reports/coverage'
+
                                             archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
-                                            stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
+                                            stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT", allowEmpty: true
                                             publishCoverage(
                                                 adapters: [coberturaAdapter(path: 'reports/coverage-reports/*.xml', mergeToOneReport: true)],
                                                 sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
@@ -355,17 +368,18 @@ pipeline {
                                         unstash "PYTHON_COVERAGE_REPORT"
                                         script{
                                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
-                                                sh(
-                                                    label:" Running Build wrapper",
-                                                    script: '''conan install . -if build/
-                                                               cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -DBUILD_TESTING:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
-                                                               (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
-                                                               mkdir -p reports/unit
-                                                               build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
-                                                               build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
-                                                               (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )
-                                                               '''
-                                                )
+//                                                 sh(
+//                                                     label:" Running Build wrapper",
+//                                                     script: '''
+// //                                                                 conan install . -if build/
+// //                                                                cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -DBUILD_TESTING:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
+// //                                                                (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
+//                                                                mkdir -p reports/unit
+//                                                                build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+//                                                                build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
+//                                                                (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )
+//                                                                '''
+//                                                 )
 
                                                 if (env.CHANGE_ID){
                                                     sh(
