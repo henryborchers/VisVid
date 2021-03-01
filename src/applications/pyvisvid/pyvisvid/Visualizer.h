@@ -14,7 +14,7 @@ extern "C"{
 
 class Visualizer {
     std::string mSource;
-    AVFormatContext *mAvFormatCtx;
+    AVFormatContext *mAvFormatCtx = nullptr;
     int mVideoStream;
     visBuffer *mBuffer;
     AVCodecContext *mCodecCtx;
