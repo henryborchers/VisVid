@@ -182,12 +182,12 @@ void Visualizer::init_video() {
     }
 
     const AVCodec *codec = avcodec_find_decoder(mAvFormatCtx->streams[mVideoStream]->codecpar->codec_id);
-    if(!codec){
+    if(codec == nullptr){
         throw std::runtime_error("unable to find codec");
     }
 
     mCodecCtx =  avcodec_alloc_context3(codec);
-    if(!mCodecCtx){
+    if(mCodecCtx == nullptr){
         throw std::runtime_error("Could not allocate video codec context");
     }
 
