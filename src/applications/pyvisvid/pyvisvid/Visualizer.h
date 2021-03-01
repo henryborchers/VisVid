@@ -14,8 +14,8 @@ extern "C"{
 
 class Visualizer {
     std::string mSource;
-    AVFormatContext *mAvFormatCtx;
-    int mVideoStream;
+    AVFormatContext *mAvFormatCtx = nullptr;
+    int mVideoStream = -1;
     visBuffer *mBuffer;
     AVCodecContext *mCodecCtx;
     static int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src);
@@ -23,7 +23,6 @@ class Visualizer {
     visView *mView;
 
 public:
-    Visualizer();
 
     void load(const std::string &source);
     void init_video();
