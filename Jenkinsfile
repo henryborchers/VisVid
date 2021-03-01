@@ -24,9 +24,9 @@ pipeline {
                 equals expected: true, actual: params.RUN_CHECKS
             }
             stages{
-                stage("C Code"){
+                stage("Static Analysis"){
                     stages{
-                        stage("Static Analysis"){
+                        stage("C Code"){
                             parallel{
                                 stage("Clang Tidy"){
                                     agent{
@@ -35,7 +35,6 @@ pipeline {
                                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)'
                                             label "linux"
                                         }
-
                                     }
                                     steps{
                                         tee('logs/clang-tidy_debug.log') {
@@ -109,137 +108,349 @@ pipeline {
                                 dockerfile {
                                     filename 'ci/dockerfiles/linux/20.04/Dockerfile'
                                     additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+                                    args '--mount source=sonar-cache-visvid,target=/home/user/.sonar/cache'
                                     label "linux"
                                 }
                             }
                             stages{
-                                stage("Build Debug Version for Testing"){
-                                    steps{
-                                        sh "conan install . -o with_createVisuals=True -if build/debug/"
-                                        tee("logs/cmakeconfig.log"){
-                                            sh(label:"configuring a debug build",
-                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON
-                                                          '''
-                                           )
+                                stage("Run tests"){
+                                    stages{
+                                        stage("C"){
+                                            stages{
+                                                stage("Build Debug Version for Testing"){
+                                                    steps{
+                                                        sh "conan install . -o with_createVisuals=True -if build/debug/"
+                                                        tee("logs/cmakeconfig.log"){
+                                                            sh(label:"configuring a debug build",
+                                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON
+                                                                          '''
+                                                           )
+                                                        }
+                                                        tee("logs/cmakebuild.log"){
+                                                            sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal --target test_pyvisvid'
+                                                        }
+                                                    }
+                                                    post{
+                                                        failure{
+                                                            sh 'ls -laR /home/user/.conan'
+                                                        }
+                                                        always{
+                                                            recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
+                                                            recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
+                                                        }
+                                                    }
+                                                }
+                                                stage("Run ctests"){
+                                                    parallel{
+                                                        stage("Run CTest"){
+                                                            steps{
+                                                                sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
+                                                            }
+                                                            post{
+                                                                always{
+                                                                    xunit(
+                                                                        testTimeMargin: '3000',
+                                                                        thresholdMode: 1,
+                                                                        thresholds: [
+                                                                            failed(),
+                                                                            skipped()
+                                                                        ],
+                                                                        tools: [
+                                                                            CTest(
+                                                                                deleteOutputFiles: true,
+                                                                                failIfNotNew: true,
+                                                                                pattern: "build/debug/Testing/**/*.xml",
+                                                                                skipNoTestFiles: true,
+                                                                                stopProcessingIfError: true
+                                                                            )
+                                                                        ]
+                                                                    )
+                                                                }
+                                                            }
+                                                        }
+                                                        stage("CTest: MemCheck"){
+                                                            steps{
+                                                                script{
+                                                                    def cores = sh(
+                                                                        label: 'looking up number of cores',
+                                                                        returnStdout: true,
+                                                                        script: 'grep -c ^processor /proc/cpuinfo'
+                                                                        ).trim()
+                                                                    ctest(
+                                                                        arguments: "-T memcheck -j${cores}",
+                                                                        installation: 'InSearchPath',
+                                                                        workingDir: 'build/debug'
+                                                                    )
+                                                                }
+                                                            }
+                                                            post{
+                                                                always{
+                                                                    publishValgrind(
+                                                                        failBuildOnInvalidReports: false,
+                                                                        failBuildOnMissingReports: false,
+                                                                        failThresholdDefinitelyLost: '',
+                                                                        failThresholdInvalidReadWrite: '',
+                                                                        failThresholdTotal: '',
+                                                                        pattern: 'build/debug/tests/**/*.memcheck',
+                                                                        publishResultsForAbortedBuilds: false,
+                                                                        publishResultsForFailedBuilds: false,
+                                                                        sourceSubstitutionPaths: '',
+                                                                        unstableThresholdDefinitelyLost: '',
+                                                                        unstableThresholdInvalidReadWrite: '',
+                                                                        unstableThresholdTotal: ''
+                                                                    )
+                                                                    archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
-                                        tee("logs/cmakebuild.log"){
-                                            sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal --target test_pyvisvid'
+                                        stage("python"){
+                                            stages{
+                                                stage("Build Python Extension for Testing"){
+                                                    steps{
+                                                        sh(
+                                                            label: "Running Python setup script to build wheel and sdist",
+                                                            script: 'CFLAGS="--coverage" python3 setup.py build -t build/python_temp/ build_ext --inplace'
+                                                            )
+                                                    }
+                                                }
+                                                stage("Running Checks on Python Code"){
+                                                    parallel{
+                                                        stage("mypy"){
+                                                            steps{
+                                                                catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+                                                                    tee("logs/mypy.log"){
+                                                                        sh(
+                                                                            label: "Running MyPy",
+                                                                            script: "cd src/applications/pyvisvid && mypy -p pyvisvid"
+                                                                        )
+                                                                    }
+                                                                }
+                                                            }
+                                                            post{
+                                                                always {
+                                                                    recordIssues(tools: [myPy(pattern: "logs/mypy.log")])
+                                                                }
+                                                            }
+                                                        }
+                                                        stage("Flake8") {
+                                                            steps{
+                                                                catchError(buildResult: "SUCCESS", message: 'Flake8 found issues', stageResult: "UNSTABLE") {
+                                                                    sh script: '''mkdir -p logs
+                                                                                  flake8 src/applications/pyvisvid --tee --output-file=logs/flake8.log
+                                                                                  '''
+                                                                }
+                                                            }
+                                                            post {
+                                                                always {
+                                                                      stash includes: 'logs/flake8.log', name: "FLAKE8_REPORT"
+                                                                      recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+                                                                }
+                                                            }
+                                                        }
+                                                        stage("Run PyTest Unit Tests"){
+                                                            steps{
+                                                                catchError(buildResult: "UNSTABLE", message: 'Did not pass all pytest tests', stageResult: "UNSTABLE") {
+                                                                    sh(
+                                                                        script: '''mkdir -p logs
+                                                                                   mkdir -p reports/tests/pytest
+                                                                                   coverage run  --parallel setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
+                                                                                   '''
+                                                                    )
+                                                                }
+                                                            }
+                                                            post {
+                                                                always {
+                                                                    junit "reports/pytest-junit.xml"
+                                                                    stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
+                                                                }
+                                                            }
+                                                        }
+                                                        stage("Pylint") {
+                                                            steps{
+                                                                tee("reports/pylint.txt"){
+                                                                    catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
+                                                                        sh(
+                                                                            script: '''mkdir -p reports
+                                                                                       python3 -m pylint src/applications/pyvisvid/pyvisvid/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+                                                                                       ''',
+                                                                            label: "Running pylint"
+                                                                        )
+                                                                    }
+                                                                }
+                                                                tee("reports/pylint_issues.txt"){
+                                                                     sh(
+                                                                        label: "Running pylint for sonarqube",
+                                                                        script: '''python3 -m pylint src/applications/pyvisvid/pyvisvid/  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}"''',
+                                                                        returnStatus: true
+                                                                     )
+                                                                }
+                                                            }
+                                                            post{
+                                                                always{
+                                                                    stash includes: "reports/pylint_issues.txt,reports/pylint.txt", name: 'PYLINT_REPORT'
+                                                                    recordIssues(tools: [pyLint(pattern: 'reports/pylint.txt')])
+                                                                }
+                                                                unstable{
+                                                                    sh "ls -laR"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            post{
+                                                always{
+                                                    sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
+                                                    stash includes: '**/*.gcov', name: "PYTHON_CPP_COVERAGE_DATA"
+                                                    sh(label: "combining coverage data",
+                                                       script: '''mkdir -p reports/coverage-reports
+                                                                  mkdir -p reports/coverage
+                                                                  coverage combine
+                                                                  coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
+                                                                  gcovr --filter src --print-summary --keep --json --output reports/coverage/coverage-cpp-python.json
+                                                                  gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
+                                                                  '''
+                                                   )
+
+
+                                                }
+        //                                         cleanup{
+        //                                             cleanWs(
+        //                                                 deleteDirs: true,
+        //                                                 patterns: [
+        //                                                     [pattern: 'build/', type: 'INCLUDE'],
+        //                                                     [pattern: 'reports/', type: 'INCLUDE'],
+        //                                                     [pattern: 'logs/', type: 'INCLUDE'],
+        //                                                     [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
+        //                                                     [pattern: '**/__pycache__/', type: 'INCLUDE'],
+        //                                                     [pattern: '**/*.so', type: 'INCLUDE'],
+        //
+        //                                                 ]
+        //                                             )
+        //                                         }
+                                            }
                                         }
                                     }
                                     post{
-                                        failure{
-                                            sh 'ls -laR /home/user/.conan'
-                                        }
                                         always{
-                                            recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
-                                            recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
+                                            sh(label: "Generating coverage report in Coberatura xml file format",
+                                               script: """mkdir -p reports/coverage
+                                                          gcovr --filter src  --json  --output reports/coverage/coverage-cpp.json --keep build/debug
+                                                          """
+                                            )
+                                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
+                                            archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
+                                            stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
+                                            publishCoverage(
+                                                adapters: [coberturaAdapter(path: 'reports/coverage-reports/*.xml', mergeToOneReport: true)],
+                                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+                                                tag: "AllCoverage"
+                                                )
+        //                                     stash includes: 'reports/coverage/*.json', name: 'CPP_COVERAGE_DATA'
+                                        }
+                                        cleanup{
+                                            cleanWs(
+                                                deleteDirs: true,
+                                                patterns: [
+                                                    [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
+                                                    [pattern: 'build/', type: 'INCLUDE'],
+                                                    [pattern: 'reports/', type: 'INCLUDE'],
+                                                    [pattern: 'logs/', type: 'INCLUDE'],
+                                                    [pattern: '**/*.so', type: 'INCLUDE'],
+                                                ]
+                                            )
                                         }
                                     }
                                 }
-                                stage("Run ctests"){
-                                    parallel{
-                                        stage("Run CTest"){
-                                            steps{
-                                                sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
-                                            }
-                                            post{
-                                                always{
-                                                    xunit(
-                                                        testTimeMargin: '3000',
-                                                        thresholdMode: 1,
-                                                        thresholds: [
-                                                            failed(),
-                                                            skipped()
-                                                        ],
-                                                        tools: [
-                                                            CTest(
-                                                                deleteOutputFiles: true,
-                                                                failIfNotNew: true,
-                                                                pattern: "build/debug/Testing/**/*.xml",
-                                                                skipNoTestFiles: true,
-                                                                stopProcessingIfError: true
-                                                            )
-                                                        ]
-                                                    )
+                                stage("Submit results to SonarCloud"){
+                                    when{
+                                        equals expected: true, actual: params.USE_SONARQUBE
+                                        beforeAgent true
+                                        beforeOptions true
+                                    }
+                                    options{
+                                        lock("visvid-sonarscanner")
+                                    }
+                                    steps{
+                                        unstash "PYLINT_REPORT"
+                                        unstash "PYTEST_REPORT"
+                                        unstash "PYTHON_COVERAGE_REPORT"
+                                        unstash 'PYTHON_CPP_COVERAGE_DATA'
+                                        script{
+                                            withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
+                                                sh(
+                                                    label:" Running Build wrapper",
+                                                    script: '''conan install . -if build/
+                                                               cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -DBUILD_TESTING:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
+                                                               (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
+                                                               mkdir -p reports/unit
+                                                               build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
+                                                               build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
+                                                               (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )
+                                                               '''
+                                                )
+
+                                                if (env.CHANGE_ID){
+                                                    sh(
+                                                        label: "Running Sonar Scanner",
+                                                        script:"sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=\$(grep -c ^processor /proc/cpuinfo) -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
+                                                        )
+                                                } else {
+                                                    sh(
+                                                        label: "Running Sonar Scanner",
+                                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=\$(grep -c ^processor /proc/cpuinfo) -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
+                                                        )
                                                 }
                                             }
-                                        }
-                                        stage("CTest: MemCheck"){
-                                            steps{
-                                                script{
-                                                    def cores = sh(
-                                                        label: 'looking up number of cores',
-                                                        returnStdout: true,
-                                                        script: 'grep -c ^processor /proc/cpuinfo'
-                                                        ).trim()
-                                                    ctest(
-                                                        arguments: "-T memcheck -j${cores}",
-                                                        installation: 'InSearchPath',
-                                                        workingDir: 'build/debug'
-                                                    )
+                                            timeout(time: 1, unit: 'HOURS') {
+                                                def sonarqube_result = waitForQualityGate(abortPipeline: false)
+                                                if (sonarqube_result.status != 'OK') {
+                                                    unstable "SonarQube quality gate: ${sonarqube_result.status}"
                                                 }
-                                            }
-                                            post{
-                                                always{
-                                                    publishValgrind(
-                                                        failBuildOnInvalidReports: false,
-                                                        failBuildOnMissingReports: false,
-                                                        failThresholdDefinitelyLost: '',
-                                                        failThresholdInvalidReadWrite: '',
-                                                        failThresholdTotal: '',
-                                                        pattern: 'build/debug/tests/**/*.memcheck',
-                                                        publishResultsForAbortedBuilds: false,
-                                                        publishResultsForFailedBuilds: false,
-                                                        sourceSubstitutionPaths: '',
-                                                        unstableThresholdDefinitelyLost: '',
-                                                        unstableThresholdInvalidReadWrite: '',
-                                                        unstableThresholdTotal: ''
-                                                    )
-                                                    archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
-                                                }
+                                                def outstandingIssues = get_sonarqube_unresolved_issues(".scannerwork/report-task.txt")
+                                                writeJSON file: 'reports/sonar-report.json', json: outstandingIssues
                                             }
                                         }
                                     }
-                                }
-                            }
-                            post{
-                                always{
-                                    sh(label: "Generating coverage report in Coberatura xml file format",
-                                       script: """mkdir -p reports/coverage
-                                                  gcovr --filter src  --json  --output reports/coverage/coverage-cpp.json --keep build/debug
-                                                  """
-                                    )
-                                    stash includes: 'reports/coverage/*.json', name: 'CPP_COVERAGE_DATA'
-//                                     publishCoverage(
-//                                         adapters: [coberturaAdapter('reports/coverage/coverage.xml')],
-//                                         sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-//                                         tag: "AllCoverage"
-//                                     )
-                                }
-                                cleanup{
-                                    cleanWs(
-                                        deleteDirs: true,
-                                        patterns: [
-                                            [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
-                                            [pattern: 'build/', type: 'INCLUDE'],
-                                            [pattern: 'reports/', type: 'INCLUDE'],
-                                            [pattern: 'logs/', type: 'INCLUDE'],
-                                            [pattern: '**/*.so', type: 'INCLUDE'],
-                                        ]
-                                    )
+                                    post{
+                                        always{
+                                            script{
+                                                if(fileExists('reports/sonar-report.json')){
+                                                    stash includes: "reports/sonar-report.json", name: 'SONAR_REPORT'
+                                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/sonar-report.json'
+                                                    recordIssues(tools: [sonarQube(pattern: 'reports/sonar-report.json')])
+                                                }
+                                            }
+                                        }
+                                       cleanup{
+                                           cleanWs(
+                                               deleteDirs: true,
+                                               patterns: [
+                                                   [pattern: 'build/', type: 'INCLUDE'],
+                                                   [pattern: 'reports/', type: 'INCLUDE'],
+                                                   [pattern: '.scannerwork/', type: 'INCLUDE']
+                                               ]
+                                           )
+                                       }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                stage("Python Code"){
-                    agent{
-                        dockerfile {
-                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-                            label "linux"
-                        }
-                    }
+
+//                 stage("Python Code"){
+//                     agent{
+//                         dockerfile {
+//                             filename 'ci/dockerfiles/linux/20.04/Dockerfile'
+//                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
+//                             label "linux"
+//                         }
+//                     }
     //                     agent{
 //                         dockerfile {
 //                             filename 'ci/dockerfiles/python/linux/Dockerfile'
@@ -247,221 +458,141 @@ pipeline {
 //                             label "linux"
 //                         }
 //                     }
-                    stages{
-                        stage("Build Python Extension for Testing"){
-                            steps{
-                                sh(
-                                    label: "Running Python setup script to build wheel and sdist",
-                                    script: 'CFLAGS="--coverage" python3 setup.py build -t build/python_temp/ build_ext --inplace'
-                                    )
-                            }
-                        }
-                        stage("Running Checks on Python Code"){
-                            parallel{
-                                stage("mypy"){
-                                    steps{
-                                        catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-                                            tee("logs/mypy.log"){
-                                                sh(
-                                                    label: "Running MyPy",
-                                                    script: "cd src/applications/pyvisvid && mypy -p pyvisvid"
-                                                )
-                                            }
-                                        }
-                                    }
-                                    post{
-                                        always {
-                                            recordIssues(tools: [myPy(pattern: "logs/mypy.log")])
-                                        }
-                                    }
-                                }
-                                stage("Flake8") {
-                                    steps{
-                                        catchError(buildResult: "SUCCESS", message: 'Flake8 found issues', stageResult: "UNSTABLE") {
-                                            sh script: '''mkdir -p logs
-                                                          flake8 src/applications/pyvisvid --tee --output-file=logs/flake8.log
-                                                          '''
-                                        }
-                                    }
-                                    post {
-                                        always {
-                                              stash includes: 'logs/flake8.log', name: "FLAKE8_REPORT"
-                                              recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
-                                        }
-                                    }
-                                }
-                                stage("Run PyTest Unit Tests"){
-                                    steps{
-                                        catchError(buildResult: "UNSTABLE", message: 'Did not pass all pytest tests', stageResult: "UNSTABLE") {
-                                            sh(
-                                                script: '''mkdir -p logs
-                                                           mkdir -p reports/tests/pytest
-                                                           coverage run  --parallel setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
-                                                           '''
-                                            )
-                                        }
-                                    }
-                                    post {
-                                        always {
-                                            junit "reports/pytest-junit.xml"
-                                            stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
-                                        }
-                                    }
-                                }
-                                stage("Pylint") {
-                                    steps{
-                                        tee("reports/pylint.txt"){
-                                            catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
-                                                sh(
-                                                    script: '''mkdir -p reports
-                                                               python3 -m pylint src/applications/pyvisvid/pyvisvid/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
-                                                               ''',
-                                                    label: "Running pylint"
-                                                )
-                                            }
-                                        }
-                                        tee("reports/pylint_issues.txt"){
-                                             sh(
-                                                label: "Running pylint for sonarqube",
-                                                script: '''python3 -m pylint src/applications/pyvisvid/pyvisvid/  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}"''',
-                                                returnStatus: true
-                                             )
-                                        }
-                                    }
-                                    post{
-                                        always{
-                                            stash includes: "reports/pylint_issues.txt,reports/pylint.txt", name: 'PYLINT_REPORT'
-                                            recordIssues(tools: [pyLint(pattern: 'reports/pylint.txt')])
-                                        }
-                                        unstable{
-                                            sh "ls -laR"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    post{
-                        always{
-                            sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
-                            stash includes: '**/*.gcov', name: "PYTHON_CPP_COVERAGE_DATA"
-                            sh(label: "combining coverage data",
-                               script: '''mkdir -p reports/coverage-reports
-                                          mkdir -p reports/coverage
-                                          coverage combine
-                                          coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-                                          gcovr --filter src --print-summary --keep --json --output reports/coverage/coverage-cpp-python.json
-                                          gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
-                                          '''
-                           )
+//                     stages{
+//                         stage("Build Python Extension for Testing"){
+//                             steps{
+//                                 sh(
+//                                     label: "Running Python setup script to build wheel and sdist",
+//                                     script: 'CFLAGS="--coverage" python3 setup.py build -t build/python_temp/ build_ext --inplace'
+//                                     )
+//                             }
+//                         }
+//                         stage("Running Checks on Python Code"){
+//                             parallel{
+//                                 stage("mypy"){
+//                                     steps{
+//                                         catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
+//                                             tee("logs/mypy.log"){
+//                                                 sh(
+//                                                     label: "Running MyPy",
+//                                                     script: "cd src/applications/pyvisvid && mypy -p pyvisvid"
+//                                                 )
+//                                             }
+//                                         }
+//                                     }
+//                                     post{
+//                                         always {
+//                                             recordIssues(tools: [myPy(pattern: "logs/mypy.log")])
+//                                         }
+//                                     }
+//                                 }
+//                                 stage("Flake8") {
+//                                     steps{
+//                                         catchError(buildResult: "SUCCESS", message: 'Flake8 found issues', stageResult: "UNSTABLE") {
+//                                             sh script: '''mkdir -p logs
+//                                                           flake8 src/applications/pyvisvid --tee --output-file=logs/flake8.log
+//                                                           '''
+//                                         }
+//                                     }
+//                                     post {
+//                                         always {
+//                                               stash includes: 'logs/flake8.log', name: "FLAKE8_REPORT"
+//                                               recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
+//                                         }
+//                                     }
+//                                 }
+//                                 stage("Run PyTest Unit Tests"){
+//                                     steps{
+//                                         catchError(buildResult: "UNSTABLE", message: 'Did not pass all pytest tests', stageResult: "UNSTABLE") {
+//                                             sh(
+//                                                 script: '''mkdir -p logs
+//                                                            mkdir -p reports/tests/pytest
+//                                                            coverage run  --parallel setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
+//                                                            '''
+//                                             )
+//                                         }
+//                                     }
+//                                     post {
+//                                         always {
+//                                             junit "reports/pytest-junit.xml"
+//                                             stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
+//                                         }
+//                                     }
+//                                 }
+//                                 stage("Pylint") {
+//                                     steps{
+//                                         tee("reports/pylint.txt"){
+//                                             catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
+//                                                 sh(
+//                                                     script: '''mkdir -p reports
+//                                                                python3 -m pylint src/applications/pyvisvid/pyvisvid/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+//                                                                ''',
+//                                                     label: "Running pylint"
+//                                                 )
+//                                             }
+//                                         }
+//                                         tee("reports/pylint_issues.txt"){
+//                                              sh(
+//                                                 label: "Running pylint for sonarqube",
+//                                                 script: '''python3 -m pylint src/applications/pyvisvid/pyvisvid/  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}"''',
+//                                                 returnStatus: true
+//                                              )
+//                                         }
+//                                     }
+//                                     post{
+//                                         always{
+//                                             stash includes: "reports/pylint_issues.txt,reports/pylint.txt", name: 'PYLINT_REPORT'
+//                                             recordIssues(tools: [pyLint(pattern: 'reports/pylint.txt')])
+//                                         }
+//                                         unstable{
+//                                             sh "ls -laR"
+//                                         }
+//                                     }
+//                                 }
+//                             }
+//                         }
+//                     }
+//                     post{
+//                         always{
+//                             sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
+//                             stash includes: '**/*.gcov', name: "PYTHON_CPP_COVERAGE_DATA"
+//                             sh(label: "combining coverage data",
+//                                script: '''mkdir -p reports/coverage-reports
+//                                           mkdir -p reports/coverage
+//                                           coverage combine
+//                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
+//                                           gcovr --filter src --print-summary --keep --json --output reports/coverage/coverage-cpp-python.json
+//                                           gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
+//                                           '''
+//                            )
+//
+//                            unstash "CPP_COVERAGE_DATA"
+//                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
+//                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
+//                            publishCoverage(
+//                                adapters: [coberturaAdapter(path: 'reports/coverage-reports/*.xml', mergeToOneReport: true)],
+//                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
+//                                tag: "AllCoverage"
+//                            )
+//                            archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
+//                         }
+//                         cleanup{
+//                             cleanWs(
+//                                 deleteDirs: true,
+//                                 patterns: [
+//                                     [pattern: 'build/', type: 'INCLUDE'],
+//                                     [pattern: 'reports/', type: 'INCLUDE'],
+//                                     [pattern: 'logs/', type: 'INCLUDE'],
+//                                     [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
+//                                     [pattern: '**/__pycache__/', type: 'INCLUDE'],
+//                                     [pattern: '**/*.so', type: 'INCLUDE'],
+//
+//                                 ]
+//                             )
+//                         }
+//                     }
+//                 }
 
-                           unstash "CPP_COVERAGE_DATA"
-                           sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
-                            stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
-                           publishCoverage(
-                               adapters: [coberturaAdapter(path: 'reports/coverage-reports/*.xml', mergeToOneReport: true)],
-                               sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-                               tag: "AllCoverage"
-                           )
-                           archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
-                        }
-                        cleanup{
-                            cleanWs(
-                                deleteDirs: true,
-                                patterns: [
-                                    [pattern: 'build/', type: 'INCLUDE'],
-                                    [pattern: 'reports/', type: 'INCLUDE'],
-                                    [pattern: 'logs/', type: 'INCLUDE'],
-                                    [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
-                                    [pattern: '**/__pycache__/', type: 'INCLUDE'],
-                                    [pattern: '**/*.so', type: 'INCLUDE'],
-
-                                ]
-                            )
-                        }
-                    }
-                }
-                stage("Submit results to SonarCloud"){
-                    agent{
-                        dockerfile {
-                            filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-                            additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-                            label "linux"
-                            args '--mount source=sonar-cache-visvid,target=/home/user/.sonar/cache'
-                        }
-                    }
-                    when{
-                        equals expected: true, actual: params.USE_SONARQUBE
-                        beforeAgent true
-                        beforeOptions true
-                    }
-                    options{
-                        lock("visvid-sonarscanner")
-                    }
-                    steps{
-                        unstash "PYLINT_REPORT"
-                        unstash "PYTEST_REPORT"
-                        unstash "PYTHON_COVERAGE_REPORT"
-                        unstash 'PYTHON_CPP_COVERAGE_DATA'
-                        script{
-                            withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
-                                sh(
-                                    label:" Running Build wrapper",
-                                    script: '''conan install . -if build/
-                                               cmake -B ./build -S ./ -D CMAKE_C_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -D CMAKE_CXX_FLAGS="-Wall -Wextra -fprofile-arcs -ftest-coverage" -DBUILD_TESTING:BOOL=ON -D CMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE:BOOL=ON -DCMAKE_TOOLCHAIN_FILE="build/conan_paths.cmake"
-                                               (cd build && build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make clean all)
-                                               mkdir -p reports/unit
-                                               build/tests/publicAPI/test-visvid -r sonarqube -o reports/unit/test-visvid.xml
-                                               build/tests/internal/test-visvid-internal -r sonarqube -o reports/unit/test-visvid-internal.xml
-                                               (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )
-                                               '''
-                                )
-
-                                if (env.CHANGE_ID){
-                                    sh(
-                                        label: "Running Sonar Scanner",
-                                        script:"sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.base=${env.CHANGE_TARGET} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=\$(grep -c ^processor /proc/cpuinfo) -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
-                                        )
-                                } else {
-                                    sh(
-                                        label: "Running Sonar Scanner",
-                                        script: "sonar-scanner -Dsonar.buildString=\"${env.BUILD_TAG}\" -Dsonar.branch.name=${env.BRANCH_NAME} -Dsonar.cfamily.cache.enabled=false -Dsonar.cfamily.threads=\$(grep -c ^processor /proc/cpuinfo) -Dsonar.cfamily.build-wrapper-output=build/build_wrapper_output_directory"
-                                        )
-                                }
-                            }
-                            timeout(time: 1, unit: 'HOURS') {
-                                def sonarqube_result = waitForQualityGate(abortPipeline: false)
-                                if (sonarqube_result.status != 'OK') {
-                                    unstable "SonarQube quality gate: ${sonarqube_result.status}"
-                                }
-                                def outstandingIssues = get_sonarqube_unresolved_issues(".scannerwork/report-task.txt")
-                                writeJSON file: 'reports/sonar-report.json', json: outstandingIssues
-                            }
-                        }
-
-                    }
-                    post{
-                        always{
-                            script{
-                                if(fileExists('reports/sonar-report.json')){
-                                    stash includes: "reports/sonar-report.json", name: 'SONAR_REPORT'
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/sonar-report.json'
-                                    recordIssues(tools: [sonarQube(pattern: 'reports/sonar-report.json')])
-                                }
-                            }
-                        }
-                       cleanup{
-                           cleanWs(
-                               deleteDirs: true,
-                               patterns: [
-                                   [pattern: 'build/', type: 'INCLUDE'],
-                                   [pattern: 'reports/', type: 'INCLUDE'],
-                                   [pattern: '.scannerwork/', type: 'INCLUDE']
-                               ]
-                           )
-                       }
-                    }
-                }
             }
         }
         stage('Build Documentation') {
