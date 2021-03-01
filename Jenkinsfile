@@ -221,7 +221,6 @@ pipeline {
                                                 always{
                                                     sh(label: "Generating coverage report in Coberatura xml file format",
                                                        script: """mkdir -p reports/coverage
-                                                                  (mkdir -p build/coverage &&  cd build/coverage && find ../.. -name '*.gcno' -exec gcov {} \\; )
                                                                   gcovr --filter src  --json  --output reports/coverage/coverage-cpp.json --keep build/debug
                                                                   """
                                                     )
@@ -325,7 +324,7 @@ pipeline {
                                             }
                                             post{
                                                 always{
-                                                    sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
+
                                                     sh(label: "combining coverage data",
                                                         script: '''mkdir -p reports/coverage-reports
                                                                   mkdir -p reports/coverage
@@ -363,6 +362,10 @@ pipeline {
                                         lock("visvid-sonarscanner")
                                     }
                                     steps{
+                                        dir('build/coverage'){
+                                            sh "find ../.. -name '*.gcno' -exec gcov {} \\; "
+                                            sh "find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; "
+                                        }
                                         unstash "PYLINT_REPORT"
                                         unstash "PYTEST_REPORT"
                                         unstash "FLAKE8_REPORT"
