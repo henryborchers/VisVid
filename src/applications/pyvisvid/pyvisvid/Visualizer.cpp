@@ -2,16 +2,16 @@
 // Created by henry on 4/24/19.
 //
 
-
+#include <iostream>
+#include <stdexcept>
 #include "Visualizer.h"
+
 extern "C"{
 #include "shared/decode.h"
 #include <libavutil/pixdesc.h>
 #include <visvid/utils.h>
-
 }
-#include <iostream>
-#include <stdexcept>
+
 const int MAX_BUFFER_SIZE = 200;
 
 
