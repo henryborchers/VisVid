@@ -127,7 +127,7 @@ pipeline {
                                                            )
                                                         }
                                                         tee("logs/cmakebuild.log"){
-                                                            sh 'cmake --build build/debug --target test-visvid --target test-visvid-internal --target test_pyvisvid'
+                                                            sh 'build-wrapper-linux-x86-64 --out-dir build/build_wrapper_output_directory cmake --build build/debug --target test-visvid --target test-visvid-internal --target test_pyvisvid'
                                                         }
                                                     }
                                                     post{
@@ -206,6 +206,15 @@ pipeline {
                                                     }
                                                 }
                                             }
+                                            post{
+                                                always{
+                                                    sh(label: "Generating coverage report in Coberatura xml file format",
+                                                       script: """mkdir -p reports/coverage
+                                                                  gcovr --filter src  --json  --output reports/coverage/coverage-cpp.json --keep build/debug
+                                                                  """
+                                                    )
+                                                }
+                                            }
                                         }
                                         stage("Python"){
                                             stages{
@@ -219,7 +228,7 @@ pipeline {
                                                 }
                                                 stage("Running Checks on Python Code"){
                                                     parallel{
-                                                        stage("mypy"){
+                                                        stage("Mypy"){
                                                             steps{
                                                                 catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
                                                                     tee("logs/mypy.log"){
@@ -305,7 +314,6 @@ pipeline {
                                             post{
                                                 always{
                                                     sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
-                                                    stash includes: '**/*.gcov', name: "PYTHON_CPP_COVERAGE_DATA"
                                                     sh(label: "combining coverage data",
                                                        script: '''mkdir -p reports/coverage-reports
                                                                   mkdir -p reports/coverage
@@ -321,11 +329,6 @@ pipeline {
                                     }
                                     post{
                                         always{
-                                            sh(label: "Generating coverage report in Coberatura xml file format",
-                                               script: """mkdir -p reports/coverage
-                                                          gcovr --filter src  --json  --output reports/coverage/coverage-cpp.json --keep build/debug
-                                                          """
-                                            )
                                             sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
                                             archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
                                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
@@ -334,26 +337,12 @@ pipeline {
                                                 sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
                                                 tag: "AllCoverage"
                                                 )
-        //                                     stash includes: 'reports/coverage/*.json', name: 'CPP_COVERAGE_DATA'
-                                        }
-                                        cleanup{
-                                            cleanWs(
-                                                deleteDirs: true,
-                                                patterns: [
-                                                    [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
-                                                    [pattern: 'build/', type: 'INCLUDE'],
-                                                    [pattern: 'reports/', type: 'INCLUDE'],
-                                                    [pattern: 'logs/', type: 'INCLUDE'],
-                                                    [pattern: '**/*.so', type: 'INCLUDE'],
-                                                ]
-                                            )
                                         }
                                     }
                                 }
                                 stage("Submit results to SonarCloud"){
                                     when{
                                         equals expected: true, actual: params.USE_SONARQUBE
-                                        beforeAgent true
                                         beforeOptions true
                                     }
                                     options{
@@ -362,8 +351,8 @@ pipeline {
                                     steps{
                                         unstash "PYLINT_REPORT"
                                         unstash "PYTEST_REPORT"
+                                        unstash "FLAKE8_REPORT"
                                         unstash "PYTHON_COVERAGE_REPORT"
-                                        unstash 'PYTHON_CPP_COVERAGE_DATA'
                                         script{
                                             withSonarQubeEnv(installationName:"sonarcloud", credentialsId: 'sonarcloud-visvid') {
                                                 sh(
@@ -414,8 +403,6 @@ pipeline {
                                            cleanWs(
                                                deleteDirs: true,
                                                patterns: [
-                                                   [pattern: 'build/', type: 'INCLUDE'],
-                                                   [pattern: 'reports/', type: 'INCLUDE'],
                                                    [pattern: '.scannerwork/', type: 'INCLUDE']
                                                ]
                                            )
@@ -423,176 +410,31 @@ pipeline {
                                     }
                                 }
                             }
-                                post{
-                                    cleanup{
-                                        cleanWs(
-                                            deleteDirs: true,
-                                            patterns: [
-                                                [pattern: 'build/', type: 'INCLUDE'],
-                                                [pattern: 'reports/', type: 'INCLUDE'],
-                                                [pattern: 'logs/', type: 'INCLUDE'],
-                                                [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
-                                                [pattern: '**/__pycache__/', type: 'INCLUDE'],
-                                                [pattern: '**/*.so', type: 'INCLUDE'],
+                            post{
+                                cleanup{
+                                    cleanWs(
+                                        deleteDirs: true,
+                                        patterns: [
+                                            [pattern: '.coverage/', type: 'INCLUDE'],
+                                            [pattern: '.eggs/', type: 'INCLUDE'],
+                                            [pattern: '.pytest_cache/', type: 'INCLUDE'],
+                                            [pattern: 'build/', type: 'INCLUDE'],
+                                            [pattern: 'reports/', type: 'INCLUDE'],
+                                            [pattern: 'logs/', type: 'INCLUDE'],
+                                            [pattern: 'generatedJUnitFiles/', type: 'INCLUDE'],
+                                            [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
+                                            [pattern: '**/__pycache__/', type: 'INCLUDE'],
+                                            [pattern: '**/*.so', type: 'INCLUDE'],
+                                            [pattern: '**/*.gcov', type: 'INCLUDE'],
+                                            [pattern: '**/*.egg-info/', type: 'INCLUDE'],
 
-                                            ]
-                                        )
-                                    }
+                                        ]
+                                    )
                                 }
                             }
                         }
                     }
-
-//                 stage("Python Code"){
-//                     agent{
-//                         dockerfile {
-//                             filename 'ci/dockerfiles/linux/20.04/Dockerfile'
-//                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-//                             label "linux"
-//                         }
-//                     }
-    //                     agent{
-//                         dockerfile {
-//                             filename 'ci/dockerfiles/python/linux/Dockerfile'
-//                             additionalBuildArgs '--build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --build-arg PIP_TRUSTED_HOST --build-arg PIP_EXTRA_INDEX_URL'
-//                             label "linux"
-//                         }
-//                     }
-//                     stages{
-//                         stage("Build Python Extension for Testing"){
-//                             steps{
-//                                 sh(
-//                                     label: "Running Python setup script to build wheel and sdist",
-//                                     script: 'CFLAGS="--coverage" python3 setup.py build -t build/python_temp/ build_ext --inplace'
-//                                     )
-//                             }
-//                         }
-//                         stage("Running Checks on Python Code"){
-//                             parallel{
-//                                 stage("mypy"){
-//                                     steps{
-//                                         catchError(buildResult: 'SUCCESS', message: 'MyPy found issues', stageResult: 'UNSTABLE') {
-//                                             tee("logs/mypy.log"){
-//                                                 sh(
-//                                                     label: "Running MyPy",
-//                                                     script: "cd src/applications/pyvisvid && mypy -p pyvisvid"
-//                                                 )
-//                                             }
-//                                         }
-//                                     }
-//                                     post{
-//                                         always {
-//                                             recordIssues(tools: [myPy(pattern: "logs/mypy.log")])
-//                                         }
-//                                     }
-//                                 }
-//                                 stage("Flake8") {
-//                                     steps{
-//                                         catchError(buildResult: "SUCCESS", message: 'Flake8 found issues', stageResult: "UNSTABLE") {
-//                                             sh script: '''mkdir -p logs
-//                                                           flake8 src/applications/pyvisvid --tee --output-file=logs/flake8.log
-//                                                           '''
-//                                         }
-//                                     }
-//                                     post {
-//                                         always {
-//                                               stash includes: 'logs/flake8.log', name: "FLAKE8_REPORT"
-//                                               recordIssues(tools: [flake8(pattern: 'logs/flake8.log')])
-//                                         }
-//                                     }
-//                                 }
-//                                 stage("Run PyTest Unit Tests"){
-//                                     steps{
-//                                         catchError(buildResult: "UNSTABLE", message: 'Did not pass all pytest tests', stageResult: "UNSTABLE") {
-//                                             sh(
-//                                                 script: '''mkdir -p logs
-//                                                            mkdir -p reports/tests/pytest
-//                                                            coverage run  --parallel setup.py test --addopts "--junitxml=reports/pytest-junit.xml"
-//                                                            '''
-//                                             )
-//                                         }
-//                                     }
-//                                     post {
-//                                         always {
-//                                             junit "reports/pytest-junit.xml"
-//                                             stash includes: 'reports/pytest-junit.xml', name: "PYTEST_REPORT"
-//                                         }
-//                                     }
-//                                 }
-//                                 stage("Pylint") {
-//                                     steps{
-//                                         tee("reports/pylint.txt"){
-//                                             catchError(buildResult: 'SUCCESS', message: 'Pylint found issues', stageResult: 'UNSTABLE') {
-//                                                 sh(
-//                                                     script: '''mkdir -p reports
-//                                                                python3 -m pylint src/applications/pyvisvid/pyvisvid/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
-//                                                                ''',
-//                                                     label: "Running pylint"
-//                                                 )
-//                                             }
-//                                         }
-//                                         tee("reports/pylint_issues.txt"){
-//                                              sh(
-//                                                 label: "Running pylint for sonarqube",
-//                                                 script: '''python3 -m pylint src/applications/pyvisvid/pyvisvid/  -r n --msg-template="{path}:{module}:{line}: [{msg_id}({symbol}), {obj}] {msg}"''',
-//                                                 returnStatus: true
-//                                              )
-//                                         }
-//                                     }
-//                                     post{
-//                                         always{
-//                                             stash includes: "reports/pylint_issues.txt,reports/pylint.txt", name: 'PYLINT_REPORT'
-//                                             recordIssues(tools: [pyLint(pattern: 'reports/pylint.txt')])
-//                                         }
-//                                         unstable{
-//                                             sh "ls -laR"
-//                                         }
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                     post{
-//                         always{
-//                             sh "(mkdir -p build/coverage &&  cd build/coverage && find ../../build/python_temp/src/applications/ -name '*.gcno' -exec gcov {} \\; )"
-//                             stash includes: '**/*.gcov', name: "PYTHON_CPP_COVERAGE_DATA"
-//                             sh(label: "combining coverage data",
-//                                script: '''mkdir -p reports/coverage-reports
-//                                           mkdir -p reports/coverage
-//                                           coverage combine
-//                                           coverage xml -o reports/coverage-reports/pythoncoverage-pytest.xml
-//                                           gcovr --filter src --print-summary --keep --json --output reports/coverage/coverage-cpp-python.json
-//                                           gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
-//                                           '''
-//                            )
-//
-//                            unstash "CPP_COVERAGE_DATA"
-//                            sh 'gcovr --add-tracefile reports/coverage/coverage-cpp-python.json --add-tracefile reports/coverage/coverage-cpp.json --print-summary --filter src --xml -o reports/coverage-reports/coverage-combined.xml --keep'
-//                             stash includes: 'reports/coverage-reports/*.xml', name: "PYTHON_COVERAGE_REPORT"
-//                            publishCoverage(
-//                                adapters: [coberturaAdapter(path: 'reports/coverage-reports/*.xml', mergeToOneReport: true)],
-//                                sourceFileResolver: sourceFiles('STORE_LAST_BUILD'),
-//                                tag: "AllCoverage"
-//                            )
-//                            archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/**'
-//                         }
-//                         cleanup{
-//                             cleanWs(
-//                                 deleteDirs: true,
-//                                 patterns: [
-//                                     [pattern: 'build/', type: 'INCLUDE'],
-//                                     [pattern: 'reports/', type: 'INCLUDE'],
-//                                     [pattern: 'logs/', type: 'INCLUDE'],
-//                                     [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
-//                                     [pattern: '**/__pycache__/', type: 'INCLUDE'],
-//                                     [pattern: '**/*.so', type: 'INCLUDE'],
-//
-//                                 ]
-//                             )
-//                         }
-//                     }
-//                 }
-
+                }
             }
         }
         stage('Build Documentation') {
