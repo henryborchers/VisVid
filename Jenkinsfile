@@ -391,8 +391,7 @@ pipeline {
                         }
                     }
                     when{
-                        equals expected: true, actual: false
-//                         equals expected: true, actual: params.USE_SONARQUBE
+                        equals expected: true, actual: params.USE_SONARQUBE
                         beforeAgent true
                         beforeOptions true
                     }
