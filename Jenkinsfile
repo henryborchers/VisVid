@@ -207,7 +207,7 @@ pipeline {
                                                 }
                                             }
                                         }
-                                        stage("python"){
+                                        stage("Python"){
                                             stages{
                                                 stage("Build Python Extension for Testing"){
                                                     steps{
@@ -315,23 +315,7 @@ pipeline {
                                                                   gcovr --filter src --print-summary --keep --xml -o reports/coverage-reports/coverage-python-c-extension.xml
                                                                   '''
                                                    )
-
-
                                                 }
-        //                                         cleanup{
-        //                                             cleanWs(
-        //                                                 deleteDirs: true,
-        //                                                 patterns: [
-        //                                                     [pattern: 'build/', type: 'INCLUDE'],
-        //                                                     [pattern: 'reports/', type: 'INCLUDE'],
-        //                                                     [pattern: 'logs/', type: 'INCLUDE'],
-        //                                                     [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
-        //                                                     [pattern: '**/__pycache__/', type: 'INCLUDE'],
-        //                                                     [pattern: '**/*.so', type: 'INCLUDE'],
-        //
-        //                                                 ]
-        //                                             )
-        //                                         }
                                             }
                                         }
                                     }
@@ -439,9 +423,25 @@ pipeline {
                                     }
                                 }
                             }
+                                post{
+                                    cleanup{
+                                        cleanWs(
+                                            deleteDirs: true,
+                                            patterns: [
+                                                [pattern: 'build/', type: 'INCLUDE'],
+                                                [pattern: 'reports/', type: 'INCLUDE'],
+                                                [pattern: 'logs/', type: 'INCLUDE'],
+                                                [pattern: 'src/applications/pyvisvid/.mypy_cache/', type: 'INCLUDE'],
+                                                [pattern: '**/__pycache__/', type: 'INCLUDE'],
+                                                [pattern: '**/*.so', type: 'INCLUDE'],
+
+                                            ]
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
-                }
 
 //                 stage("Python Code"){
 //                     agent{
