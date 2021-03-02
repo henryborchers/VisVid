@@ -144,6 +144,17 @@ RUN python3 -m pip install --upgrade pip && \
 COPY requirements-dev.txt /tmp/requirements-dev.txt
 COPY ci/dockerfiles/python/shared/requirements-ci.txt /tmp/requirements-ci.txt
 RUN python3 -m pip wheel -r /tmp/requirements-dev.txt -r /tmp/requirements-ci.txt -w /wheels
+
+#==============================================================================
+FROM base_image as DR_MEMORY_BUILDER
+RUN apt install -y wget
+WORKDIR /drmemory
+RUN wget --no-verbose https://github.com/DynamoRIO/drmemory/releases/download/release_2.3.0/DrMemory-Linux-2.3.0-1.tar.gz && \
+    mkdir -p /opt/drmemory && tar xzf DrMemory-Linux-2.3.0-1.tar.gz -C /opt/drmemory --strip-components=1 && \
+    ln -s /opt/drmemory/bin64/drmemory /usr/local/bin/drmemory && \
+    drmemory -version
+
+
 #==============================================================================
 # FINAL IMAGE
 
@@ -170,6 +181,10 @@ RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install -r /tmp/requirements-ci.txt && \
     python3 -m pip install cmake && \
     python3 -m pip install conan gcovr
+
+COPY --from=DR_MEMORY_BUILDER /opt/drmemory /opt/drmemory/
+RUN ln -s /opt/drmemory/bin64/drmemory /usr/local/bin/drmemory && \
+    drmemory -version
 
 COPY conanfile.py /tmp/
 ENV CONAN_USER_HOME=/home/user

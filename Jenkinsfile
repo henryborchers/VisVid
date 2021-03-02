@@ -14,6 +14,7 @@ pipeline {
     agent none
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
+        booleanParam(name: "RUN_MEMCHECK", defaultValue: false, description: "Run Memcheck. NOTE: This can be very slow.")
         booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
         booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: true, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
@@ -122,7 +123,7 @@ pipeline {
                                                         sh "conan install . -o with_createVisuals=True -if build/debug/"
                                                         tee("logs/cmakeconfig.log"){
                                                             sh(label:"configuring a debug build",
-                                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON
+                                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage -coverage  -Wall -Wextra" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON -DMEMORYCHECK_COMMAND=/usr/local/bin/drmemory
                                                                           '''
                                                            )
                                                         }
@@ -180,6 +181,9 @@ pipeline {
                                                             }
                                                         }
                                                         stage("CTest: MemCheck"){
+                                                            when{
+                                                                equals expected: true, actual: params.RUN_MEMCHECK
+                                                            }
                                                             steps{
                                                                 script{
                                                                     def cores = sh(
@@ -196,21 +200,7 @@ pipeline {
                                                             }
                                                             post{
                                                                 always{
-                                                                    publishValgrind(
-                                                                        failBuildOnInvalidReports: false,
-                                                                        failBuildOnMissingReports: false,
-                                                                        failThresholdDefinitelyLost: '',
-                                                                        failThresholdInvalidReadWrite: '',
-                                                                        failThresholdTotal: '',
-                                                                        pattern: 'build/debug/tests/**/*.memcheck',
-                                                                        publishResultsForAbortedBuilds: false,
-                                                                        publishResultsForFailedBuilds: false,
-                                                                        sourceSubstitutionPaths: '',
-                                                                        unstableThresholdDefinitelyLost: '',
-                                                                        unstableThresholdInvalidReadWrite: '',
-                                                                        unstableThresholdTotal: ''
-                                                                    )
-                                                                    archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                                                    recordIssues(filters: [excludeFile('build/debug/_deps/*'), excludeFile('-:0')], tools: [drMemory(pattern: 'build/debug/Testing/Temporary/DrMemory/**/results.txt')])
                                                                 }
                                                             }
                                                         }
