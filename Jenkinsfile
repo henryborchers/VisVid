@@ -14,7 +14,7 @@ pipeline {
     agent none
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
-        booleanParam(name: "USE_SONARQUBE", defaultValue: true, description: "Send data checks data to SonarQube")
+        booleanParam(name: "USE_SONARQUBE", defaultValue: false, description: "Send data checks data to SonarQube")
         booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: true, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
     }
@@ -151,12 +151,18 @@ pipeline {
                                                                 tee("logs/drmemory.log"){
                                                                     sh('drmemory -logdir ./logs -- ./build/drmem/tests/publicAPI/test-visvid')
                                                                 }
-
-
                                                             }
                                                             post{
                                                                 always {
-                                                                    recordIssues(tools: [drMemory(pattern: 'logs/drmemory.log')])
+                                                                    sh "ls -aR ./logs"
+//                                                                     sh "cat ./logs/*.log"
+                                                                    script{
+                                                                        findFiles(glob: "logs/**/results.txt").each{
+                                                                            sh "cat ${it.path}"
+                                                                        }
+                                                                    }
+                                                                    recordIssues(tools: [drMemory(pattern: 'logs/**/results.txt')])
+//                                                                     recordIssues(tools: [drMemory(pattern: 'logs/drmemory.log')])
                                                                 }
                                                             }
                                                         }
