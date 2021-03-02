@@ -122,7 +122,7 @@ pipeline {
                                                         sh "conan install . -o with_createVisuals=True -if build/debug/"
                                                         tee("logs/cmakeconfig.log"){
                                                             sh(label:"configuring a debug build",
-                                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage -coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON
+                                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage -coverage  -Wall -Wextra" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON -DMEMORYCHECK_COMMAND=/usr/local/bin/drmemory
                                                                           '''
                                                            )
                                                         }
@@ -189,41 +189,41 @@ pipeline {
                                                                 }
                                                             }
                                                         }
-//                                                         stage("CTest: MemCheck"){
-//                                                             steps{
-//                                                                 script{
-//                                                                     def cores = sh(
-//                                                                         label: 'looking up number of cores',
-//                                                                         returnStdout: true,
-//                                                                         script: 'grep -c ^processor /proc/cpuinfo'
-//                                                                         ).trim()
-//                                                                     ctest(
-//                                                                         arguments: "-T memcheck -j${cores}",
-//                                                                         installation: 'InSearchPath',
-//                                                                         workingDir: 'build/debug'
-//                                                                     )
-//                                                                 }
-//                                                             }
-//                                                             post{
-//                                                                 always{
-//                                                                     publishValgrind(
-//                                                                         failBuildOnInvalidReports: false,
-//                                                                         failBuildOnMissingReports: false,
-//                                                                         failThresholdDefinitelyLost: '',
-//                                                                         failThresholdInvalidReadWrite: '',
-//                                                                         failThresholdTotal: '',
-//                                                                         pattern: 'build/debug/tests/**/*.memcheck',
-//                                                                         publishResultsForAbortedBuilds: false,
-//                                                                         publishResultsForFailedBuilds: false,
-//                                                                         sourceSubstitutionPaths: '',
-//                                                                         unstableThresholdDefinitelyLost: '',
-//                                                                         unstableThresholdInvalidReadWrite: '',
-//                                                                         unstableThresholdTotal: ''
-//                                                                     )
-//                                                                     archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
-//                                                                 }
-//                                                             }
-//                                                         }
+                                                        stage("CTest: MemCheck"){
+                                                            steps{
+                                                                script{
+                                                                    def cores = sh(
+                                                                        label: 'looking up number of cores',
+                                                                        returnStdout: true,
+                                                                        script: 'grep -c ^processor /proc/cpuinfo'
+                                                                        ).trim()
+                                                                    ctest(
+                                                                        arguments: "-T memcheck -j${cores}",
+                                                                        installation: 'InSearchPath',
+                                                                        workingDir: 'build/debug'
+                                                                    )
+                                                                }
+                                                            }
+                                                            post{
+                                                                always{
+                                                                    publishValgrind(
+                                                                        failBuildOnInvalidReports: false,
+                                                                        failBuildOnMissingReports: false,
+                                                                        failThresholdDefinitelyLost: '',
+                                                                        failThresholdInvalidReadWrite: '',
+                                                                        failThresholdTotal: '',
+                                                                        pattern: 'build/debug/tests/**/*.memcheck',
+                                                                        publishResultsForAbortedBuilds: false,
+                                                                        publishResultsForFailedBuilds: false,
+                                                                        sourceSubstitutionPaths: '',
+                                                                        unstableThresholdDefinitelyLost: '',
+                                                                        unstableThresholdInvalidReadWrite: '',
+                                                                        unstableThresholdTotal: ''
+                                                                    )
+                                                                    archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
