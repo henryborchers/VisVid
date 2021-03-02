@@ -142,16 +142,16 @@ pipeline {
                                                 }
                                                 stage("Run tests"){
                                                     parallel{
-                                                        stage("Dr Memory"){
-                                                            steps{
-                                                                sh('drmemory -logdir ./logs -- ./build/debug/tests/publicAPI/test-visvid')
-                                                            }
-                                                            post{
-                                                                always {
-                                                                    recordIssues(tools: [drMemory(pattern: 'logs/**/results.txt')])
-                                                                }
-                                                            }
-                                                        }
+//                                                         stage("Dr Memory"){
+//                                                             steps{
+//                                                                 sh('drmemory -logdir ./logs -- ./build/debug/tests/publicAPI/test-visvid')
+//                                                             }
+//                                                             post{
+//                                                                 always {
+//                                                                     recordIssues(tools: [drMemory(pattern: 'logs/**/results.txt')])
+//                                                                 }
+//                                                             }
+//                                                         }
                                                         stage("Run Test"){
                                                             steps{
                                                                 sh(
@@ -206,21 +206,22 @@ pipeline {
                                                             }
                                                             post{
                                                                 always{
-                                                                    publishValgrind(
-                                                                        failBuildOnInvalidReports: false,
-                                                                        failBuildOnMissingReports: false,
-                                                                        failThresholdDefinitelyLost: '',
-                                                                        failThresholdInvalidReadWrite: '',
-                                                                        failThresholdTotal: '',
-                                                                        pattern: 'build/debug/tests/**/*.memcheck',
-                                                                        publishResultsForAbortedBuilds: false,
-                                                                        publishResultsForFailedBuilds: false,
-                                                                        sourceSubstitutionPaths: '',
-                                                                        unstableThresholdDefinitelyLost: '',
-                                                                        unstableThresholdInvalidReadWrite: '',
-                                                                        unstableThresholdTotal: ''
-                                                                    )
-                                                                    archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                                                    recordIssues(tools: [drMemory(pattern: 'build/debug/Testing/Temporary/DrMemory/**/results.txt')])
+//                                                                     publishValgrind(
+//                                                                         failBuildOnInvalidReports: false,
+//                                                                         failBuildOnMissingReports: false,
+//                                                                         failThresholdDefinitelyLost: '',
+//                                                                         failThresholdInvalidReadWrite: '',
+//                                                                         failThresholdTotal: '',
+//                                                                         pattern: 'build/debug/tests/**/*.memcheck',
+//                                                                         publishResultsForAbortedBuilds: false,
+//                                                                         publishResultsForFailedBuilds: false,
+//                                                                         sourceSubstitutionPaths: '',
+//                                                                         unstableThresholdDefinitelyLost: '',
+//                                                                         unstableThresholdInvalidReadWrite: '',
+//                                                                         unstableThresholdTotal: ''
+//                                                                     )
+//                                                                     archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
                                                                 }
                                                             }
                                                         }
