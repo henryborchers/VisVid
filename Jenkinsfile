@@ -122,7 +122,7 @@ pipeline {
                                                         sh "conan install . -o with_createVisuals=True -if build/debug/"
                                                         tee("logs/cmakeconfig.log"){
                                                             sh(label:"configuring a debug build",
-                                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON
+                                                               script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage -coverage  -Wall -Wextra" -DVALGRIND_COMMAND_OPTIONS="--xml=yes --xml-file=mem-%p.memcheck" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON
                                                                           '''
                                                            )
                                                         }
@@ -142,27 +142,18 @@ pipeline {
                                                 }
                                                 stage("Run tests"){
                                                     parallel{
-                                                        stage("Dr memory"){
+                                                        stage("Dr Memory"){
                                                             steps{
                                                                 sh(script: '''cmake -B ./build/drmem -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage"
                                                                               cmake --build ./build/drmem
                                                                               ''')
-                                                                              sh 'mkdir -p logs'
                                                                 tee("logs/drmemory.log"){
                                                                     sh('drmemory -logdir ./logs -- ./build/drmem/tests/publicAPI/test-visvid')
                                                                 }
                                                             }
                                                             post{
                                                                 always {
-                                                                    sh "ls -aR ./logs"
-//                                                                     sh "cat ./logs/*.log"
-                                                                    script{
-                                                                        findFiles(glob: "logs/**/results.txt").each{
-                                                                            sh "cat ${it.path}"
-                                                                        }
-                                                                    }
                                                                     recordIssues(tools: [drMemory(pattern: 'logs/**/results.txt')])
-//                                                                     recordIssues(tools: [drMemory(pattern: 'logs/drmemory.log')])
                                                                 }
                                                             }
                                                         }
