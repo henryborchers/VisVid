@@ -14,6 +14,7 @@ pipeline {
     agent none
     parameters{
         booleanParam(name: "RUN_CHECKS", defaultValue: true, description: "Run checks on code")
+        booleanParam(name: "RUN_MEMCHECK", defaultValue: false, description: "Run Memcheck. NOTE: This can be very slow.")
         booleanParam(name: "USE_SONARQUBE", defaultValue: false, description: "Send data checks data to SonarQube")
         booleanParam(name: "BUILD_DOCUMENTATION", defaultValue: true, description: "Build documentation")
         booleanParam(name: "PACKAGE", defaultValue: false, description: "Create distribution packages")
@@ -142,16 +143,6 @@ pipeline {
                                                 }
                                                 stage("Run tests"){
                                                     parallel{
-//                                                         stage("Dr Memory"){
-//                                                             steps{
-//                                                                 sh('drmemory -logdir ./logs -- ./build/debug/tests/publicAPI/test-visvid')
-//                                                             }
-//                                                             post{
-//                                                                 always {
-//                                                                     recordIssues(tools: [drMemory(pattern: 'logs/**/results.txt')])
-//                                                                 }
-//                                                             }
-//                                                         }
                                                         stage("Run Test"){
                                                             steps{
                                                                 sh(
@@ -190,6 +181,9 @@ pipeline {
                                                             }
                                                         }
                                                         stage("CTest: MemCheck"){
+                                                            when{
+                                                                equals expected: true, actual: params.RUN_MEMCHECK
+                                                            }
                                                             steps{
                                                                 script{
                                                                     def cores = sh(
