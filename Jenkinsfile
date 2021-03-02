@@ -144,11 +144,11 @@ pipeline {
                                                     parallel{
                                                         stage("Dr Memory"){
                                                             steps{
-                                                                sh(script: '''cmake -B ./build/drmem -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage"
-                                                                              cmake --build ./build/drmem
-                                                                              ''')
+//                                                                 sh(script: '''cmake -B ./build/drmem -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage"
+//                                                                               cmake --build ./build/drmem
+//                                                                               ''')
                                                                 tee("logs/drmemory.log"){
-                                                                    sh('drmemory -logdir ./logs -- ./build/drmem/tests/publicAPI/test-visvid')
+                                                                    sh('drmemory -logdir ./logs -- ./build/debug/tests/publicAPI/test-visvid')
                                                                 }
                                                             }
                                                             post{
