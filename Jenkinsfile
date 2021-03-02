@@ -206,22 +206,7 @@ pipeline {
                                                             }
                                                             post{
                                                                 always{
-                                                                    recordIssues(tools: [drMemory(pattern: 'build/debug/Testing/Temporary/DrMemory/**/results.txt')])
-//                                                                     publishValgrind(
-//                                                                         failBuildOnInvalidReports: false,
-//                                                                         failBuildOnMissingReports: false,
-//                                                                         failThresholdDefinitelyLost: '',
-//                                                                         failThresholdInvalidReadWrite: '',
-//                                                                         failThresholdTotal: '',
-//                                                                         pattern: 'build/debug/tests/**/*.memcheck',
-//                                                                         publishResultsForAbortedBuilds: false,
-//                                                                         publishResultsForFailedBuilds: false,
-//                                                                         sourceSubstitutionPaths: '',
-//                                                                         unstableThresholdDefinitelyLost: '',
-//                                                                         unstableThresholdInvalidReadWrite: '',
-//                                                                         unstableThresholdTotal: ''
-//                                                                     )
-//                                                                     archiveArtifacts "build/debug/Testing/**/DynamicAnalysis.xml"
+                                                                    recordIssues(filters: [excludeFile('build/debug/_deps/*'), excludeFile('-:0')], tools: [drMemory(pattern: 'build/debug/Testing/Temporary/DrMemory/**/results.txt')])
                                                                 }
                                                             }
                                                         }
