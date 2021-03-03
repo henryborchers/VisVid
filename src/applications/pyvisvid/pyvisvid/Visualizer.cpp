@@ -96,28 +96,8 @@ void Visualizer::process() {
             }
             else if (ret == 1){
 
-                VisYUVFrame *yuvFrame = VisYUVFrame_Create();
-                if(yuvFrame == nullptr){
-                    throw PyVisVidException("VisYUVFrame_Create failed\n");
-                }
-                VisYUVFrame_SetSize(yuvFrame, frame->width, frame->height);
-                if(ffmpeg2visframe(yuvFrame, frame) !=0){
-                    throw PyVisVidException("ffmpeg2visframe failed\n");
-                }
-                int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
+                process_frame(frame);
 
-                visProcessContext proCtx;
-                proCtx.processCb = visVisResult_CaculateBrightestOverWidth;
-                visVisualResult     result;
-                process_frame(yuvFrame, frame_width, proCtx, result);
-                if(mCodecCtx->frame_number >= MAX_BUFFER_SIZE){
-                    break;
-                }
-                if(visBuffer_PushBackResult(mBuffer, &result) != 0){
-                    throw PyVisVidException("visBuffer_PushBackResult failed");
-                }
-                VisVisualResult_Cleanup(&result);
-                VisYUVFrame_Destroy(&yuvFrame);
             }
 
         }
@@ -130,8 +110,27 @@ void Visualizer::process() {
     av_frame_free(&frame);
 }
 
-void Visualizer::process_frame(const VisYUVFrame *yuvFrame, int frame_width, const visProcessContext &proCtx,
-                               visVisualResult &result) const {
+void Visualizer::process_frame(AVFrame *frame) const {
+    std::shared_ptr<VisYUVFrame> yuvFrame(VisYUVFrame_Create(), [](VisYUVFrame *p){VisYUVFrame_Destroy(&p);});
+    if(yuvFrame == nullptr){
+        throw PyVisVidException("VisYUVFrame_Create failed\n");
+    }
+    VisYUVFrame_SetSize(yuvFrame.get(), frame->width, frame->height);
+    if(ffmpeg2visframe(yuvFrame.get(), frame) !=0){
+        throw PyVisVidException("ffmpeg2visframe failed\n");
+    }
+    int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
+
+    visProcessContext proCtx;
+    proCtx.processCb = visVisResult_CaculateBrightestOverWidth;
+    visVisualResult     result;
+    process_frame_result(yuvFrame.get(), frame_width, proCtx, result);
+
+    VisVisualResult_Cleanup(&result);
+}
+
+void Visualizer::process_frame_result(const VisYUVFrame *yuvFrame, int frame_width, const visProcessContext &proCtx,
+                                      visVisualResult &result) const {
     if(VisVisualResult_Init(&result) != 0 ){
         throw std::runtime_error("Unable to initialize a visVisualResult");
     }
@@ -146,6 +145,12 @@ void Visualizer::process_frame(const VisYUVFrame *yuvFrame, int frame_width, con
     }
     if(mCodecCtx->frame_number % 100 == 0){
         std::cout << "Adding frame " << mCodecCtx->frame_number << "to buffer\n";
+    }
+    if(mCodecCtx->frame_number >= MAX_BUFFER_SIZE){
+        return;
+    }
+    if(visBuffer_PushBackResult(mBuffer, &result) != 0){
+        throw PyVisVidException("visBuffer_PushBackResult failed");
     }
 }
 
