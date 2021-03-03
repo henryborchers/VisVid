@@ -194,10 +194,6 @@ void Visualizer::init_video() {
     if(!mCodecCtx){
         throw PyVisVidException("Could not allocate video codec context");
     }
-//    mCodecCtx =  avcodec_alloc_context3(codec);
-//    if(mCodecCtx == nullptr){
-//        throw PyVisVidException("Could not allocate video codec context");
-//    }
 
     if(avcodec_parameters_to_context(mCodecCtx.get(), mAvFormatCtx->streams[mVideoStream]->codecpar) < 0){
         throw PyVisVidException("Could not set codec context parameters\n");
