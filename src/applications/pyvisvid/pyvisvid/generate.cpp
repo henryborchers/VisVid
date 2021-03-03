@@ -4,7 +4,7 @@
 
 #include "generate.h"
 #include "Visualizer.h"
-extern  "C" {
+extern "C" {
 #include "shared/pgm.h"
 }
 int make_pgm(const std::string &source, const std::string &output_file){
