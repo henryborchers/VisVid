@@ -109,20 +109,7 @@ void Visualizer::process() {
                 visProcessContext proCtx;
                 proCtx.processCb = visVisResult_CaculateBrightestOverWidth;
                 visVisualResult     result;
-                if(VisVisualResult_Init(&result) != 0 ){
-                    throw std::runtime_error("Unable to initialize a visVisualResult");
-                }
-                std::shared_ptr<PixelValue[]> slice(new PixelValue[frame_width]);
-                if(VisVisualResult_SetSize(&result, frame_width) != 0){
-                    throw PyVisVidException("VisVisualResult_SetSize failed \n");
-                }
-//                FIXME:!!!
-                if(visVisProcess(&result, yuvFrame, &proCtx, slice.get()) != 0){
-                    throw PyVisVidException("visVisProcess failed");
-                }
-                if(mCodecCtx->frame_number % 100 == 0){
-                    std::cout << "Adding frame " << mCodecCtx->frame_number << "to buffer\n";
-                }
+                process_frame(yuvFrame, frame_width, proCtx, result);
                 if(mCodecCtx->frame_number >= MAX_BUFFER_SIZE){
                     break;
                 }
@@ -141,6 +128,25 @@ void Visualizer::process() {
 
     }
     av_frame_free(&frame);
+}
+
+void Visualizer::process_frame(const VisYUVFrame *yuvFrame, int frame_width, visProcessContext &proCtx,
+                               visVisualResult &result) const {
+    if(VisVisualResult_Init(&result) != 0 ){
+        throw std::runtime_error("Unable to initialize a visVisualResult");
+    }
+
+    std::shared_ptr<PixelValue[]> slice = std::make_shared<PixelValue[]>(frame_width);
+    if(VisVisualResult_SetSize(&result, frame_width) != 0){
+        throw PyVisVidException("VisVisualResult_SetSize failed \n");
+    }
+//                FIXME:!!!
+    if(visVisProcess(&result, yuvFrame, &proCtx, slice.get()) != 0){
+        throw PyVisVidException("visVisProcess failed");
+    }
+    if(mCodecCtx->frame_number % 100 == 0){
+        std::cout << "Adding frame " << mCodecCtx->frame_number << "to buffer\n";
+    }
 }
 
 visImage *Visualizer::get_image() {

@@ -21,7 +21,8 @@ class Visualizer {
     static int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src);
     visImage mImage;
     visView *mView;
-
+    void process_frame(const VisYUVFrame *yuvFrame, int frame_width, visProcessContext &proCtx,
+                       visVisualResult &result) const;
 public:
 
     void load(const std::string &source);
@@ -31,6 +32,8 @@ public:
     visImage *get_image();
 
     virtual ~Visualizer();
+
+
 };
 
 
