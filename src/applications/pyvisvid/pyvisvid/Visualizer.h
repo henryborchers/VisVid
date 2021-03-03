@@ -6,7 +6,7 @@
 #define LIBVISVID_VISUALIZER_H
 
 #include <string>
-
+#include <memory>
 extern "C"{
 #include <libavformat/avformat.h>
 #include <visvid/visvid.h>
@@ -14,10 +14,10 @@ extern "C"{
 
 class Visualizer {
     std::string mSource;
-    AVFormatContext *mAvFormatCtx = nullptr;
+    std::shared_ptr<AVFormatContext> mAvFormatCtx;
     int mVideoStream = -1;
-    visBuffer *mBuffer;
-    AVCodecContext *mCodecCtx;
+    std::shared_ptr<visBuffer> mBuffer;
+    std::shared_ptr<AVCodecContext> mCodecCtx;
     static int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src);
     visImage mImage;
     visView *mView;
@@ -31,10 +31,6 @@ public:
     void process();
     void rasterize();
     visImage *get_image();
-
-    virtual ~Visualizer();
-
-
 
 };
 
