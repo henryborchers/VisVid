@@ -71,7 +71,6 @@ void Visualizer::process() {
     AVFrame *frame = av_frame_alloc();
     if(frame == nullptr){
         throw PyVisVidException("Could not allocate a video frame");
-//        throw std::runtime_error("Could not allocate a video frame");
     }
     while(true) {
         if((ret = av_read_frame(mAvFormatCtx, &pkt)) < 0){
