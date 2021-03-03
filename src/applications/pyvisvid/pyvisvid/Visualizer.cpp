@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <memory>
 #include "Visualizer.h"
 #include "visvid_exceptions.h"
 
@@ -100,23 +101,24 @@ void Visualizer::process() {
                     throw PyVisVidException("VisYUVFrame_Create failed\n");
                 }
                 VisYUVFrame_SetSize(yuvFrame, frame->width, frame->height);
-                if((ret = ffmpeg2visframe(yuvFrame, frame)) !=0){
+                if(ffmpeg2visframe(yuvFrame, frame) !=0){
                     throw PyVisVidException("ffmpeg2visframe failed\n");
                 }
+                int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
 
                 visProcessContext proCtx;
                 proCtx.processCb = visVisResult_CaculateBrightestOverWidth;
                 visVisualResult     result;
-                if((ret = VisVisualResult_Init(&result)) != 0 ){
+                if(VisVisualResult_Init(&result) != 0 ){
                     throw std::runtime_error("Unable to initialize a visVisualResult");
                 }
-                int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
-                if((ret = VisVisualResult_SetSize(&result, frame_width)) != 0){
+//                PixelValue *slice= new PixelValue[frame_width];
+                std::shared_ptr<PixelValue[]> slice(new PixelValue[frame_width]);
+                if(VisVisualResult_SetSize(&result, frame_width) != 0){
                     throw PyVisVidException("VisVisualResult_SetSize failed \n");
                 }
 //                FIXME:!!!
-                PixelValue *slice= new PixelValue[frame_width];
-                if((ret = visVisProcess(&result, yuvFrame, &proCtx, slice)) != 0){
+                if(visVisProcess(&result, yuvFrame, &proCtx, slice.get()) != 0){
                     throw PyVisVidException("visVisProcess failed");
                 }
                 if(mCodecCtx->frame_number % 100 == 0){
@@ -125,10 +127,9 @@ void Visualizer::process() {
                 if(mCodecCtx->frame_number >= MAX_BUFFER_SIZE){
                     break;
                 }
-                if((ret = visBuffer_PushBackResult(mBuffer, &result)) != 0){
+                if(visBuffer_PushBackResult(mBuffer, &result) != 0){
                     throw PyVisVidException("visBuffer_PushBackResult failed");
                 }
-                delete[] slice;
                 VisVisualResult_Cleanup(&result);
                 VisYUVFrame_Destroy(&yuvFrame);
             }
