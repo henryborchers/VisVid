@@ -23,9 +23,9 @@ enum pixel_component{
     V,
 };
 
-size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component component);
+size_t yuv_pixel_offset(const AVFrame *frame, int x, int y, enum pixel_component component);
 
-size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component component){
+size_t yuv_pixel_offset(const AVFrame *frame, int x, int y, enum pixel_component component){
     size_t offset = 0;
     const AVPixFmtDescriptor * desc = av_pix_fmt_desc_get((AVPixelFormat)frame->format);
     signed int uvx = x >> desc->log2_chroma_w;
