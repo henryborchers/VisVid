@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "Visualizer.h"
+#include "visvid_exceptions.h"
 
 extern "C"{
 #include "shared/decode.h"
@@ -68,10 +69,10 @@ void Visualizer::process() {
     // ever fails and an exception is thrown.
     // perhaps moving frame variable a private member variable
     AVFrame *frame = av_frame_alloc();
-    if(!frame){
-        throw std::runtime_error("Could not allocate a video frame");
+    if(frame == nullptr){
+        throw PyVisVidException("Could not allocate a video frame");
     }
-    while(1) {
+    while(true) {
         if((ret = av_read_frame(mAvFormatCtx, &pkt)) < 0){
             if(ret == AVERROR_EOF){
                 ret = 0;
@@ -96,11 +97,11 @@ void Visualizer::process() {
 
                 VisYUVFrame *yuvFrame = VisYUVFrame_Create();
                 if(yuvFrame == nullptr){
-                    throw std::runtime_error("VisYUVFrame_Create failed\n");
+                    throw PyVisVidException("VisYUVFrame_Create failed\n");
                 }
                 VisYUVFrame_SetSize(yuvFrame, frame->width, frame->height);
                 if((ret = ffmpeg2visframe(yuvFrame, frame)) !=0){
-                    throw std::runtime_error("ffmpeg2visframe failed\n");
+                    throw PyVisVidException("ffmpeg2visframe failed\n");
                 }
 
                 visProcessContext proCtx;
@@ -111,12 +112,12 @@ void Visualizer::process() {
                 }
                 int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
                 if((ret = VisVisualResult_SetSize(&result, frame_width)) != 0){
-                    throw std::runtime_error("VisVisualResult_SetSize failed \n");
+                    throw PyVisVidException("VisVisualResult_SetSize failed \n");
                 }
 //                FIXME:!!!
                 PixelValue *slice= new PixelValue[frame_width];
                 if((ret = visVisProcess(&result, yuvFrame, &proCtx, slice)) != 0){
-                    throw std::runtime_error("visVisProcess failed");
+                    throw PyVisVidException("visVisProcess failed");
                 }
                 if(mCodecCtx->frame_number % 100 == 0){
                     std::cout << "Adding frame " << mCodecCtx->frame_number << "to buffer\n";
@@ -125,7 +126,7 @@ void Visualizer::process() {
                     break;
                 }
                 if((ret = visBuffer_PushBackResult(mBuffer, &result)) != 0){
-                    throw std::runtime_error("visBuffer_PushBackResult failed");
+                    throw PyVisVidException("visBuffer_PushBackResult failed");
                 }
                 delete[] slice;
                 VisVisualResult_Cleanup(&result);
@@ -171,7 +172,7 @@ void Visualizer::rasterize() {
 void Visualizer::init_video() {
     int ret = 0;
     if(( ret = avformat_open_input(&mAvFormatCtx, mSource.c_str(), nullptr, nullptr))){
-        throw std::runtime_error("unable to open file");
+        throw PyVisVidException("unable to open file");
     }
 
     for (unsigned int stream_number = 0; stream_number < mAvFormatCtx->nb_streams; stream_number++) {
@@ -183,26 +184,26 @@ void Visualizer::init_video() {
 
     const AVCodec *codec = avcodec_find_decoder(mAvFormatCtx->streams[mVideoStream]->codecpar->codec_id);
     if(codec == nullptr){
-        throw std::runtime_error("unable to find codec");
+        throw PyVisVidException("unable to find codec");
     }
 
     mCodecCtx =  avcodec_alloc_context3(codec);
     if(mCodecCtx == nullptr){
-        throw std::runtime_error("Could not allocate video codec context");
+        throw PyVisVidException("Could not allocate video codec context");
     }
 
     ret = avcodec_parameters_to_context(mCodecCtx, mAvFormatCtx->streams[mVideoStream]->codecpar);
     if(ret < 0){
-        throw std::runtime_error("Could not set codec context parameters\n");
+        throw PyVisVidException("Could not set codec context parameters\n");
     }
     if(avcodec_open2(mCodecCtx, codec, nullptr) < 0){
-        throw std::runtime_error("Could Not open codec\n");
+        throw PyVisVidException("Could Not open codec\n");
     }
     int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
     mBuffer = VisBuffer_Create2(frame_width, MAX_BUFFER_SIZE);
 
     if(mBuffer == nullptr){
-        throw std::runtime_error("Unable to allocate a visbuffer\n");
+        throw PyVisVidException("Unable to allocate a visbuffer\n");
     }
 
 

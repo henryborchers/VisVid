@@ -41,30 +41,36 @@ if(Python3_Interpreter_FOUND)
         DEPENDS
             Visvid::Visvid
             )
+    if(Python3_Development_FOUND)
+        add_library(pyvisvid_module
+                pyvisvid/visvid_exceptions.cpp
+                pyvisvid/visvid_extension.cpp
+                pyvisvid/Visualizer.cpp
+                pyvisvid/Visualizer.h
+                pyvisvid/utils.cpp
+                pyvisvid/utils.h
+                pyvisvid/generate.cpp
+                pyvisvid/generate.h
+                ${PROJECT_SOURCE_DIR}/examples/shared/decode.c
+                ${PROJECT_SOURCE_DIR}/examples/shared/pgm.c
+                )
 
-    add_library(pyvisvid_module
-            pyvisvid/visvid_extension.cpp
-            pyvisvid/Visualizer.cpp
-            pyvisvid/Visualizer.h
-            pyvisvid/utils.cpp
-            pyvisvid/utils.h
-            pyvisvid/generate.cpp
-            pyvisvid/generate.h
-            )
-
-    target_link_libraries(pyvisvid_module
-            PRIVATE
-                pybind11::module
-                Visvid::Visvid
-                FFmpeg::avformat
-            )
-    target_include_directories(pyvisvid_module
-            PRIVATE
-                ${PROJECT_SOURCE_DIR}/examples
-            PUBLIC
-                ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
-            )
-
+        target_link_libraries(pyvisvid_module
+                PUBLIC
+                    Visvid::Visvid
+                PRIVATE
+                    pybind11::module
+                    Python3::Python
+                    FFmpeg::avformat
+                    FFmpeg::avcodec
+                )
+        target_include_directories(pyvisvid_module
+                PRIVATE
+                    ${PROJECT_SOURCE_DIR}/examples
+                PUBLIC
+                    ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
+                )
+    endif()
     add_custom_target(pyvisvid_run
             DEPENDS
                 pyvisvid_build
