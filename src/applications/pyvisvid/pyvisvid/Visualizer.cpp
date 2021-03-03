@@ -155,11 +155,6 @@ void Visualizer::process_frame_result(const VisYUVFrame *yuvFrame, int frame_wid
 }
 
 visImage *Visualizer::get_image() {
-    int ret;
-//    if((ret = visView_GenerateBW(&mImage, mView)) != 0){
-//        fprintf(stderr, "visView_GenerateBW failed with value %d\n",  ret);
-//
-//    }
     return &mImage;
 }
 
