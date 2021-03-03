@@ -136,7 +136,7 @@ void Visualizer::process_frame(const VisYUVFrame *yuvFrame, int frame_width, vis
         throw std::runtime_error("Unable to initialize a visVisualResult");
     }
 
-    std::shared_ptr<PixelValue[]> slice = std::make_shared<PixelValue[]>(frame_width);
+    std::unique_ptr<PixelValue[]> slice = std::make_unique<PixelValue[]>(frame_width);
     if(VisVisualResult_SetSize(&result, frame_width) != 0){
         throw PyVisVidException("VisVisualResult_SetSize failed \n");
     }
