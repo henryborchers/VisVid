@@ -46,23 +46,12 @@ size_t yuv_pixel_offset(AVFrame *frame, int x, int y, enum pixel_component compo
 }
 
 
-Visualizer::~Visualizer() {
-    if(mAvFormatCtx != nullptr){
-        avformat_close_input(&mAvFormatCtx);
-    }
-
-    if(mCodecCtx != nullptr) {
-        avcodec_free_context(&mCodecCtx);
-    }
-    VisBuffer_Destroy(&mBuffer);
-
-}
 
 void Visualizer::load(const std::string &source) {
     mSource = source;
 }
 
-void Visualizer::process() {
+void Visualizer::process() const{
     int ret;
     AVPacket pkt;
 
@@ -74,7 +63,7 @@ void Visualizer::process() {
         throw PyVisVidException("Could not allocate a video frame");
     }
     while(true) {
-        if((ret = av_read_frame(mAvFormatCtx, &pkt)) < 0){
+        if((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0){
             if(ret == AVERROR_EOF){
                 ret = 0;
                 break;
@@ -85,7 +74,7 @@ void Visualizer::process() {
         }
         if(pkt.stream_index == mVideoStream){
 
-            ret = decode(mCodecCtx, frame, &pkt);
+            ret = decode(mCodecCtx.get(), frame, &pkt);
             if(ret == AVERROR(EAGAIN)) {
                 continue;
             }
@@ -149,7 +138,7 @@ void Visualizer::process_frame_result(const VisYUVFrame *yuvFrame, int frame_wid
     if(mCodecCtx->frame_number >= MAX_BUFFER_SIZE){
         return;
     }
-    if(visBuffer_PushBackResult(mBuffer, &result) != 0){
+    if(visBuffer_PushBackResult(mBuffer.get(), &result) != 0){
         throw PyVisVidException("visBuffer_PushBackResult failed");
     }
 }
@@ -161,7 +150,7 @@ visImage *Visualizer::get_image() {
 void Visualizer::rasterize() {
     mView = VisView_Create(mBuffer->bufferWidth, mCodecCtx->frame_number);
 
-    if( visView_Update4(mView, mBuffer) != 0){
+    if(visView_Update4(mView, mBuffer.get()) != 0){
         throw PyVisVidException("visView_Update4 failed");
     }
     visImage_Alloc(&mImage, mView->width, mView->height, 1);
@@ -175,11 +164,17 @@ void Visualizer::rasterize() {
 }
 
 void Visualizer::init_video() {
-    int ret = 0;
-    if(( ret = avformat_open_input(&mAvFormatCtx, mSource.c_str(), nullptr, nullptr))){
+    AVFormatContext *ctx = nullptr;
+
+    if(avformat_open_input(&ctx, mSource.c_str(), nullptr, nullptr)) {
         throw PyVisVidException("unable to open file");
     }
+    mAvFormatCtx = std::shared_ptr<AVFormatContext>(ctx, [](AVFormatContext *p){
+        if(p != nullptr){
+            avformat_close_input(&p);
+        }
 
+    });
     for (unsigned int stream_number = 0; stream_number < mAvFormatCtx->nb_streams; stream_number++) {
         if(mAvFormatCtx->streams[stream_number]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO){
             mVideoStream = stream_number;
@@ -191,27 +186,29 @@ void Visualizer::init_video() {
     if(codec == nullptr){
         throw PyVisVidException("unable to find codec");
     }
-
-    mCodecCtx =  avcodec_alloc_context3(codec);
-    if(mCodecCtx == nullptr){
+    mCodecCtx = std::shared_ptr<AVCodecContext>(avcodec_alloc_context3(codec), [](AVCodecContext *p){
+        if(p != nullptr){
+            avcodec_free_context(&p);
+        }
+    });
+    if(!mCodecCtx){
         throw PyVisVidException("Could not allocate video codec context");
     }
 
-    ret = avcodec_parameters_to_context(mCodecCtx, mAvFormatCtx->streams[mVideoStream]->codecpar);
-    if(ret < 0){
+    if(avcodec_parameters_to_context(mCodecCtx.get(), mAvFormatCtx->streams[mVideoStream]->codecpar) < 0){
         throw PyVisVidException("Could not set codec context parameters\n");
     }
-    if(avcodec_open2(mCodecCtx, codec, nullptr) < 0){
+    if(avcodec_open2(mCodecCtx.get(), codec, nullptr) < 0){
         throw PyVisVidException("Could Not open codec\n");
     }
     int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
-    mBuffer = VisBuffer_Create2(frame_width, MAX_BUFFER_SIZE);
-
-    if(mBuffer == nullptr){
+    mBuffer = std::shared_ptr<visBuffer>(VisBuffer_Create2(frame_width, MAX_BUFFER_SIZE), [](visBuffer *p){
+        VisBuffer_Destroy(&p);
+    });
+    if(!mBuffer){
         throw PyVisVidException("Unable to allocate a visbuffer\n");
+
     }
-
-
 
 }
 
