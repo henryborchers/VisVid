@@ -21,7 +21,7 @@ class Visualizer {
     static int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src);
     visImage mImage;
     visView *mView;
-    void process_frame(const VisYUVFrame *yuvFrame, int frame_width, visProcessContext &proCtx,
+    void process_frame(const VisYUVFrame *yuvFrame, int frame_width, const visProcessContext &proCtx,
                        visVisualResult &result) const;
 public:
 

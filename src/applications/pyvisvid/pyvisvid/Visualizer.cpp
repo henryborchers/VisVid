@@ -130,7 +130,7 @@ void Visualizer::process() {
     av_frame_free(&frame);
 }
 
-void Visualizer::process_frame(const VisYUVFrame *yuvFrame, int frame_width, visProcessContext &proCtx,
+void Visualizer::process_frame(const VisYUVFrame *yuvFrame, int frame_width, const visProcessContext &proCtx,
                                visVisualResult &result) const {
     if(VisVisualResult_Init(&result) != 0 ){
         throw std::runtime_error("Unable to initialize a visVisualResult");
