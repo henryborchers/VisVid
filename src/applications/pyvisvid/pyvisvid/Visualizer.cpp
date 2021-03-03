@@ -132,7 +132,7 @@ void Visualizer::process_frame(AVFrame *frame) const {
 void Visualizer::process_frame_result(const VisYUVFrame *yuvFrame, int frame_width, const visProcessContext &proCtx,
                                       visVisualResult &result) const {
     if(VisVisualResult_Init(&result) != 0 ){
-        throw std::runtime_error("Unable to initialize a visVisualResult");
+        throw PyVisVidException("Unable to initialize a visVisualResult");
     }
 
     auto slice = std::make_unique<PixelValue[]>(frame_width);
@@ -159,15 +159,14 @@ visImage *Visualizer::get_image() {
 }
 
 void Visualizer::rasterize() {
-    int ret;
     mView = VisView_Create(mBuffer->bufferWidth, mCodecCtx->frame_number);
 
-    if((ret = visView_Update4(mView, mBuffer)) != 0){
-        throw std::runtime_error("visView_Update4 failed");
+    if( visView_Update4(mView, mBuffer) != 0){
+        throw PyVisVidException("visView_Update4 failed");
     }
     visImage_Alloc(&mImage, mView->width, mView->height, 1);
-    if((ret = visView_GenerateBW(&mImage, mView)) != 0){
-        throw std::runtime_error("visView_GenerateBW");
+    if(visView_GenerateBW(&mImage, mView) != 0){
+        throw PyVisVidException("visView_GenerateBW");
 
     }
 
