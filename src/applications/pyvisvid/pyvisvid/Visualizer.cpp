@@ -112,7 +112,6 @@ void Visualizer::process() {
                 if(VisVisualResult_Init(&result) != 0 ){
                     throw std::runtime_error("Unable to initialize a visVisualResult");
                 }
-//                PixelValue *slice= new PixelValue[frame_width];
                 std::shared_ptr<PixelValue[]> slice(new PixelValue[frame_width]);
                 if(VisVisualResult_SetSize(&result, frame_width) != 0){
                     throw PyVisVidException("VisVisualResult_SetSize failed \n");
