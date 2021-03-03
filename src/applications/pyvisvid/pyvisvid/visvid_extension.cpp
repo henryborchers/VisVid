@@ -18,7 +18,6 @@ extern  "C"{
 namespace py = pybind11;
 
 void init(){
-//    std::cerr << "I'm initing from " __FILE__ << "\n";
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
     av_register_all();
 #endif
@@ -26,7 +25,7 @@ void init(){
 
 PYBIND11_MODULE(visvid, m){
     m.def("get_version", &get_version);
-    m.def("initialize", &init),
+    m.def("initialize", &init);
     m.def("make_pgm", &make_pgm, py::arg("source"), py::arg("output"));
     py::register_exception<PyVisVidException>(m, "PyVisVidException");
 }
