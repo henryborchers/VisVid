@@ -22,7 +22,7 @@ find_package(FFMPEG
 
 find_package(SDL2)
 find_package(Doxygen)
-find_package(Python3 COMPONENTS Interpreter)
+find_package(Python3 COMPONENTS Interpreter Development)
 
 #include(CTest)
 
