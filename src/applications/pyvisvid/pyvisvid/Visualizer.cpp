@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 #include "Visualizer.h"
+#include "visvid_exceptions.h"
 
 extern "C"{
 #include "shared/decode.h"
@@ -68,8 +69,9 @@ void Visualizer::process() {
     // ever fails and an exception is thrown.
     // perhaps moving frame variable a private member variable
     AVFrame *frame = av_frame_alloc();
-    if(!frame){
-        throw std::runtime_error("Could not allocate a video frame");
+    if(frame == nullptr){
+        throw PyVisVidException("Could not allocate a video frame");
+//        throw std::runtime_error("Could not allocate a video frame");
     }
     while(1) {
         if((ret = av_read_frame(mAvFormatCtx, &pkt)) < 0){
@@ -96,11 +98,13 @@ void Visualizer::process() {
 
                 VisYUVFrame *yuvFrame = VisYUVFrame_Create();
                 if(yuvFrame == nullptr){
-                    throw std::runtime_error("VisYUVFrame_Create failed\n");
+                    throw PyVisVidException("VisYUVFrame_Create failed\n");
+//                    throw std::runtime_error("VisYUVFrame_Create failed\n");
                 }
                 VisYUVFrame_SetSize(yuvFrame, frame->width, frame->height);
                 if((ret = ffmpeg2visframe(yuvFrame, frame)) !=0){
-                    throw std::runtime_error("ffmpeg2visframe failed\n");
+                    throw PyVisVidException("ffmpeg2visframe failed\n");
+//                    throw std::runtime_error("ffmpeg2visframe failed\n");
                 }
 
                 visProcessContext proCtx;
@@ -111,12 +115,14 @@ void Visualizer::process() {
                 }
                 int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
                 if((ret = VisVisualResult_SetSize(&result, frame_width)) != 0){
-                    throw std::runtime_error("VisVisualResult_SetSize failed \n");
+                    throw PyVisVidException("VisVisualResult_SetSize failed \n");
+//                    throw std::runtime_error("VisVisualResult_SetSize failed \n");
                 }
 //                FIXME:!!!
                 PixelValue *slice= new PixelValue[frame_width];
                 if((ret = visVisProcess(&result, yuvFrame, &proCtx, slice)) != 0){
-                    throw std::runtime_error("visVisProcess failed");
+                    throw PyVisVidException("visVisProcess failed");
+//                    throw std::runtime_error("visVisProcess failed");
                 }
                 if(mCodecCtx->frame_number % 100 == 0){
                     std::cout << "Adding frame " << mCodecCtx->frame_number << "to buffer\n";
@@ -125,7 +131,8 @@ void Visualizer::process() {
                     break;
                 }
                 if((ret = visBuffer_PushBackResult(mBuffer, &result)) != 0){
-                    throw std::runtime_error("visBuffer_PushBackResult failed");
+                    throw PyVisVidException("visBuffer_PushBackResult failed");
+//                    throw std::runtime_error("visBuffer_PushBackResult failed");
                 }
                 delete[] slice;
                 VisVisualResult_Cleanup(&result);
