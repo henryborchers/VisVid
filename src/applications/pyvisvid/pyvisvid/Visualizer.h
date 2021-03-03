@@ -28,7 +28,7 @@ public:
 
     void load(const std::string &source);
     void init_video();
-    void process();
+    void process() const;
     void rasterize();
     visImage *get_image();
 

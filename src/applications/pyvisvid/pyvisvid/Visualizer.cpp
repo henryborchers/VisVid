@@ -51,7 +51,7 @@ void Visualizer::load(const std::string &source) {
     mSource = source;
 }
 
-void Visualizer::process() {
+void Visualizer::process() const{
     int ret;
     AVPacket pkt;
 
