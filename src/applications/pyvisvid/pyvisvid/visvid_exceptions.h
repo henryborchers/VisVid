@@ -7,6 +7,6 @@
 #include <stdexcept>
 class PyVisVidException: public std::runtime_error{
 public:
-    PyVisVidException(const std::string &arg);
+    explicit PyVisVidException(const std::string &arg);
 };
 #endif //LIBVISVID_VISVID_EXCEPTIONS_H
