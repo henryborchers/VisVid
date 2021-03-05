@@ -18,7 +18,7 @@ class Visualizer {
     int mVideoStream = -1;
     std::shared_ptr<visBuffer> mBuffer;
     std::shared_ptr<AVCodecContext> mCodecCtx;
-    static int ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src);
+    static int ffmpeg2visframe(VisYUVFrame *dst, const struct AVFrame *src);
     visImage mImage;
     visView *mView;
     void process_frame(AVFrame *frame) const;

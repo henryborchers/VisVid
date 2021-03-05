@@ -214,7 +214,7 @@ void Visualizer::init_video() {
 
 }
 
-int Visualizer::ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src) {
+int Visualizer::ffmpeg2visframe(VisYUVFrame *dst, const struct AVFrame *src) {
 
         int res;
 
