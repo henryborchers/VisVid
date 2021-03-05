@@ -137,7 +137,7 @@ pipeline {
                                                         }
                                                         always{
                                                             recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
-                                                            recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
+                                                            recordIssues(filters: [includeFile('uiucprescon/*')], tools: [gcc(pattern: 'logs/cmakebuild.log')])
                                                         }
                                                     }
                                                 }
