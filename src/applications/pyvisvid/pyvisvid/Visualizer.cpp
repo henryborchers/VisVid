@@ -101,7 +101,7 @@ void Visualizer::process() const{
     av_frame_free(&frame);
 }
 
-void Visualizer::process_frame(AVFrame *frame) const {
+void Visualizer::process_frame(const AVFrame *frame) const {
     std::shared_ptr<VisYUVFrame> yuvFrame(VisYUVFrame_Create(), [](VisYUVFrame *p){VisYUVFrame_Destroy(&p);});
     if(yuvFrame == nullptr){
         throw PyVisVidException("VisYUVFrame_Create failed\n");
