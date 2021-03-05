@@ -17,10 +17,10 @@ extern "C"{
 const int MAX_BUFFER_SIZE = 200;
 
 
-enum pixel_component{
-    Y,
-    U,
-    V,
+enum class pixel_component{
+    Y = 1,
+    U = 2,
+    V = 3,
 };
 
 size_t yuv_pixel_offset(const AVFrame *frame, int x, int y, enum pixel_component component);
@@ -32,13 +32,13 @@ size_t yuv_pixel_offset(const AVFrame *frame, int x, int y, enum pixel_component
     signed int uvy = y >> desc->log2_chroma_h;
 
     switch(component){
-        case Y:
+        case pixel_component::Y:
             offset = frame->linesize[0] * y + x;
             break;
-        case U:
+        case pixel_component::U:
             offset = frame->linesize[1] * uvy + uvx;
             break;
-        case V:
+        case pixel_component::V:
             offset = frame->linesize[2] * uvy + uvx;
             break;
         default:
@@ -223,9 +223,9 @@ int Visualizer::ffmpeg2visframe(VisYUVFrame *dst, const struct AVFrame *src) {
 
                 visBrush brush;
 
-                brush.Y = src->data[0][yuv_pixel_offset(src, x, y, Y)];
-                brush.U = src->data[1][yuv_pixel_offset(src, x, y, U)];
-                brush.V = src->data[2][yuv_pixel_offset(src, x, y, V)];
+                brush.Y = src->data[0][yuv_pixel_offset(src, x, y, pixel_component::Y)];
+                brush.U = src->data[1][yuv_pixel_offset(src, x, y, pixel_component::U)];
+                brush.V = src->data[2][yuv_pixel_offset(src, x, y, pixel_component::V)];
                 if((res = YUVPixel_Draw(dst, &brush, x, y)) != 0){
                     return res;
                 }
