@@ -101,7 +101,7 @@ void Visualizer::process() const{
     av_frame_free(&frame);
 }
 
-void Visualizer::process_frame(AVFrame *frame) const {
+void Visualizer::process_frame(const AVFrame *frame) const {
     std::shared_ptr<VisYUVFrame> yuvFrame(VisYUVFrame_Create(), [](VisYUVFrame *p){VisYUVFrame_Destroy(&p);});
     if(yuvFrame == nullptr){
         throw PyVisVidException("VisYUVFrame_Create failed\n");
@@ -214,7 +214,7 @@ void Visualizer::init_video() {
 
 }
 
-int Visualizer::ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src) {
+int Visualizer::ffmpeg2visframe(VisYUVFrame *dst, const struct AVFrame *src) {
 
         int res;
 
@@ -223,9 +223,9 @@ int Visualizer::ffmpeg2visframe(VisYUVFrame *dst, struct AVFrame *src) {
 
                 visBrush brush;
 
-                brush.Y = (PixelValue)src->data[0][yuv_pixel_offset(src, x, y, Y)];
-                brush.U = (PixelValue)src->data[1][yuv_pixel_offset(src, x, y, U)];
-                brush.V = (PixelValue)src->data[2][yuv_pixel_offset(src, x, y, V)];
+                brush.Y = src->data[0][yuv_pixel_offset(src, x, y, Y)];
+                brush.U = src->data[1][yuv_pixel_offset(src, x, y, U)];
+                brush.V = src->data[2][yuv_pixel_offset(src, x, y, V)];
                 if((res = YUVPixel_Draw(dst, &brush, x, y)) != 0){
                     return res;
                 }
