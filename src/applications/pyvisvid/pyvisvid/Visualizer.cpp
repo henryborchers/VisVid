@@ -223,9 +223,9 @@ int Visualizer::ffmpeg2visframe(VisYUVFrame *dst, const struct AVFrame *src) {
 
                 visBrush brush;
 
-                brush.Y = (PixelValue)src->data[0][yuv_pixel_offset(src, x, y, Y)];
-                brush.U = (PixelValue)src->data[1][yuv_pixel_offset(src, x, y, U)];
-                brush.V = (PixelValue)src->data[2][yuv_pixel_offset(src, x, y, V)];
+                brush.Y = src->data[0][yuv_pixel_offset(src, x, y, Y)];
+                brush.U = src->data[1][yuv_pixel_offset(src, x, y, U)];
+                brush.V = src->data[2][yuv_pixel_offset(src, x, y, V)];
                 if((res = YUVPixel_Draw(dst, &brush, x, y)) != 0){
                     return res;
                 }
