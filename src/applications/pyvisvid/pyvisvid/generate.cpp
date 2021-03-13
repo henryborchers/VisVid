@@ -8,7 +8,7 @@
 #include "AbsPgmStrategy.h"
 #include "visvid_exceptions.h"
 extern "C" {
-#include "visFrame.h"
+#include "visvid/utils.h"
 #include "shared/pgm.h"
 #include <libavutil/pixdesc.h>
 }
