@@ -45,6 +45,6 @@ public:
     void process_frame_result(std::shared_ptr<VisYUVFrame> yuvFrame, int frame_width, const visProcessContext &proCtx,
                               std::shared_ptr<visVisualResult> result, std::shared_ptr<AVCodecContext> codecContext, std::shared_ptr<visBuffer> buffer);
 
-//    void process_frame_result(VisYUVFrame *pFrame, int width, visProcessContext context, visVisualResult result);
+    static std::shared_ptr<visImage> generateImage(std::shared_ptr<visView> sharedPtr);
 };
 #endif //LIBVISVID_GENERATE_H

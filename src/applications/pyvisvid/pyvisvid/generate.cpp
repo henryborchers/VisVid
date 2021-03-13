@@ -157,23 +157,12 @@ std::shared_ptr<visImage> Processor::process() {
 
 //    ===============================================================
     std::shared_ptr<visView> mView(VisView_Create(buffer->bufferWidth, mCodecCtx->frame_number), [](visView *ptr){VisView_Destroy(&ptr);});
-
     if(visView_Update4(mView.get(), buffer.get()) != 0){
         throw PyVisVidException("visView_Update4 failed");
     }
-    std::shared_ptr<visImage> img(
-            new visImage,
-            [](visImage *ptr){
-                visImage_FreeData(ptr);
-                delete(ptr);
-            }
-        );
+    std::shared_ptr<visImage> img = this->generateImage(mView);
 
-    visImage_Alloc(img.get(), mView->width, mView->height, 1);
-    if(visView_GenerateBW(img.get(), mView.get()) != 0){
-        throw PyVisVidException("visView_GenerateBW");
 
-    }
     return img;
 }
 int Processor::decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<AVFrame> frame, AVPacket &packet) {
@@ -295,4 +284,20 @@ void Processor::process_frame_result(std::shared_ptr<VisYUVFrame> yuvFrame, int 
             throw PyVisVidException("visBuffer_PushBackResult failed");
         }
 
+}
+
+std::shared_ptr<visImage> Processor::generateImage(std::shared_ptr<visView> mView) {
+    std::shared_ptr<visImage> img(
+            new visImage,
+            [](visImage *ptr){
+                visImage_FreeData(ptr);
+                delete(ptr);
+            }
+    );
+    visImage_Alloc(img.get(), mView->width, mView->height, 1);
+    if(visView_GenerateBW(img.get(), mView.get()) != 0){
+        throw PyVisVidException("visView_GenerateBW");
+
+    }
+    return img;
 }
