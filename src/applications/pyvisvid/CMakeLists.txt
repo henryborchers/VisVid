@@ -74,9 +74,8 @@ if(Python3_Interpreter_FOUND)
                     FFmpeg::avcodec
                 )
         target_include_directories(pyvisvid_module
-                PRIVATE
-                    ${PROJECT_SOURCE_DIR}/examples
                 PUBLIC
+                    ${PROJECT_SOURCE_DIR}/examples
                     ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
                 )
     endif()
