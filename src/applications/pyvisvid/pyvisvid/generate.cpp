@@ -37,15 +37,13 @@ public:
 };
 
 int SplitPgmStrategy::make_pgm(const std::string &source, const std::string &output_file) const {
-    std::shared_ptr<VideoFile> video = std::make_shared<VideoFile>(source);
-    Processor processor(video);
+    Processor processor(std::make_shared<VideoFile>(source));
     const std::shared_ptr<visImage> img = processor.process();
     image_save_pgm(img.get(), output_file.c_str());
     return 0;
 }
 
 int make_pgm(const std::string &source, const std::string &output_file){
-//    const StandardPgmStrategy strategy;
     const SplitPgmStrategy strategy;
     return strategy.make_pgm(source, output_file);
 }
@@ -208,7 +206,7 @@ void Processor::process_frame(std::shared_ptr<AVFrame> frame, int frame_width, s
     visProcessContext proCtx;
     proCtx.processCb = visVisResult_CaculateBrightestOverWidth;
 
-    visVisualResult     *result = (visVisualResult*)malloc(sizeof(visVisualResult));
+    auto *result = (visVisualResult*)malloc(sizeof(visVisualResult));
     if(VisVisualResult_Init(result) != 0 ){
         throw PyVisVidException("Unable to initialize a visVisualResult");
     }
