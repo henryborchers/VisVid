@@ -52,7 +52,7 @@ if(Python3_Interpreter_FOUND)
             )
 #        add_library(pyvisvid_module
 #                pyvisvid/visvid_exceptions.cpp
-#                pyvisvid/visvid_extension.cpp
+#                pyvisvid/wrapper.cpp
 #                pyvisvid/Visualizer.cpp
 #                pyvisvid/Visualizer.h
 #                pyvisvid/utils.cpp

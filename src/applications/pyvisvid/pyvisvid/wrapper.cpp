@@ -23,7 +23,7 @@ void init(){
 #endif
 }
 
-PYBIND11_MODULE(visvid, m){
+PYBIND11_MODULE(wrapper, m){
     m.def("get_version", &get_version);
     m.def("initialize", &init);
     m.def("make_pgm", &make_pgm, py::arg("source"), py::arg("output"));
