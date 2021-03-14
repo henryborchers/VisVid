@@ -77,7 +77,6 @@ if(Python3_Interpreter_FOUND)
                 PRIVATE
                     ${PROJECT_SOURCE_DIR}/examples
                 PUBLIC
-                    ${PROJECT_SOURCE_DIR}/examples
                     ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
                 )
     endif()
