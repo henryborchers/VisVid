@@ -32,7 +32,6 @@ private:
         V = 3,
     };
     std::shared_ptr<VideoFile> mVideoFile;
-    static size_t yuv_pixel_offset(std::shared_ptr<AVFrame> frame, int x, int y, enum pixel_component component);
 public:
     explicit  Processor(std::shared_ptr<VideoFile> videoFile);
     std::shared_ptr<visImage> process();

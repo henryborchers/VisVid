@@ -18,13 +18,13 @@ class Visualizer {
     int mVideoStream = -1;
     std::shared_ptr<visBuffer> mBuffer;
     std::shared_ptr<AVCodecContext> mCodecCtx;
-    static int ffmpeg2visframe(VisYUVFrame *dst, const struct AVFrame *src);
     visImage mImage;
     visView *mView;
     void process_frame(const AVFrame *frame) const;
     void process_frame_result(const VisYUVFrame *yuvFrame, int frame_width, const visProcessContext &proCtx,
                               visVisualResult &result) const;
 public:
+    static int ffmpeg2visframe(VisYUVFrame *dst, const struct AVFrame *src);
 
     void load(const std::string &source);
     void init_video();

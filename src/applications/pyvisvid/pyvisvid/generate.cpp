@@ -8,6 +8,7 @@
 #include "Visualizer.h"
 #include "AbsPgmStrategy.h"
 #include "visvid_exceptions.h"
+#include "utils.h"
 extern "C" {
 #include "visvid/utils.h"
 #include "shared/pgm.h"
@@ -199,7 +200,7 @@ void Processor::process_frame(std::shared_ptr<AVFrame> frame, int frame_width, s
         throw PyVisVidException("VisYUVFrame_Create failed\n");
     }
     VisYUVFrame_SetSize(yuvFrame.get(), frame->width, frame->height);
-    if(this->ffmpeg2visframe(yuvFrame, frame) !=0){
+    if(this->ffmpeg2visframe(yuvFrame, frame) != 0){
         throw PyVisVidException("ffmpeg2visframe failed\n");
     }
 
@@ -216,46 +217,9 @@ void Processor::process_frame(std::shared_ptr<AVFrame> frame, int frame_width, s
 }
 
 
-size_t Processor::yuv_pixel_offset(std::shared_ptr<AVFrame> frame, int x, int y, enum pixel_component component){
-    size_t offset = 0;
-    const AVPixFmtDescriptor * desc = av_pix_fmt_desc_get((AVPixelFormat)frame->format);
-    signed int uvx = x >> desc->log2_chroma_w;
-    signed int uvy = y >> desc->log2_chroma_h;
-
-    switch(component){
-        case pixel_component::Y:
-            offset = frame->linesize[0] * y + x;
-            break;
-        case pixel_component::U:
-            offset = frame->linesize[1] * uvy + uvx;
-            break;
-        case pixel_component::V:
-            offset = frame->linesize[2] * uvy + uvx;
-            break;
-        default:
-            break;
-    }
-    return offset;
-}
-
 
 int Processor::ffmpeg2visframe(std::shared_ptr<VisYUVFrame> dst, std::shared_ptr<AVFrame> src) {
-    int res;
-
-    for(int y = 0; y < src->height; y++){
-        for(int x = 0; x < src->width; x++){
-
-            visBrush brush;
-
-            brush.Y = src->data[0][Processor::yuv_pixel_offset(src, x, y, pixel_component::Y)];
-            brush.U = src->data[1][Processor::yuv_pixel_offset(src, x, y, pixel_component::U)];
-            brush.V = src->data[2][Processor::yuv_pixel_offset(src, x, y, pixel_component::V)];
-            if((res = YUVPixel_Draw(dst.get(), &brush, x, y)) != 0){
-                return res;
-            }
-
-        }
-    }
+    Visualizer::ffmpeg2visframe(dst.get(), src.get());
     return 0;
 }
 
