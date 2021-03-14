@@ -176,24 +176,22 @@ int Processor::decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<
         fprintf(stderr, "error sending a packet for decoding. Reason: %s\n", error_msg);
         return ret;
     }
-    while (ret >=0){
-        ret = avcodec_receive_frame(codecCtx.get(), frame.get());
-        if(ret == AVERROR(EAGAIN) || ret == AVERROR_EOF){
-            return ret;
-        } else if (ret < 0){
-            fprintf(stderr, "error During decoding\n");
-            return ret;
-        }
-
-
-        return 1;
+//    while (ret >=0){
+    ret = avcodec_receive_frame(codecCtx.get(), frame.get());
+    if(ret == AVERROR(EAGAIN) || ret == AVERROR_EOF){
+        return ret;
+    } else if (ret < 0){
+        fprintf(stderr, "error During decoding\n");
+        return ret;
     }
-    char error_msg[1000];
-    av_strerror(ret,error_msg, 1000);
-    fprintf(stderr, "error . Reason: %s\n", error_msg);
-    exit(1);
 
-    return 0;
+
+    return 1;
+//    }
+//    char error_msg[1000];
+//    av_strerror(ret,error_msg, 1000);
+//    fprintf(stderr, "error . Reason: %s\n", error_msg);
+//    exit(1);
 }
 
 void Processor::process_frame(std::shared_ptr<AVFrame> frame, int frame_width, std::shared_ptr<AVCodecContext> codecContext, std::shared_ptr<visBuffer> buffer) {
