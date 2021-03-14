@@ -42,6 +42,14 @@ if(Python3_Interpreter_FOUND)
             Visvid::Visvid
             )
     if(Python3_Development_FOUND)
+        add_library(_pyvisvid_module_shared OBJECT EXCLUDE_FROM_ALL
+                ${PROJECT_SOURCE_DIR}/examples/shared/decode.c
+                ${PROJECT_SOURCE_DIR}/examples/shared/pgm.c
+                )
+        target_link_libraries(_pyvisvid_module_shared
+            PUBLIC
+                Visvid::Visvid
+            )
         add_library(pyvisvid_module
                 pyvisvid/visvid_exceptions.cpp
                 pyvisvid/visvid_extension.cpp
@@ -51,14 +59,15 @@ if(Python3_Interpreter_FOUND)
                 pyvisvid/utils.h
                 pyvisvid/generate.cpp
                 pyvisvid/generate.h
-                ${PROJECT_SOURCE_DIR}/examples/shared/decode.c
-                ${PROJECT_SOURCE_DIR}/examples/shared/pgm.c
+#                ${PROJECT_SOURCE_DIR}/examples/shared/decode.c
+#                ${PROJECT_SOURCE_DIR}/examples/shared/pgm.c
                 )
 
         target_link_libraries(pyvisvid_module
                 PUBLIC
                     Visvid::Visvid
                 PRIVATE
+                    _pyvisvid_module_shared
                     pybind11::module
                     Python3::Python
                     FFmpeg::avformat
