@@ -1,6 +1,6 @@
 import os
 import pytest
-from pyvisvid import visvid
+from pyvisvid import wrapper as visvid
 import shutil
 import subprocess
 import struct
