@@ -50,34 +50,34 @@ if(Python3_Interpreter_FOUND)
             PUBLIC
                 Visvid::Visvid
             )
-#        add_library(pyvisvid_module
-#                pyvisvid/visvid_exceptions.cpp
-#                pyvisvid/wrapper.cpp
-#                pyvisvid/Visualizer.cpp
-#                pyvisvid/Visualizer.h
-#                pyvisvid/utils.cpp
-#                pyvisvid/utils.h
-#                pyvisvid/generate.cpp
-#                pyvisvid/generate.h
-##                ${PROJECT_SOURCE_DIR}/examples/shared/decode.c
-##                ${PROJECT_SOURCE_DIR}/examples/shared/pgm.c
-#                )
-#
-#        target_link_libraries(pyvisvid_module
-#                PUBLIC
-#                    Visvid::Visvid
-#                PRIVATE
-#                    _pyvisvid_module_shared
-#                    pybind11::module
-#                    Python3::Python
-#                    FFmpeg::avformat
-#                    FFmpeg::avcodec
-#                )
-#        target_include_directories(pyvisvid_module
-#                PUBLIC
-#                    ${PROJECT_SOURCE_DIR}/examples
-#                    ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
-#                )
+        set_target_properties(_pyvisvid_module_shared PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+        add_library(pyvisvid_module EXCLUDE_FROM_ALL
+                pyvisvid/visvid_exceptions.cpp
+                pyvisvid/wrapper.cpp
+                pyvisvid/Visualizer.cpp
+                pyvisvid/Visualizer.h
+                pyvisvid/utils.cpp
+                pyvisvid/utils.h
+                pyvisvid/generate.cpp
+                pyvisvid/generate.h
+                )
+        set_target_properties(pyvisvid_module PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+
+        target_link_libraries(pyvisvid_module
+                PUBLIC
+                Visvid::Visvid
+                PRIVATE
+                    _pyvisvid_module_shared
+                    pybind11::module
+                    Python3::Python
+                    FFmpeg::avformat
+                    FFmpeg::avcodec
+                )
+        target_include_directories(pyvisvid_module
+                PUBLIC
+                    ${PROJECT_SOURCE_DIR}/examples
+                    ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
+                )
     endif()
     add_custom_target(pyvisvid_run
             DEPENDS
