@@ -4,8 +4,8 @@
 include(FetchContent)
 if(Python3_Interpreter_FOUND)
     FetchContent_Declare(libpybind11
-            URL https://github.com/pybind/pybind11/archive/v2.4.3.tar.gz
-            URL_HASH SHA1=75d0184c1720bad96bbcbef0e25ccee92f21523b
+            URL https://github.com/pybind/pybind11/archive/v2.6.2.tar.gz
+            URL_HASH SHA1=e340be2d61439deaf7bdd4bd273bb8c51b713f26
             )
     FetchContent_GetProperties(libpybind11)
     if (NOT libpybind11_POPULATED)
