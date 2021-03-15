@@ -40,7 +40,7 @@ public:
 
     void process_frame(std::shared_ptr<AVFrame> frame, int frame_width, std::shared_ptr<AVCodecContext> codecContext, std::shared_ptr<visBuffer> buffer);
 
-    int ffmpeg2visframe(std::shared_ptr<VisYUVFrame> dst, std::shared_ptr<AVFrame> src);
+    static int ffmpeg2visframe(std::shared_ptr<VisYUVFrame> dst, std::shared_ptr<AVFrame> src);
     void process_frame_result(std::shared_ptr<VisYUVFrame> yuvFrame, int frame_width, const visProcessContext &proCtx,
                               std::shared_ptr<visVisualResult> result, std::shared_ptr<AVCodecContext> codecContext, std::shared_ptr<visBuffer> buffer);
 
