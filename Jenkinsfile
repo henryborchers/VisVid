@@ -128,7 +128,7 @@ pipeline {
                                                            )
                                                         }
                                                         tee("logs/cmakebuild.log"){
-                                                            sh 'build-wrapper-linux-x86-64 --out-dir build/build_wrapper_output_directory cmake --build build/debug --target test-visvid --target test-visvid-internal'
+                                                            sh 'build-wrapper-linux-x86-64 --out-dir build/build_wrapper_output_directory cmake --build build/debug --target all --target test-visvid --target test-visvid-internal'
                                                         }
                                                     }
                                                     post{
