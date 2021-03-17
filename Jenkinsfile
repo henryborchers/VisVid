@@ -132,9 +132,6 @@ pipeline {
                                                         }
                                                     }
                                                     post{
-                                                        failure{
-                                                            sh 'ls -laR /home/user/.conan'
-                                                        }
                                                         always{
                                                             recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
                                                             recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
