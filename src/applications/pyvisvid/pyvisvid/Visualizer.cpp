@@ -2,11 +2,11 @@
 // Created by henry on 4/24/19.
 //
 
-#include <iostream>
 #include <stdexcept>
 #include <memory>
 #include "Visualizer.h"
 #include "visvid_exceptions.h"
+#include <iostream>
 
 extern "C"{
 #include "shared/decode.h"
