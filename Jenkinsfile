@@ -120,7 +120,7 @@ pipeline {
                                             stages{
                                                 stage("Build Debug Version for Testing"){
                                                     steps{
-                                                        sh "conan install . -o with_createVisuals=True -if build/debug/"
+                                                        sh "conan install . -o with_createVisuals=True -o ffmpeg:shared=True -if build/debug/"
                                                         tee("logs/cmakeconfig.log"){
                                                             sh(label:"configuring a debug build",
                                                                script: '''cmake . -B build/debug  -Wdev -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="build/debug/conan_paths.cmake" -DCMAKE_CXX_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage" -DCMAKE_C_FLAGS="-g -fno-inline -fno-omit-frame-pointer -fprofile-arcs -ftest-coverage -coverage  -Wall -Wextra" -DBUILD_TESTING:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON -DVISVID_SAMPLE_CREATEVISUALS:BOOL=ON -DVISVID_PYVISVID:BOOL=ON -DMEMORYCHECK_COMMAND=/usr/local/bin/drmemory

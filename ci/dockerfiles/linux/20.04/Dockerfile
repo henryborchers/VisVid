@@ -193,5 +193,5 @@ RUN apt update && apt install -y ffmpeg
 USER user
 WORKDIR /tmp
 COPY --from=CONAN_BUILDER --chown=user:user /home/user/.conan /home/user/.conan/
-RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
+RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update -o ffmpeg:shared=True && \
     chown -R user /home/user/.conan/data
