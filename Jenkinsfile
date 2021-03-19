@@ -151,6 +151,14 @@ pipeline {
                                                                            )
                                                             }
                                                         }
+                                                        stage("Clang-Tidy"){
+                                                            steps{
+                                                                sh(
+                                                                    label:'Run Clang-Tidy',
+                                                                    script: 'run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/'
+                                                                   )
+                                                            }
+                                                        }
                                                         stage("Run CTest"){
                                                             steps{
                                                                 sh "cd build/debug && ctest --output-on-failure --no-compress-output -T Test"
