@@ -4,13 +4,13 @@
 
 
 #include "Visualizer.h"
-#include "utils.h"
 #include "generate.h"
+#include "utils.h"
 #include "visvid_exceptions.h"
 extern  "C"{
     #include <libavcodec/version.h>
-    #include <libavutil/version.h>
     #include <libavformat/avformat.h>
+    #include <libavutil/version.h>
 }
 
 #include <pybind11/pybind11.h>
