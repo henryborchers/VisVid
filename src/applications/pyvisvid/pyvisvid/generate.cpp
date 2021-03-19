@@ -115,13 +115,13 @@ std::shared_ptr<visImage> Processor::process() {
 
 //    ===============================================================
 
-    int ret;
     AVPacket pkt;
     std::shared_ptr<AVFrame> frame(av_frame_alloc(), [](AVFrame *p){av_frame_free(&p);});
     if(!frame){
         throw PyVisVidException("Could not allocate a video frame");
     }
     while(true) {
+        int ret;
         if((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0){
             if(ret == AVERROR_EOF){
                 ret = 0;
