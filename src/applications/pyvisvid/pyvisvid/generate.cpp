@@ -4,10 +4,10 @@
 //
 
 #include "generate.h"
-#include "visvid_exceptions.h"
 #include "AbsPgmStrategy.h"
-#include "Visualizer.h"
 #include "utils.h"
+#include "Visualizer.h"
+#include "visvid_exceptions.h"
 extern "C" {
 #include "shared/pgm.h"
 #include "visvid/utils.h"
