@@ -107,7 +107,8 @@ pipeline {
                                                         always {
                                                             recordIssues(
                                                                 filters: [
-                                                                        excludeFile('build/debug/_deps/*')
+                                                                        excludeFile('build/debug/_deps/*'),
+                                                                        excludeFile('home/user/.conan/*'),
                                                                     ],
                                                                 tools: [
                                                                         cppCheck(pattern: 'logs/cppcheck_debug.xml')
