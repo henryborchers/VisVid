@@ -134,7 +134,7 @@ pipeline {
                                                     post{
                                                         always{
                                                             recordIssues(tools: [[$class: 'Cmake', pattern: 'logs/cmakeconfig.log']])
-                                                            recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')])
+                                                            recordIssues(tools: [gcc(pattern: 'logs/cmakebuild.log')], filters: [excludeFile('/usr/include/*')])
                                                         }
                                                     }
                                                 }
