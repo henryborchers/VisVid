@@ -165,9 +165,7 @@ std::shared_ptr<visImage> Processor::process() {
 }
 int Processor::decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<AVFrame> frame, AVPacket &packet) {
 //TODO: fix up here
-    int ret;
-
-    ret = avcodec_send_packet(codecCtx.get(), &packet);
+    int ret = avcodec_send_packet(codecCtx.get(), &packet);
     if(ret < 0 ){
         char error_msg[1000];
         av_strerror(ret,error_msg, 1000);

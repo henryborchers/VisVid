@@ -36,12 +36,12 @@ public:
     explicit  Processor(std::shared_ptr<VideoFile> videoFile);
     std::shared_ptr<visImage> process();
 
-    int decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<AVFrame> frame, AVPacket &packet);
+    static int decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<AVFrame> frame, AVPacket &packet);
 
     void process_frame(std::shared_ptr<AVFrame> frame, int frame_width, std::shared_ptr<AVCodecContext> codecContext, std::shared_ptr<visBuffer> buffer);
 
     static int ffmpeg2visframe(std::shared_ptr<VisYUVFrame> dst, std::shared_ptr<AVFrame> src);
-    void process_frame_result(std::shared_ptr<VisYUVFrame> yuvFrame, int frame_width, const visProcessContext &proCtx,
+    static void process_frame_result(std::shared_ptr<VisYUVFrame> yuvFrame, int frame_width, const visProcessContext &proCtx,
                               std::shared_ptr<visVisualResult> result, std::shared_ptr<AVCodecContext> codecContext, std::shared_ptr<visBuffer> buffer);
 
     static std::shared_ptr<visImage> generateImage(std::shared_ptr<visView> sharedPtr);
