@@ -4,8 +4,8 @@
 //
 
 #include "generate.h"
-#include "Visualizer.h"
 #include "AbsPgmStrategy.h"
+#include "Visualizer.h"
 #include "visvid_exceptions.h"
 #include "utils.h"
 extern "C" {
