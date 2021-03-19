@@ -67,7 +67,6 @@ void Visualizer::process() const{
     while(true) {
         if((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0){
             if(ret == AVERROR_EOF){
-                ret = 0;
                 break;
             }
             char error_msg[1000];
