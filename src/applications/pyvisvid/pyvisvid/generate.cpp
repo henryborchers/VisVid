@@ -3,7 +3,6 @@
 // Created by Borchers, Henry Samuel on 2/26/21.
 //
 
-#include <iostream>
 #include "generate.h"
 #include "Visualizer.h"
 #include "AbsPgmStrategy.h"
@@ -14,7 +13,7 @@ extern "C" {
 #include "shared/pgm.h"
 #include <libavutil/pixdesc.h>
 }
-
+#include <iostream>
 
 class StandardPgmStrategy : public AbsPgmStrategy {
 public:
