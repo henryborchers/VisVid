@@ -2,7 +2,7 @@ import os
 import argparse
 import sys
 
-from . import visvid
+from . import wrapper as visvid
 
 
 def is_valid_source(source):

@@ -23,7 +23,7 @@ enum class pixel_component{
     V = 3,
 };
 
-size_t yuv_pixel_offset(const AVFrame *frame, int x, int y, enum pixel_component component);
+
 
 size_t yuv_pixel_offset(const AVFrame *frame, int x, int y, enum pixel_component component){
     size_t offset = 0;

@@ -4,8 +4,8 @@
 include(FetchContent)
 if(Python3_Interpreter_FOUND)
     FetchContent_Declare(libpybind11
-            URL https://github.com/pybind/pybind11/archive/v2.4.3.tar.gz
-            URL_HASH SHA1=75d0184c1720bad96bbcbef0e25ccee92f21523b
+            URL https://github.com/pybind/pybind11/archive/v2.6.2.tar.gz
+            URL_HASH SHA1=e340be2d61439deaf7bdd4bd273bb8c51b713f26
             )
     FetchContent_GetProperties(libpybind11)
     if (NOT libpybind11_POPULATED)
@@ -42,9 +42,18 @@ if(Python3_Interpreter_FOUND)
             Visvid::Visvid
             )
     if(Python3_Development_FOUND)
-        add_library(pyvisvid_module
+#        add_library(_pyvisvid_module_shared OBJECT EXCLUDE_FROM_ALL
+#                ${PROJECT_SOURCE_DIR}/examples/shared/decode.c
+#                ${PROJECT_SOURCE_DIR}/examples/shared/pgm.c
+#                )
+#        target_link_libraries(_pyvisvid_module_shared
+#            PUBLIC
+#                Visvid::Visvid
+#            )
+#        set_target_properties(_pyvisvid_module_shared PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+        add_library(pyvisvid_module EXCLUDE_FROM_ALL
                 pyvisvid/visvid_exceptions.cpp
-                pyvisvid/visvid_extension.cpp
+                pyvisvid/wrapper.cpp
                 pyvisvid/Visualizer.cpp
                 pyvisvid/Visualizer.h
                 pyvisvid/utils.cpp
@@ -54,20 +63,21 @@ if(Python3_Interpreter_FOUND)
                 ${PROJECT_SOURCE_DIR}/examples/shared/decode.c
                 ${PROJECT_SOURCE_DIR}/examples/shared/pgm.c
                 )
+#        set_target_properties(pyvisvid_module PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
         target_link_libraries(pyvisvid_module
                 PUBLIC
-                    Visvid::Visvid
+                Visvid::Visvid
                 PRIVATE
+#                    _pyvisvid_module_shared
                     pybind11::module
                     Python3::Python
                     FFmpeg::avformat
                     FFmpeg::avcodec
                 )
         target_include_directories(pyvisvid_module
-                PRIVATE
-                    ${PROJECT_SOURCE_DIR}/examples
                 PUBLIC
+                    ${PROJECT_SOURCE_DIR}/examples
                     ${PROJECT_SOURCE_DIR}/src/applications/pyvisvid
                 )
     endif()

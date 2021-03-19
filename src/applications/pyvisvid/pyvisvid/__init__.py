@@ -1,3 +1,3 @@
-from . import visvid
+from . import wrapper
 
-visvid.initialize()
+wrapper.initialize()

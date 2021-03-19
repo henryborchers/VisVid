@@ -5,6 +5,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && \
     apt-get install -y \
+        libx11-dev \
         build-essential \
         python3-pip \
         pkg-config \
@@ -159,7 +160,7 @@ RUN wget --no-verbose https://github.com/DynamoRIO/drmemory/releases/download/re
 # FINAL IMAGE
 
 FROM PYTHON_BASE
-
+RUN apt update && apt install -y  clang-tidy cppcheck
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN groupadd -g $GROUP_ID user && \
@@ -192,5 +193,5 @@ RUN apt update && apt install -y ffmpeg
 USER user
 WORKDIR /tmp
 COPY --from=CONAN_BUILDER --chown=user:user /home/user/.conan /home/user/.conan/
-RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update && \
+RUN conan install /tmp/ --no-imports --build missing -o with_createVisuals=True --update -o ffmpeg:shared=True && \
     chown -R user /home/user/.conan/data

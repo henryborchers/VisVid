@@ -205,10 +205,10 @@ class BuildCMakeClib(build_clib):
 
 
 pyvisvid_extension = Extension(
-    "pyvisvid.visvid",
+    "pyvisvid.wrapper",
     sources=[
         'src/applications/pyvisvid/pyvisvid/visvid_exceptions.cpp',
-        'src/applications/pyvisvid/pyvisvid/visvid_extension.cpp',
+        'src/applications/pyvisvid/pyvisvid/wrapper.cpp',
         'src/applications/pyvisvid/pyvisvid/Visualizer.cpp',
         'src/applications/pyvisvid/pyvisvid/utils.cpp',
         'src/applications/pyvisvid/pyvisvid/generate.cpp',

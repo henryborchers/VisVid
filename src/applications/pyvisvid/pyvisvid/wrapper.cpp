@@ -4,13 +4,13 @@
 
 
 #include "Visualizer.h"
-#include "utils.h"
 #include "generate.h"
+#include "utils.h"
 #include "visvid_exceptions.h"
 extern  "C"{
     #include <libavcodec/version.h>
-    #include <libavutil/version.h>
     #include <libavformat/avformat.h>
+    #include <libavutil/version.h>
 }
 
 #include <pybind11/pybind11.h>
@@ -23,7 +23,11 @@ void init(){
 #endif
 }
 
-PYBIND11_MODULE(visvid, m){
+PYBIND11_MODULE(wrapper, m){
+    pybind11::options options;
+//    options.enable_function_signatures();
+    options.disable_function_signatures();
+//    options.disable_signature_sections();
     m.def("get_version", &get_version);
     m.def("initialize", &init);
     m.def("make_pgm", &make_pgm, py::arg("source"), py::arg("output"));
