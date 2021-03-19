@@ -2,9 +2,6 @@
 // Created by henry on 4/24/19.
 //
 
-#include <iostream>
-#include <stdexcept>
-#include <memory>
 #include "Visualizer.h"
 #include "visvid_exceptions.h"
 
@@ -13,6 +10,9 @@ extern "C"{
 #include <libavutil/pixdesc.h>
 #include <visvid/utils.h>
 }
+#include <iostream>
+#include <memory>
+#include <stdexcept>
 
 const int MAX_BUFFER_SIZE = 200;
 
@@ -67,7 +67,6 @@ void Visualizer::process() const{
     while(true) {
         if((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0){
             if(ret == AVERROR_EOF){
-                ret = 0;
                 break;
             }
             char error_msg[1000];

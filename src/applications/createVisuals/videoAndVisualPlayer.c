@@ -2,6 +2,10 @@
 // Created by Borchers, Henry Samuel on 12/3/16.
 //
 
+#include "videoAndVisualPlayer.h"
+#include "ffmpeg_converter.h"
+#include "videoDecoder.h"
+
 #include <SDL.h>
 #include <SDL_error.h>
 #include <SDL_events.h>
@@ -15,9 +19,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <visvid/visvid.h>
-#include "ffmpeg_converter.h"
-#include "videoAndVisualPlayer.h"
-#include "videoDecoder.h"
+
 #define NUM_COLORS 4
 
 static int vidVis_init();

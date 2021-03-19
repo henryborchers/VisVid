@@ -22,8 +22,9 @@ void image_save_pgm(const visImage *image, const char *filename)
 
     f = fopen(filename,"w");
     fprintf(f, "P5\n%d %d\n%d\n", xsize, ysize, 255);
-    for (i = 0; i < ysize; i++)
+    for (i = 0; i < ysize; i++){
         fwrite(buf + i * wrap, 1, xsize, f);
+    }
     fclose(f);
 }
 
