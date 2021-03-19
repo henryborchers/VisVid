@@ -3,9 +3,9 @@
 //
 
 #include <catch.hpp>
-#include <pyvisvid/utils.h>
 #include <pyvisvid/Visualizer.h>
 #include <pyvisvid/generate.h>
+#include <pyvisvid/utils.h>
 extern "C"{
     #include "shared/pgm.h"
 }
