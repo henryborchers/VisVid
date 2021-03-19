@@ -178,7 +178,8 @@ int Processor::decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<
     ret = avcodec_receive_frame(codecCtx.get(), frame.get());
     if(ret == AVERROR(EAGAIN) || ret == AVERROR_EOF){
         return ret;
-    } else if (ret < 0){
+    }
+    if (ret < 0){
         fprintf(stderr, "error During decoding\n");
         return ret;
     }
