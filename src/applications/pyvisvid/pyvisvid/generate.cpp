@@ -9,8 +9,8 @@
 #include "visvid_exceptions.h"
 #include "utils.h"
 extern "C" {
-#include "visvid/utils.h"
 #include "shared/pgm.h"
+#include "visvid/utils.h"
 #include <libavutil/pixdesc.h>
 }
 #include <iostream>
