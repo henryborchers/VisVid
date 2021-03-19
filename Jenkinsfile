@@ -232,7 +232,10 @@ pipeline {
                                                                     tee("logs/mypy.log"){
                                                                         sh(
                                                                             label: "Running MyPy",
-                                                                            script: "cd src/applications/pyvisvid && mypy -p pyvisvid"
+                                                                            script: '''stubgen src/applications/pyvisvid  -o /tmp/mypy_stubs
+                                                                                       MYPYPATH=/tmp/mypy_stubs mypy -p pyvisvid --cache-dir=/tmp/.mypy_cache
+//                                                                                       cd src/applications/pyvisvid && mypy -p pyvisvid
+                                                                                       '''
                                                                         )
                                                                     }
                                                                 }
