@@ -24,6 +24,10 @@ void init(){
 }
 
 PYBIND11_MODULE(wrapper, m){
+    pybind11::options options;
+//    options.enable_function_signatures();
+    options.disable_function_signatures();
+//    options.disable_signature_sections();
     m.def("get_version", &get_version);
     m.def("initialize", &init);
     m.def("make_pgm", &make_pgm, py::arg("source"), py::arg("output"));
