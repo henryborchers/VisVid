@@ -74,12 +74,20 @@ pipeline {
                                                 }
                                                 stage("Clang-Tidy"){
                                                     steps{
-                                                        tee('logs/clang-tidy_debug.log') {
-                                                            sh(
-                                                                label:'Run Clang-Tidy',
-                                                                script: 'run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/'
-                                                               )
-                                                           }
+                                                        script{
+                                                            def cores = sh(
+                                                            label: 'looking up number of cores',
+                                                            returnStdout: true,
+                                                            script: 'grep -c ^processor /proc/cpuinfo'
+                                                            ).trim()
+
+                                                            tee('logs/clang-tidy_debug.log') {
+                                                                sh(
+                                                                    label: 'Run Clang-Tidy',
+                                                                    script: "run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/ -j ${cores}"
+                                                                   )
+                                                            }
+                                                        }
                                                     }
                                                     post{
                                                         always {
