@@ -160,7 +160,7 @@ RUN wget --no-verbose https://github.com/DynamoRIO/drmemory/releases/download/re
 # FINAL IMAGE
 
 FROM PYTHON_BASE
-RUN apt update && apt install -y  clang-tidy
+RUN apt update && apt install -y  clang-tidy cppcheck
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN groupadd -g $GROUP_ID user && \
