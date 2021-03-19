@@ -5,8 +5,8 @@
 
 #include "generate.h"
 #include "AbsPgmStrategy.h"
-#include "utils.h"
 #include "Visualizer.h"
+#include "utils.h"
 #include "visvid_exceptions.h"
 extern "C" {
 #include "shared/pgm.h"
