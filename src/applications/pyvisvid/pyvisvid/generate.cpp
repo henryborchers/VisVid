@@ -123,7 +123,6 @@ std::shared_ptr<visImage> Processor::process() {
         int ret;
         if((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0){
             if(ret == AVERROR_EOF){
-                ret = 0;
                 break;
             }
             char error_msg[1000];
@@ -159,7 +158,7 @@ std::shared_ptr<visImage> Processor::process() {
     if(visView_Update4(mView.get(), buffer.get()) != 0){
         throw PyVisVidException("visView_Update4 failed");
     }
-    std::shared_ptr<visImage> img = this->generateImage(mView);
+    std::shared_ptr<visImage> img = Processor::generateImage(mView);
 
 
     return img;
@@ -199,7 +198,7 @@ void Processor::process_frame(std::shared_ptr<AVFrame> frame, int frame_width, s
         throw PyVisVidException("VisYUVFrame_Create failed\n");
     }
     VisYUVFrame_SetSize(yuvFrame.get(), frame->width, frame->height);
-    if(this->ffmpeg2visframe(yuvFrame, frame) != 0){
+    if(Processor::ffmpeg2visframe(yuvFrame, frame) != 0){
         throw PyVisVidException("ffmpeg2visframe failed\n");
     }
 
