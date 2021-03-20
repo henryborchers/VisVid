@@ -83,7 +83,7 @@ DecoderContext *decoderContext_Create(const char *filename) {
         free(tmp);
         return NULL;
     }
-
+    tmp->filename[file_name_len] = 0;
     strncpy(tmp->filename, filename, file_name_len);
     if((ret = avformat_open_input(&tmp->formatContext, filename, NULL, NULL)) < 0){
         char error_msg[1000];
