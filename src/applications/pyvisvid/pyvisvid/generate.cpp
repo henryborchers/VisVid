@@ -90,15 +90,7 @@ std::shared_ptr<visImage> Processor::process() {
     //====================
 //    std::shared_ptr<AVFormatContext> mAvFormatCtx = this->open(mVideoFile);
     int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
-
-    auto buffer = std::shared_ptr<visBuffer>(VisBuffer_Create2(frame_width, MAX_BUFFER_SIZE), [](visBuffer *p){
-        VisBuffer_Destroy(&p);
-    });
-    if(!buffer){
-        throw PyVisVidException("Unable to allocate a visbuffer\n");
-
-    }
-
+    std::shared_ptr<visBuffer> buffer = Processor::createVisvidBuffer(frame_width, MAX_BUFFER_SIZE);
 
 //    ===============================================================
 
@@ -109,13 +101,16 @@ std::shared_ptr<visImage> Processor::process() {
     }
     while(true) {
         int ret;
-        if((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0){
-            if(ret == AVERROR_EOF){
-                break;
+
+        {
+            if ((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0) {
+                if (ret == AVERROR_EOF) {
+                    break;
+                }
+                char error_msg[AV_ERROR_MAX_STRING_SIZE];
+                av_strerror(ret, error_msg, AV_ERROR_MAX_STRING_SIZE);
+                puts(error_msg);
             }
-            char error_msg[1000];
-            av_strerror(ret, error_msg, 1000);
-            puts(error_msg);
         }
         if(pkt.stream_index == mVideoStream){
 
@@ -124,8 +119,8 @@ std::shared_ptr<visImage> Processor::process() {
                 continue;
             }
             if(ret < 0){
-                char error_msg[1000];
-                av_strerror(ret, error_msg, 1000);
+                char error_msg[AV_ERROR_MAX_STRING_SIZE];
+                av_strerror(ret, error_msg, AV_ERROR_MAX_STRING_SIZE);
                 puts(error_msg);
             }
             else if (ret == 1){
@@ -189,8 +184,8 @@ int Processor::decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<
 //TODO: fix up here
     int ret = avcodec_send_packet(codecCtx.get(), &packet);
     if(ret < 0 ){
-        char error_msg[1000];
-        av_strerror(ret,error_msg, 1000);
+        char error_msg[AV_ERROR_MAX_STRING_SIZE];
+        av_strerror(ret,error_msg, AV_ERROR_MAX_STRING_SIZE);
         fprintf(stderr, "error sending a packet for decoding. Reason: %s\n", error_msg);
         return ret;
     }
