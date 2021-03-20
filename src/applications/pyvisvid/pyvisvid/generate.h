@@ -23,6 +23,13 @@ public:
 };
 
 
+class VideoFilePlayer: public VideoFile{
+public:
+
+    void forward();
+    void back();
+    VideoFilePlayer(const std::string &source);
+};
 
 class Processor{
 private:
@@ -32,9 +39,10 @@ private:
         V = 3,
     };
     std::shared_ptr<VideoFile> mVideoFile;
+    std::shared_ptr<AVFormatContext> open(const std::string &filename);
 public:
-    explicit  Processor(std::shared_ptr<VideoFile> videoFile);
-    std::shared_ptr<visImage> process();
+    explicit Processor(std::shared_ptr<VideoFile> videoFile);
+    virtual std::shared_ptr<visImage> process();
 
     static int decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<AVFrame> frame, AVPacket &packet);
 
@@ -45,5 +53,18 @@ public:
                               std::shared_ptr<visVisualResult> result, std::shared_ptr<AVCodecContext> codecContext, std::shared_ptr<visBuffer> buffer);
 
     static std::shared_ptr<visImage> generateImage(std::shared_ptr<visView> sharedPtr);
+
+    int getVideoStream(const std::shared_ptr<AVFormatContext> &mAvFormatCtx) const;
+
+    std::shared_ptr<AVCodecContext>
+    getCodecContext(const std::shared_ptr<AVFormatContext> &mAvFormatCtx, const AVCodec *codec, int mVideoStream) const;
 };
+
+class Processor2: public Processor{
+public:
+    Processor2(const std::shared_ptr<VideoFile> &videoFile);
+
+
+};
+
 #endif //LIBVISVID_GENERATE_H

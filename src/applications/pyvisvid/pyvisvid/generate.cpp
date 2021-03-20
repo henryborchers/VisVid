@@ -57,6 +57,9 @@ const std::string &VideoFile::getSource() const {
     return mSource;
 }
 
+VideoFilePlayer::VideoFilePlayer(const std::string &source) : VideoFile(source) {}
+
+// ====================================================================================================================
 Processor::Processor(std::shared_ptr<VideoFile> videoFile): mVideoFile(videoFile) {
 
 }
@@ -65,6 +68,7 @@ const int MAX_BUFFER_SIZE = 200;
 std::shared_ptr<visImage> Processor::process() {
 
     AVFormatContext *ctx = nullptr;
+
     if(avformat_open_input(&ctx, mVideoFile->getSource().c_str(), nullptr, nullptr)<0) {
         throw PyVisVidException("unable to open file");
     }
@@ -74,35 +78,19 @@ std::shared_ptr<visImage> Processor::process() {
         }
     });
 
-    int mVideoStream = 0;
-    for (unsigned int stream_number = 0; stream_number < mAvFormatCtx->nb_streams; stream_number++) {
-        if(mAvFormatCtx->streams[stream_number]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO){
-            mVideoStream = stream_number;
-            break;
-        }
-    }
+    int mVideoStream = getVideoStream(mAvFormatCtx);
 
     const AVCodec *codec = avcodec_find_decoder(mAvFormatCtx->streams[mVideoStream]->codecpar->codec_id);
     if(codec == nullptr){
         throw PyVisVidException("unable to find codec");
     }
-    auto mCodecCtx = std::shared_ptr<AVCodecContext>(avcodec_alloc_context3(codec), [](AVCodecContext *p){
-        if(p != nullptr){
-            avcodec_free_context(&p);
-        }
-    });
 
-    if(!mCodecCtx){
-        throw PyVisVidException("Could not allocate video codec context");
-    }
+    std::shared_ptr<AVCodecContext> mCodecCtx = getCodecContext(mAvFormatCtx, codec, mVideoStream);
 
-    if(avcodec_parameters_to_context(mCodecCtx.get(), mAvFormatCtx->streams[mVideoStream]->codecpar) < 0){
-        throw PyVisVidException("Could not set codec context parameters\n");
-    }
-    if(avcodec_open2(mCodecCtx.get(), codec, nullptr) < 0){
-        throw PyVisVidException("Could Not open codec\n");
-    }
+    //====================
+//    std::shared_ptr<AVFormatContext> mAvFormatCtx = this->open(mVideoFile);
     int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
+
     auto buffer = std::shared_ptr<visBuffer>(VisBuffer_Create2(frame_width, MAX_BUFFER_SIZE), [](visBuffer *p){
         VisBuffer_Destroy(&p);
     });
@@ -163,6 +151,40 @@ std::shared_ptr<visImage> Processor::process() {
 
     return img;
 }
+
+std::shared_ptr<AVCodecContext>
+Processor::getCodecContext(const std::shared_ptr<AVFormatContext> &mAvFormatCtx, const AVCodec *codec,
+                           int mVideoStream) const {
+    auto mCodecCtx = std::shared_ptr<AVCodecContext>(avcodec_alloc_context3(codec), [](AVCodecContext *p){
+        if(p != nullptr){
+            avcodec_free_context(&p);
+        }
+    });
+
+    if(!mCodecCtx){
+        throw PyVisVidException("Could not allocate video codec context");
+    }
+
+    if(avcodec_parameters_to_context(mCodecCtx.get(), mAvFormatCtx->streams[mVideoStream]->codecpar) < 0){
+        throw PyVisVidException("Could not set codec context parameters\n");
+    }
+    if(avcodec_open2(mCodecCtx.get(), codec, nullptr) < 0){
+        throw PyVisVidException("Could Not open codec\n");
+    }
+    return mCodecCtx;
+}
+
+int Processor::getVideoStream(const std::shared_ptr<AVFormatContext> &mAvFormatCtx) const {
+    int mVideoStream = -1;
+    for (unsigned int stream_number = 0; stream_number < mAvFormatCtx->nb_streams; stream_number++) {
+        if(mAvFormatCtx->streams[stream_number]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO){
+            mVideoStream = stream_number;
+            break;
+        }
+    }
+    return mVideoStream;
+}
+
 int Processor::decode(std::shared_ptr<AVCodecContext> codecCtx, std::shared_ptr<AVFrame> frame, AVPacket &packet) {
 //TODO: fix up here
     int ret = avcodec_send_packet(codecCtx.get(), &packet);
@@ -259,3 +281,35 @@ std::shared_ptr<visImage> Processor::generateImage(std::shared_ptr<visView> mVie
     }
     return img;
 }
+
+std::shared_ptr<AVFormatContext> Processor::open(const std::string &filename) {
+
+    AVFormatContext *ctx = nullptr;
+    if(avformat_open_input(&ctx, filename.c_str(), nullptr, nullptr)<0) {
+        throw PyVisVidException("unable to open file");
+    }
+    std::shared_ptr<AVFormatContext> mAvFormatCtx = std::shared_ptr<AVFormatContext>(ctx, [](AVFormatContext *p){
+        if(p != nullptr){
+            avformat_close_input(&p);
+        }
+    });
+
+    int mVideoStream = getVideoStream(mAvFormatCtx);
+
+    const AVCodec *codec = avcodec_find_decoder(mAvFormatCtx->streams[mVideoStream]->codecpar->codec_id);
+    if(codec == nullptr){
+        throw PyVisVidException("unable to find codec");
+    }
+
+    auto mCodecCtx = std::shared_ptr<AVCodecContext>(avcodec_alloc_context3(codec), [](AVCodecContext *p){
+        if(p != nullptr){
+            avcodec_free_context(&p);
+        }
+    });
+
+    return mAvFormatCtx;
+}
+
+// =====================================================================================================================
+Processor2::Processor2(const std::shared_ptr<VideoFile> &videoFile) : Processor(videoFile) {}
+
