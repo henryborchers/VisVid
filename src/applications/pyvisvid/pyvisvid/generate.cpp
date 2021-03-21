@@ -67,17 +67,21 @@ const int MAX_BUFFER_SIZE = 200;
 
 std::shared_ptr<visImage> Processor::process() {
 
-    std::shared_ptr<AVFormatContext> mAvFormatCtx = Processor::createFormatContext(mVideoFile->getSource());
-    int mVideoStream = getVideoStream(mAvFormatCtx);
-    const AVCodec *codec = avcodec_find_decoder(mAvFormatCtx->streams[mVideoStream]->codecpar->codec_id);
+    auto formatContext = Processor::createFormatContext(mVideoFile->getSource());
+    std::optional<unsigned int> stream = getVideoStream1(formatContext);
+    if(stream == false){
+        throw PyVisVidException("No video stream found");
+    }
+    int mVideoStream = stream.value();
+    const AVCodec *codec = avcodec_find_decoder(formatContext->streams[mVideoStream]->codecpar->codec_id);
     if(codec == nullptr){
         throw PyVisVidException("unable to find codec");
     }
 
-    std::shared_ptr<AVCodecContext> mCodecCtx = getCodecContext(mAvFormatCtx, codec, mVideoStream);
+    std::shared_ptr<AVCodecContext> mCodecCtx = getCodecContext(formatContext, codec, mVideoStream);
 
     //====================
-    int frame_width = mAvFormatCtx->streams[mVideoStream]->codecpar->width;
+    int frame_width = formatContext->streams[mVideoStream]->codecpar->width;
     std::shared_ptr<visBuffer> buffer = Processor::createVisvidBuffer(frame_width, MAX_BUFFER_SIZE);
 
 //    ===============================================================
@@ -88,7 +92,7 @@ std::shared_ptr<visImage> Processor::process() {
         int ret;
 
         {
-            if ((ret = av_read_frame(mAvFormatCtx.get(), &pkt)) < 0) {
+            if ((ret = av_read_frame(formatContext.get(), &pkt)) < 0) {
                 if (ret == AVERROR_EOF) {
                     break;
                 }
@@ -321,6 +325,15 @@ std::shared_ptr<visBuffer> Processor::createVisvidBuffer(int frame_width, int bu
 
     }
     return buffer;
+}
+
+std::optional<unsigned int> Processor::getVideoStream1(const std::shared_ptr<AVFormatContext> &formatContext) {
+    for (unsigned int stream_number = 0; stream_number < formatContext->nb_streams; stream_number++) {
+        if(formatContext->streams[stream_number]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO){
+            return stream_number;
+        }
+    }
+    return {};
 }
 
 // =====================================================================================================================

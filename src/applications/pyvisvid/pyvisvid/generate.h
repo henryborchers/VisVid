@@ -6,10 +6,10 @@
 #define LIBVISVID_GENERATE_H
 #include <string>
 #include "AbsPgmStrategy.h"
-#include <memory>
-
 #include "Visualizer.h"
 
+#include <optional>
+#include <memory>
 int make_pgm(const std::string &source, const std::string &output_file);
 //int make_pgm(const std::string &source, const std::string &output_file, const AbsPgmStrategy &strategy);
 
@@ -59,6 +59,7 @@ public:
     static std::shared_ptr<visImage> generateImage(std::shared_ptr<visView> sharedPtr);
 
     static int getVideoStream(const std::shared_ptr<AVFormatContext> &mAvFormatCtx);
+    static std::optional<unsigned int> getVideoStream1(const std::shared_ptr<AVFormatContext> &formatContext);
 
 
 
