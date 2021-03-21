@@ -243,7 +243,7 @@ class DarwinExtras(PlatformSpecificRequirements):
         pyvisvid_extension.library_dirs.append("/usr/local/lib")
 
     def extra_compile_args(self):
-        pyvisvid_extension.extra_compile_args.append("-std=c++14")
+        pyvisvid_extension.extra_compile_args.append("-std=c++17")
 
 
 EXTRA_COMPILER_SETTINGS = {
