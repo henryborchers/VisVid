@@ -219,6 +219,7 @@ pyvisvid_extension = Extension(
     ],
     libraries=['Visvid', "avformat", "avcodec", "shared_data"],
     language='c++',
+    extra_compile_args=['-std=c++17']
     )
 
 
