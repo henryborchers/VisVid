@@ -69,7 +69,7 @@ std::shared_ptr<visImage> Processor::process() {
 
     auto formatContext = Processor::createFormatContext(mVideoFile->getSource());
     std::optional<unsigned int> stream = getVideoStream1(formatContext);
-    if(stream == false){
+    if(!stream){
         throw PyVisVidException("No video stream found");
     }
     int mVideoStream = stream.value();
