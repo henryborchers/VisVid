@@ -219,6 +219,7 @@ pyvisvid_extension = Extension(
     ],
     libraries=['Visvid', "avformat", "avcodec", "shared_data"],
     language='c++',
+    extra_compile_args=['-std=c++17']
     )
 
 
@@ -243,7 +244,7 @@ class DarwinExtras(PlatformSpecificRequirements):
         pyvisvid_extension.library_dirs.append("/usr/local/lib")
 
     def extra_compile_args(self):
-        pyvisvid_extension.extra_compile_args.append("-std=c++11")
+        pyvisvid_extension.extra_compile_args.append("-std=c++17")
 
 
 EXTRA_COMPILER_SETTINGS = {

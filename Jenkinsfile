@@ -81,11 +81,13 @@ pipeline {
                                                             script: 'grep -c ^processor /proc/cpuinfo'
                                                             ).trim()
 
-                                                            tee('logs/clang-tidy_debug.log') {
-                                                                sh(
-                                                                    label: 'Run Clang-Tidy',
-                                                                    script: "run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/ -j ${cores}"
-                                                                   )
+                                                            catchError(buildResult: 'SUCCESS', message: 'Clang-Tidy found issues', stageResult: 'UNSTABLE') {
+                                                                tee('logs/clang-tidy_debug.log') {
+                                                                    sh(
+                                                                        label: 'Run Clang-Tidy',
+                                                                        script: "run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/ -j ${cores}"
+                                                                       )
+                                                                }
                                                             }
                                                         }
                                                     }

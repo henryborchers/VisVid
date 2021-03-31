@@ -6,10 +6,10 @@
 #define LIBVISVID_GENERATE_H
 #include <string>
 #include "AbsPgmStrategy.h"
-#include <memory>
-
 #include "Visualizer.h"
 
+#include <optional>
+#include <memory>
 int make_pgm(const std::string &source, const std::string &output_file);
 //int make_pgm(const std::string &source, const std::string &output_file, const AbsPgmStrategy &strategy);
 
@@ -39,7 +39,11 @@ private:
         V = 3,
     };
     std::shared_ptr<VideoFile> mVideoFile;
-    std::shared_ptr<AVFormatContext> open(const std::string &filename);
+//    std::shared_ptr<AVFormatContext> open(const std::string &filename);
+    static std::shared_ptr<AVCodecContext> getCodecContext(const std::shared_ptr<AVFormatContext> &mAvFormatCtx, const AVCodec *codec, int mVideoStream);
+    static std::shared_ptr<AVFrame> allocateEmptyFrame();
+    static std::shared_ptr<visBuffer> createVisvidBuffer(int frame_width, int buffer_size);
+    static std::shared_ptr<AVFormatContext> createFormatContext(const std::string &filename);
 public:
     explicit Processor(std::shared_ptr<VideoFile> videoFile);
     virtual std::shared_ptr<visImage> process();
@@ -54,10 +58,11 @@ public:
 
     static std::shared_ptr<visImage> generateImage(std::shared_ptr<visView> sharedPtr);
 
-    int getVideoStream(const std::shared_ptr<AVFormatContext> &mAvFormatCtx) const;
+    static int getVideoStream(const std::shared_ptr<AVFormatContext> &mAvFormatCtx);
+    static std::optional<unsigned int> getVideoStream1(const std::shared_ptr<AVFormatContext> &formatContext);
 
-    std::shared_ptr<AVCodecContext>
-    getCodecContext(const std::shared_ptr<AVFormatContext> &mAvFormatCtx, const AVCodec *codec, int mVideoStream) const;
+
+
 };
 
 class Processor2: public Processor{
