@@ -13,20 +13,6 @@ if(Python3_Interpreter_FOUND)
         add_subdirectory(${libpybind11_SOURCE_DIR} ${libpybind11_BINARY_DIR} EXCLUDE_FROM_ALL)
     endif()
 
-#    execute_process(COMMAND ${Python3_EXECUTABLE} -m venv ${PROJECT_BINARY_DIR}/venv)
-#    find_program(VENV_PYTHON
-#            NAMES
-#                python
-#            PATHS
-#                ${PROJECT_BINARY_DIR}/venv/bin
-#                ${PROJECT_BINARY_DIR}/venv/Scripts
-#            NO_DEFAULT_PATH
-#            NO_SYSTEM_ENVIRONMENT_PATH
-#            )
-#    execute_process(COMMAND ${VENV_PYTHON} -m pip install wheel)
-#    execute_process(COMMAND ${VENV_PYTHON} -m pip wheel --wheel-dir=${PROJECT_BINARY_DIR}/wheels -r ${CMAKE_SOURCE_DIR}/requirements-dev.txt)
-#    execute_process(COMMAND ${VENV_PYTHON} -m pip install --no-index --find-links=${PROJECT_BINARY_DIR}/wheels -r ${CMAKE_SOURCE_DIR}/requirements-dev.txt)
-
     add_custom_target(pyvisvid_build
         COMMAND
             ${Python3_EXECUTABLE} setup.py
@@ -38,7 +24,6 @@ if(Python3_Interpreter_FOUND)
                     --library-dirs=$<TARGET_FILE_DIR:Visvid::Visvid>
                 build_clib
                     --cmake-path=${CMAKE_COMMAND}
-#        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/build
         DEPENDS
