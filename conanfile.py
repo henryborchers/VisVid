@@ -4,8 +4,7 @@ from conans import ConanFile, CMake
 
 class VisvidConan(ConanFile):
     requires = [
-        "ffmpeg/4.2.1@bincrafters/stable",
-        "libiconv/1.16"
+        "ffmpeg/5.0",
     ]
     settings = "os", "arch", "compiler", "build_type"
 
@@ -19,9 +18,9 @@ class VisvidConan(ConanFile):
 
     def requirements(self):
         if self.options.with_createVisuals:
-            self.requires("sdl2/2.0.12@bincrafters/stable")
-            if self.settings.os == "Linux":
-                self.requires("libalsa/1.2.4")
+            self.requires("sdl/2.24.0")
+            # if self.settings.os == "Linux":
+            #     self.requires("libalsa/1.2.4")
 
 
     def imports(self):
@@ -30,10 +29,10 @@ class VisvidConan(ConanFile):
 
     def configure(self):
         if self.settings.os == "Linux":
-            self.options["ffmpeg"].vorbis = False
-            self.options["ffmpeg"].openjpeg = False
-            self.options["ffmpeg"].x264 = False
-            self.options["ffmpeg"].x265 = False
+            # self.options["ffmpeg"].vorbis = False
+            self.options["ffmpeg"].with_openjpeg = False
+            self.options["ffmpeg"].with_libx264 = False
+            self.options["ffmpeg"].with_libx265 = False
 
     def build(self):
         cmake = self._configure_cmake()
