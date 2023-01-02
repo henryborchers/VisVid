@@ -85,7 +85,7 @@ pipeline {
                                                                 tee('logs/clang-tidy_debug.log') {
                                                                     sh(
                                                                         label: 'Run Clang-Tidy',
-                                                                        script: "run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/ -j ${cores}"
+                                                                        script: "run-clang-tidy -clang-tidy-binary clang-tidy -p ./build/debug/ -j ${cores} src/ examples/"
                                                                        )
                                                                 }
                                                             }
