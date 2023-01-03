@@ -12,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 string(TIMESTAMP LIBVISVID_VERSION_BUILD "%Y%m%d%H%M%S")
 
 
-find_package(FFMPEG
+find_package(ffmpeg
     COMPONENTS
         avformat
         avcodec

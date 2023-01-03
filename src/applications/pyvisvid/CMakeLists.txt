@@ -61,8 +61,8 @@ if(Python3_Interpreter_FOUND)
 #                    _pyvisvid_module_shared
                     pybind11::module
                     Python3::Python
-                    FFmpeg::avformat
-                    FFmpeg::avcodec
+                    ffmpeg::avformat
+                    ffmpeg::avcodec
                 )
         target_include_directories(pyvisvid_module
                 PUBLIC
