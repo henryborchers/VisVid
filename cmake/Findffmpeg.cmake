@@ -6,25 +6,25 @@ FindFFMPEG
 This will define the following variables::
 
   FFMPEG_FOUND       - True if the system has the FFMpeg library
-  FFMPEG_VERSION     - The version of the FFmpeg library which was found
+  FFMPEG_VERSION     - The version of the ffmpeg library which was found
   FFMPEG_EXECUTABLE  - The path to the ffmpeg executable which was found
   FFMPEG_INCLUDE_DIR - The path where the headers are located. avcodec.h, avformat.h ...
 
 and the following imported targets::
 
-  FFmpeg::ffmpeg   - The ffmpeg executable
-  FFmpeg::ffprobe  - The ffprobe executable
-  FFmpeg::avcodec  - The libavcodec library
-  FFmpeg::avformat - The libavformat library
-  FFmpeg::avutil   - The libavutil library
-  FFmpeg::swscale  - The swscale library
-  FFmpeg::avdevice - The avdevice library
+  ffmpeg::ffmpeg   - The ffmpeg executable
+  ffmpeg::ffprobe  - The ffprobe executable
+  ffmpeg::avcodec  - The libavcodec library
+  ffmpeg::avformat - The libavformat library
+  ffmpeg::avutil   - The libavutil library
+  ffmpeg::swscale  - The swscale library
+  ffmpeg::avdevice - The avdevice library
 
 #]=======================================================================]
 include_guard(GLOBAL)
 
 macro(FFMPEG_ERROR)
-    set(FFmpeg_FOUND FALSE)
+    set(ffmpeg_FOUND FALSE)
     set(FFMPEG_FOUND FALSE)
     if (FFMPEG_FIND_REQUIRED)
         message(FATAL_ERROR "no found")
@@ -32,17 +32,17 @@ macro(FFMPEG_ERROR)
 endmacro(FFMPEG_ERROR)
 
 find_program(FFMPEG_EXECUTABLE NAMES ffmpeg)
-if(NOT TARGET FFmpeg::ffmpeg)
-    add_executable(FFmpeg::ffmpeg IMPORTED)
-    set_target_properties(FFmpeg::ffmpeg PROPERTIES IMPORTED_LOCATION ${FFMPEG_EXECUTABLE})
-endif(NOT TARGET FFmpeg::ffmpeg)
+if(NOT TARGET ffmpeg::ffmpeg)
+    add_executable(ffmpeg::ffmpeg IMPORTED)
+    set_target_properties(ffmpeg::ffmpeg PROPERTIES IMPORTED_LOCATION ${FFMPEG_EXECUTABLE})
+endif(NOT TARGET ffmpeg::ffmpeg)
 
 find_program(FFMPEG_FFPROBE_EXECUTABLE NAMES ffprobe)
 
-if(NOT TARGET FFmpeg::probe)
-    add_executable(FFmpeg::probe IMPORTED)
-    set_target_properties(FFmpeg::probe PROPERTIES IMPORTED_LOCATION ${FFMPEG_FFPROBE_EXECUTABLE})
-endif(NOT TARGET FFmpeg::probe)
+if(NOT TARGET ffmpeg::probe)
+    add_executable(ffmpeg::probe IMPORTED)
+    set_target_properties(ffmpeg::probe PROPERTIES IMPORTED_LOCATION ${FFMPEG_FFPROBE_EXECUTABLE})
+endif(NOT TARGET ffmpeg::probe)
 # TODO: set library versionsThe path
 
 if(FFMPEG_EXECUTABLE)
@@ -85,8 +85,8 @@ if ("avformat" IN_LIST FFMPEG_FIND_COMPONENTS)
                 /usr/lib
             )
     mark_as_advanced(FFMPEG_AVFORMAT_LIBRARY)
-    add_library(FFmpeg::avformat UNKNOWN IMPORTED)
-    set_target_properties(FFmpeg::avformat PROPERTIES
+    add_library(ffmpeg::avformat UNKNOWN IMPORTED)
+    set_target_properties(ffmpeg::avformat PROPERTIES
         IMPORTED_LOCATION ${FFMPEG_AVFORMAT_LIBRARY}
         INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_AVFORMAT_INCLUDE_DIR}
         IMPORTED_LINK_INTERFACE_LANGUAGES "C"
@@ -133,8 +133,8 @@ if ("avcodec" IN_LIST FFMPEG_FIND_COMPONENTS)
             )
     mark_as_advanced(FFMPEG_AVCODEC_LIBRARY)
 
-    add_library(FFmpeg::avcodec UNKNOWN IMPORTED)
-    set_target_properties(FFmpeg::avcodec PROPERTIES
+    add_library(ffmpeg::avcodec UNKNOWN IMPORTED)
+    set_target_properties(ffmpeg::avcodec PROPERTIES
             IMPORTED_LOCATION ${FFMPEG_AVCODEC_LIBRARY}
             INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_AVCODEC_INCLUDE_DIR}
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
@@ -184,8 +184,8 @@ if ("avutil" IN_LIST FFMPEG_FIND_COMPONENTS)
             )
     mark_as_advanced(FFMPEG_AVUTIL_LIBRARY)
 
-    add_library(FFmpeg::avutil UNKNOWN IMPORTED)
-    set_target_properties(FFmpeg::avutil PROPERTIES
+    add_library(ffmpeg::avutil UNKNOWN IMPORTED)
+    set_target_properties(ffmpeg::avutil PROPERTIES
             IMPORTED_LOCATION ${FFMPEG_AVUTIL_LIBRARY}
             INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_AVUTIL_INCLUDE_DIR}
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
@@ -236,8 +236,8 @@ if ("avutil" IN_LIST FFMPEG_FIND_COMPONENTS)
 
     mark_as_advanced(FFMPEG_SWSCALE_LIBRARY)
 
-    add_library(FFmpeg::swscale UNKNOWN IMPORTED)
-    set_target_properties(FFmpeg::swscale PROPERTIES
+    add_library(ffmpeg::swscale UNKNOWN IMPORTED)
+    set_target_properties(ffmpeg::swscale PROPERTIES
             IMPORTED_LOCATION ${FFMPEG_SWSCALE_LIBRARY}
             INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_SWSCALE_INCLUDE_DIR}
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
@@ -283,8 +283,8 @@ if ("avutil" IN_LIST FFMPEG_FIND_COMPONENTS)
             )
     mark_as_advanced(FFMPEG_AVDEVICE_INCLUDE_DIR)
 
-    add_library(FFmpeg::avdevice UNKNOWN IMPORTED)
-    set_target_properties(FFmpeg::avdevice PROPERTIES
+    add_library(ffmpeg::avdevice UNKNOWN IMPORTED)
+    set_target_properties(ffmpeg::avdevice PROPERTIES
             IMPORTED_LOCATION ${FFMPEG_AVDEVICE_LIBRARY}
             INTERFACE_INCLUDE_DIRECTORIES ${FFMPEG_AVDEVICE_INCLUDE_DIR}
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
