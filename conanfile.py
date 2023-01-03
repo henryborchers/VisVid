@@ -8,7 +8,7 @@ class VisvidConan(ConanFile):
     ]
     settings = "os", "arch", "compiler", "build_type"
 
-    generators = ["cmake_paths"]
+    generators = ["cmake_paths", "cmake_find_package"]
     options = {
         "with_createVisuals": [True, False]
     }
