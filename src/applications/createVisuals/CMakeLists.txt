@@ -67,7 +67,9 @@ target_include_directories(CreateVisual PRIVATE ${FFMPEG_INCLUDE_DIR})
 target_link_libraries(CreateVisual
         PRIVATE
             Visvid::Visvid
-            ${FFMPEG_LIBRARIES}
+            ffmpeg::avcodec
+            ffmpeg::swscale
+            ffmpeg::avformat
         )
 if (TARGET SDL2::SDL2)
     target_link_libraries(CreateVisual PRIVATE SDL2::SDL2)
